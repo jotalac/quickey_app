@@ -24,6 +24,8 @@ onMounted(() => {
     if(props.actionElement.value !== '') {
         delayTime.value = parseInt(props.actionElement.value)
     }
+    // Always call updateValue to ensure the default value is set
+    updateValue()
 })
 
 

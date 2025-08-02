@@ -213,8 +213,8 @@ onMounted(async () => {
         class="notify-button"
         @click="openEmailDialog"
       >
-        <ShinyText text="I am interested" :disabled="false" :speed="3"/>
         <i class="pi pi-info-circle"></i>
+        <ShinyText text="I am interested" :disabled="false" :speed="3"/>
       </Button>
       <SendEmailDialog v-model:visible="dialogVisible"/>
     </div>
