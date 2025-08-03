@@ -81,9 +81,7 @@ const getCategoryIcon = (categoryName: string) => {
                 ></div>
             </div>
 
-            <!-- page indicator -->
-            <!-- <p class="page-num-display">Page: <span class="page-num-val">{{ currentPage }}</span></p> -->
-            
+            <!-- page indicator -->            
             <div class="page-num-display">
                 <div
                     v-for="pageNumber in 3"
@@ -186,8 +184,9 @@ const getCategoryIcon = (categoryName: string) => {
 }
 
 .save-key-binded {
-    background-color: var(--green-bright);
-    box-shadow: 0 0 10px rgba(0, 128, 28, 0.37);
+    background-color: var(--blue-sky-bright);
+    /* box-shadow: 0 0 10px rgba(0, 128, 28, 0.37); */
+    box-shadow: 0 0 10px rgba(3, 87, 115, 0.37);
 }
 
 .save-key-empty {
