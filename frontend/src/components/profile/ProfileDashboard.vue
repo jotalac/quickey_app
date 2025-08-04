@@ -196,7 +196,7 @@ const showEditSaveDialog = (currentData: KeybindingDataSave) => {
                 class="saves-container"
                 appear
             >
-                <KeybindingSaveProfileDialog :keybiding-data="currentDialogData"/>
+                <KeybindingSaveProfileDialog :keybiding-data="currentDialogData" v-on:dialog-hide="filterValueChanged"/>
                 <KeybindingSave 
                     v-for="(bindingSave, index) in displayData" 
                     :key="bindingSave._id"

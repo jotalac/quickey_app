@@ -14,6 +14,9 @@ interface Props {
 
 const{isDialogVisible, hideDialog} = useEditSaveDialog()
 const props = defineProps<Props>()
+const emit = defineEmits<{
+    dialogHide: []
+}>()
 
 // name and description edit
 const saveName = ref<string>()
@@ -34,7 +37,7 @@ const isFormEdited = computed<boolean>(() => {
 })
 
 const restoreFormValues = () => {
-    saveName.value = props.keybidingData?.name
+    saveName.value = props.keybidingData?.name 
     saveDescription.value = descriptionOriginal
     isPublic.value = props.keybidingData?.public
 }
@@ -56,17 +59,10 @@ const likeButtonToggle = async () => {
 
     try {
         const response = await keybindingSaveApi.toggleLike(isLiked.value, props.keybidingData._id)
-        
-        if (response.status !== 'success') {
-            // Revert on error
-            isLiked.value = originalLikedState
-            likeCount.value = originalLikeCount
-            console.error('Failed to toggle like:', response)
-        } else {
-            console.log('Like toggled successfully')
-        }
-        
+        console.log(response)
+                
     } catch (error) {
+        console.log(error)
         // Revert on error
         isLiked.value = originalLikedState
         likeCount.value = originalLikeCount
@@ -92,7 +88,7 @@ const leftMenuItems = computed(() => [
 ])
 
 watch(() => props.keybidingData, async () => {
-    saveName.value = props.keybidingData?.name
+    saveName.value = props.keybidingData?.name || ''
     descriptionOriginal = await keybindingSaveApi.getDescription(props.keybidingData?._id as string)
     saveDescription.value = descriptionOriginal
     isPublic.value = props.keybidingData?.public
@@ -105,6 +101,12 @@ const selectOptions = [
     {label: 'Public', icon: 'pi pi-globe', value: true}
 ]
 
+// === dialog controls ===
+const dialogHide = () => {
+    hideDialog()
+    emit('dialogHide')
+} 
+
 </script>
 
 <template>
@@ -114,7 +116,7 @@ const selectOptions = [
         maximizable
         :header="`Edit - ${props.keybidingData?.name}`"
         :style="{width: '90%', height: '90%'}"
-        @hide="hideDialog"
+        @hide="dialogHide"
     >   
         <div class="dialog-content">
             <div class="left-edit-section">

@@ -28,4 +28,17 @@ const likeSave = async (req: Request, res: Response ) => {
     }
 }
 
-export {likeSave}
+const unlikeSave = async (req: Request, res: Response) => {
+    const user = req.user as IUser
+    const {saveId} = req.params
+    
+    try {
+        await Like.deleteOne({userId: user._id, keyBindingId: saveId})
+
+        res.status(200).json({status: "success"})
+    } catch (error) {
+        res.status(500).json({status: "error"})
+    }
+}
+
+export {likeSave, unlikeSave}

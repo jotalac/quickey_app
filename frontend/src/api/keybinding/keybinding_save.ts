@@ -39,7 +39,7 @@ const getDescription =  async (saveId: string) => {
         return response.data.data
     } catch (error) {
         console.log(error);
-        return false
+        return ''
     }
 }
 
