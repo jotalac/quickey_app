@@ -115,6 +115,34 @@ const getBindingUser = async (req: Request, res: Response) => {
     }
 }
 
+const getDescription = async (req: Request, res: Response) => {
+    try {
+        const {saveId} = req.params
+        const user = req.user as IUser
+
+        const savedData = await KeyBinding.findById(saveId)
+
+        
+        if (!savedData || !savedData.userId.equals(user._id)) {
+            res.status(400).json({
+                status: "error",
+                msg: "Invalid save id"
+            })
+            return
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: savedData.description
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            msg: "Error getting description"
+        })
+    }
+}
+
 //helper funcations
 const bindingNameValid = async (userId: string, saveName: string): Promise<Boolean> => {
     const exists = await KeyBinding.exists({
@@ -146,4 +174,4 @@ const getTotalCountResults = async (pipeline: PipelineStage[]) => {
     return countResult[0]?.count || 0
 }
 
-export {verfiyBindingName, bindingNameValid, getBindingUser}
+export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription}

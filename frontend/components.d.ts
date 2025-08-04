@@ -69,6 +69,7 @@ declare module 'vue' {
     KnobRotateSelect: typeof import('./src/components/modals/knobBinding/KnobRotateSelect.vue')['default']
     Menu: typeof import('primevue/menu')['default']
     Menubar: typeof import('primevue/menubar')['default']
+    MenuBar: typeof import('primevue/menubar')['default']
     Message: typeof import('primevue/message')['default']
     MouseClickNode: typeof import('./src/components/modals/multiBinding/actionNodes/MouseClickNode.vue')['default']
     MouseMoveNode: typeof import('./src/components/modals/multiBinding/actionNodes/MouseMoveNode.vue')['default']

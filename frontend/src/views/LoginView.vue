@@ -67,47 +67,6 @@ const onFormSubmit = async ({valid, values, reset}: {valid: boolean, values: any
 const {setCurrentUser} = useAuth()
 const {handleGoogleSuccess, handleGoogleError} = useGoogleLogin()
 
-
-
-// const handleGoogleSuccess = async (response: any) => {
-//     try {
-//         const result = await authApi.googleSSO(response.credential)
-
-//         if (result.status === 'success') {
-//             //save auth data
-//             AuthService.saveAuthData(result.data)
-
-//             setCurrentUser(result.data.user)
-//             router.push("/profile")
-//         } else {
-//             toast.add({
-//                 severity: 'error',
-//                 summary: "Login failed",
-//                 detail: "Google login failed",
-//                 life: 3000
-//             })
-//         }
-//     } catch (error: any) {
-//         console.log(error.message);
-        
-//         toast.add({ 
-//             severity: 'error', 
-//             summary: 'Login error', 
-//             detail: 'Please try again later', 
-//             life: 3000 
-//         })
-//     }
-// }
-
-// const handleGoogleError = () => {
-//         toast.add({ 
-//             severity: 'error', 
-//             summary: 'Google login failed', 
-//             detail: 'Try google login later', 
-//             life: 3000 
-//         })
-// }
-
 </script>
 
 
