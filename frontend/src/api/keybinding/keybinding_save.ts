@@ -35,7 +35,7 @@ const toggleLike = async (isLiked: boolean, saveId: string) => {
 
 const getDescription =  async (saveId: string) => {
     try {
-        const response = await api.get(`/keybinding/save/${saveId}/get-description`)
+        const response = await api.get(`/keybinding/${saveId}/get-description`)
         return response.data.data
     } catch (error) {
         console.log(error);

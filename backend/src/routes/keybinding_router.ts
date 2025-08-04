@@ -4,6 +4,7 @@ import { getCategories, saveKeyBinding } from "../controllers/keybinding/save_ke
 import { authenticateToken } from "../middleware/auth_middleware"
 import {getBindingUser, getDescription, verfiyBindingName} from "../controllers/keybinding/keybinding_user_controller"
 import { keyBindingSaveLimiter } from "../middleware/rate_limiter"
+import { likeSave } from "../controllers/keybinding/like_keybinding_controller"
 
 const router = express.Router()
 
@@ -15,11 +16,11 @@ router.get("/get-categories", getCategories)
 
 router.get("/get-user-binding", authenticateToken, getBindingUser)
 
-router.get("/save/:saveId/get-description", authenticateToken, getDescription)
+router.get("/:saveId/get-description", authenticateToken, getDescription)
 
 //like and unlike post
-router.post("/save/:saveId/like", authenticateToken)
+router.post("/:saveId/like", authenticateToken, likeSave)
 
-router.delete("/save/:saveId/unlike", authenticateToken)
+router.delete("/:saveId/unlike", authenticateToken)
 
 export default router

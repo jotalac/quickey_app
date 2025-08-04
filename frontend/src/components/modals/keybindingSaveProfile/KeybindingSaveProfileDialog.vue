@@ -42,20 +42,35 @@ const restoreFormValues = () => {
 const likeButtonToggle = async () => {
     if (!props.keybidingData?._id) return
 
-    isLiked.value = !isLiked.value
+    const originalLikedState = isLiked.value
+    const originalLikeCount = likeCount.value
 
+    // Optimistically update UI
+    isLiked.value = !isLiked.value
+    
     if (isLiked.value) {
         likeCount.value = (likeCount.value ?? 0) + 1
     } else {
-        likeCount.value = props.keybidingData?.likeCount || 0
+        likeCount.value = Math.max(0, (likeCount.value ?? 1) - 1) // Prevent negative counts
     }
 
-    //send request to update the database
     try {
-        const response = await keybindingSaveApi.toggleLike(isLiked.value, props.keybidingData?._id)
-
+        const response = await keybindingSaveApi.toggleLike(isLiked.value, props.keybidingData._id)
+        
+        if (response.status !== 'success') {
+            // Revert on error
+            isLiked.value = originalLikedState
+            likeCount.value = originalLikeCount
+            console.error('Failed to toggle like:', response)
+        } else {
+            console.log('Like toggled successfully')
+        }
+        
     } catch (error) {
-        console.log(error)
+        // Revert on error
+        isLiked.value = originalLikedState
+        likeCount.value = originalLikeCount
+        console.error('Error toggling like:', error)
     }
 }
 

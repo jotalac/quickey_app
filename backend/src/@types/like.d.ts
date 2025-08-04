@@ -6,7 +6,6 @@ export interface ILike extends Document {
     createdAt: Date
 }
 
-export interface ILikeModel extends Model<Like> {
-    toggleLike(userId: ObjectId, keyBindingId: ObjectId): Promise<{liked: boolean}>
-    hasUserLiked(userId: ObjectId, keyBindingId: ObjectId): Promise<boolean>
+export interface ILikeModel extends Model<ILike> {
+    hasUserLiked(userId: string, keyBindingId: string): Promise<boolean>;
 }
