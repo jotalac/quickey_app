@@ -7,6 +7,7 @@ import { keybindingSaveApi } from '@/api/keybinding/keybinding_save';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod' 
 import { userKeybindingApi } from '@/api/keybinding/keybinding_user';
+import { useToast } from 'primevue';
 
 interface Props {
     keybidingData: KeybindingDataSave | null
@@ -25,10 +26,35 @@ const isPublic = ref<boolean>()
 const isLiked = ref<boolean>()
 const likeCount = ref<number>()
 
+const toast = useToast()
+
 let descriptionOriginal = ""
 
 //edit form validaiton
-const resolver = zodResolver(z.object({}))
+// const resolver = zodResolver(
+//     z.object({
+//         saveName: z.string().trim()
+//             .min(1, "Name is requiered")
+//             .min(3, "Minimum 3 characters are requiered")
+//             .max(50, "Maximum 50 characters allowed"),
+//         saveDescription: z.union([z.string().url().nullish(), z.literal(""), z.string().max(3000, "Max desc length is 3000 characters")]),
+//     })
+// )
+const validateFormValues = (): boolean => {
+    let valid = true
+    const currentNameLength = saveName.value?.trim().length 
+    const currentDescLength = saveDescription.value?.trim().length 
+    if (currentNameLength!! < 3 || currentNameLength!! > 50) {
+        toast.add({severity: 'warn', summary: "Name length must be 3-50 characters", life: 1000})
+        valid = false
+    } 
+    if (currentDescLength!! > 3000) {
+        toast.add({severity: 'warn', summary: "Description length must be 0-3000 characters", life: 1000})
+        valid = false
+    }
+
+    return valid
+}
 
 const isFormEdited = computed<boolean>(() => {
     return saveName.value?.trim() === props.keybidingData?.name &&
@@ -42,6 +68,24 @@ const restoreFormValues = () => {
     isPublic.value = props.keybidingData?.public
 }
 
+const saveNewInfo = async () => {
+    if (!props.keybidingData?._id) return
+
+    //validate the values manually :[
+    if (!validateFormValues()) return
+
+    const saveResult = await userKeybindingApi.editKeybindingSave(saveName.value!!, saveDescription.value!!, isPublic.value!!, props.keybidingData._id)
+    
+    if (saveResult.status === 'success') {
+        toast.add({severity: 'success', summary: "Save updated", life: 1000})
+        //set the new data to be the original dat
+
+    } else {
+        toast.add({severity: 'error', summary: "Error", detail: saveResult.msg, life: 2000})
+    }
+}
+
+// === likes ===
 const likeButtonToggle = async () => {
     if (!props.keybidingData?._id) return
 
@@ -121,7 +165,8 @@ const dialogHide = () => {
         <div class="dialog-content">
             <div class="left-edit-section">
                 <div class="edit-form-cont">
-                    <Form v-slot="$form" :resolver="resolver" :validate-on-blur="true" class="form-element">
+                    <Form :key="props.keybidingData?._id" v-slot="$form" class="form-element" @submit="saveNewInfo" validate-on-value-update>
+
                         <label for="save-name" class="input-label">Name</label>
                         <InputText
                         v-model="saveName"
@@ -129,12 +174,13 @@ const dialogHide = () => {
                         id="save-name"
                         placeholder="Save name"
                         class="form-input"
+                        maxlength="50"
                         />
 
                         <label for="save-description" class="input-label">Description</label>
                         <Textarea 
                             v-model="saveDescription" 
-                            name="saveDesc" 
+                            name="saveDescription" 
                             id="save-description"
                             placeholder="Save description (optional)"
                             class="form-input"
@@ -161,6 +207,7 @@ const dialogHide = () => {
                                     outlined
                                     class="button-save"
                                     :disabled="isFormEdited"
+                                    type="submit"
                                 />
     
                                 <Button 
@@ -248,6 +295,10 @@ const dialogHide = () => {
 
 .form-input{
     margin-bottom: 20px
+}
+.input-incorrect{
+    color: var(--red-vivid);
+    border: var(--red-vivid) 1px solid;
 }
 
 #save-description{

@@ -49,6 +49,21 @@ export const keyBindingSaveLimiter = rateLimit({
     }
 })
 
+export const keyBindingUpdateLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    message: {
+        status: 'error',
+        msg: 'Too many updates attempts. Try it again later',
+    },
+    handler: (req: Request, res: Response) => {
+        res.status(200).json({
+            status: 'error',
+            msg: 'You’re updating too fast. Take a short break before trying again.',
+        })
+    }
+})
+
 //limit the general app usage to 100 requests per minute
 export const generalLimiter = rateLimit({
     windowMs: 60 * 1000,

@@ -143,6 +143,54 @@ const getDescription = async (req: Request, res: Response) => {
     }
 }
 
+const updateSave = async (req: Request, res: Response) => {
+    const {saveId} = req.params
+    const user = req.user as IUser
+    let {newName, newDescription, newIsPublic} = req.body
+    newName = newName.trim()
+    newDescription = newDescription.trim()
+    //check if all data is provided
+    if (!saveId || !newName || newDescription === undefined || newIsPublic === undefined) {
+        res.status(400).json({status: "error", msg: "Not all data provided"})
+        return 
+    }
+    //check if user owns the save
+    if (!await userOwnsSave(user._id, saveId)) {
+        res.status(400).json({status: "error", msg: "Invalid save ID"})
+        return 
+    }
+
+    //check if name doesnt already exists
+    if (!await validateNameUpdate(newName, user._id, saveId)) {
+        res.status(400).json({status: "error", msg: "New name is not valid"})
+        return
+    }
+    
+    //validate description
+    if (newDescription.length > 3000) {
+        res.status(400).json({status: "error", msg: "Description is too long"})
+        return
+    }
+
+    try {
+        await KeyBinding.findByIdAndUpdate(
+            saveId,
+            {
+                name: newName,
+                description: newDescription,
+                public: newIsPublic
+            }
+        )
+
+        res.status(200).json({
+            status: "success",
+            msg: "Save updated successfully"
+        })
+    } catch (error) {
+        res.status(500).json({status: "error", msg: "Updating save failed!"})
+    }
+}
+
 //helper funcations
 const bindingNameValid = async (userId: string, saveName: string): Promise<Boolean> => {
     const exists = await KeyBinding.exists({
@@ -151,6 +199,24 @@ const bindingNameValid = async (userId: string, saveName: string): Promise<Boole
     })
 
     return !exists
+}
+
+const validateNameUpdate = async (newName: string, userId: string, saveId: string): Promise<boolean> => {
+    if (newName.length > 50 || newName.length < 3) {
+        return false
+    }
+
+    const existsSave = await KeyBinding.exists({
+        userId: userId,
+        name: newName,
+        _id: {$ne: saveId}
+    })
+    return !existsSave
+}
+
+const userOwnsSave = async (userId: string, saveId: string): Promise<boolean> => {
+    const exists = await KeyBinding.exists({userId: userId, _id: saveId})
+    return !!exists 
 }
 
 const getSortOptions = (sortValue: string): Record<string, 1 | -1> => {
@@ -174,4 +240,4 @@ const getTotalCountResults = async (pipeline: PipelineStage[]) => {
     return countResult[0]?.count || 0
 }
 
-export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription}
+export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription, updateSave}

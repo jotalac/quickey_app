@@ -23,6 +23,23 @@ export const userKeybindingApi = {
         }
     },
 
+    async editKeybindingSave(saveName: string, saveDescription: string, isPublic: boolean, saveId: string) {
+        try {
+            const response = await api.patch(`/keybinding/${saveId}/update`, 
+                {
+                    newName: saveName,
+                    newDescription: saveDescription,
+                    newIsPublic: isPublic
+            })
+
+            return response.data
+        } catch (error: any) {
+            console.log(error)
+
+            return {status: "error", msg: error.response?.data?.msg || "Error updating data"}
+        }
+    },
+
     async getKeybindingUser(searchText: string, filterCategories: string[], sortBy: string, publicFilter: string, likedFilter: boolean, page: Number, limit: Number) {
         try {
             console.log(filterCategories)
