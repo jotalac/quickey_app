@@ -13,10 +13,13 @@ interface Props {
     keybidingData: KeybindingDataSave | null
 }
 
+
 const{isDialogVisible, hideDialog} = useEditSaveDialog()
 const props = defineProps<Props>()
 const emit = defineEmits<{
-    dialogHide: []
+    dialogHide: [],
+    upadeSuccess: [updatedData: any],
+    likeChange: [isLiked: any]
 }>()
 
 // name and description edit
@@ -30,16 +33,6 @@ const toast = useToast()
 
 let descriptionOriginal = ""
 
-//edit form validaiton
-// const resolver = zodResolver(
-//     z.object({
-//         saveName: z.string().trim()
-//             .min(1, "Name is requiered")
-//             .min(3, "Minimum 3 characters are requiered")
-//             .max(50, "Maximum 50 characters allowed"),
-//         saveDescription: z.union([z.string().url().nullish(), z.literal(""), z.string().max(3000, "Max desc length is 3000 characters")]),
-//     })
-// )
 const validateFormValues = (): boolean => {
     let valid = true
     const currentNameLength = saveName.value?.trim().length 
@@ -79,7 +72,9 @@ const saveNewInfo = async () => {
     if (saveResult.status === 'success') {
         toast.add({severity: 'success', summary: "Save updated", life: 1000})
         //set the new data to be the original dat
-
+        descriptionOriginal = saveResult.newData.saveDescription
+        emit('upadeSuccess', saveResult.newData)
+        hideDialog()
     } else {
         toast.add({severity: 'error', summary: "Error", detail: saveResult.msg, life: 2000})
     }
@@ -103,8 +98,8 @@ const likeButtonToggle = async () => {
 
     try {
         const response = await keybindingSaveApi.toggleLike(isLiked.value, props.keybidingData._id)
-        console.log(response)
-                
+        
+        emit('likeChange', {isLiked: isLiked.value, saveId: props.keybidingData._id, likeCount: likeCount.value})
     } catch (error) {
         console.log(error)
         // Revert on error

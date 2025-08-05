@@ -108,6 +108,35 @@ const showEditSaveDialog = (currentData: KeybindingDataSave) => {
     showDialog()
 }
 
+// emits from the dialog
+const handleItemUpdate = (newData: any) => {
+    const index = displayData.value.findIndex(item => item._id === newData.id)
+
+    if (index !== -1) {
+        const newItem = {
+            ...displayData.value[index], 
+            name: newData.saveName,      
+            public: newData.isPublic,    
+        };
+        
+        displayData.value[index] = newItem;
+    }
+
+    if (currentDialogData.value) {
+        currentDialogData.value.name = newData.name
+        currentDialogData.value.public = newData.isPublic
+    }
+}
+
+const handleItemLiked = (likeData: any) => {
+    const index = displayData.value.findIndex(item => item._id === likeData.saveId)
+
+    if (index !== -1) {
+        displayData.value[index].isLiked = likeData.isLiked
+        displayData.value[index].likeCount = likeData.likeCount
+    }
+}
+
 
 </script>
 
@@ -196,7 +225,11 @@ const showEditSaveDialog = (currentData: KeybindingDataSave) => {
                 class="saves-container"
                 appear
             >
-                <KeybindingSaveProfileDialog :keybiding-data="currentDialogData" v-on:dialog-hide="filterValueChanged"/>
+                <KeybindingSaveProfileDialog 
+                    :keybiding-data="currentDialogData"
+                    @upade-success="handleItemUpdate"
+                    @like-change="handleItemLiked"
+                />
                 <KeybindingSave 
                     v-for="(bindingSave, index) in displayData" 
                     :key="bindingSave._id"

@@ -184,7 +184,13 @@ const updateSave = async (req: Request, res: Response) => {
 
         res.status(200).json({
             status: "success",
-            msg: "Save updated successfully"
+            msg: "Save updated successfully",
+            newData: {
+                saveName: newName,
+                saveDescription: newDescription,
+                isPublic: newIsPublic,
+                id: saveId 
+            }
         })
     } catch (error) {
         res.status(500).json({status: "error", msg: "Updating save failed!"})
