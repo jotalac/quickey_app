@@ -146,6 +146,10 @@ const handleItemDeleted = (saveId: string) => {
         }
 }
 
+const handleDialogHide = () => {
+    currentDialogData.value = null
+}
+
 
 </script>
 
@@ -239,6 +243,7 @@ const handleItemDeleted = (saveId: string) => {
                     @upade-success="handleItemUpdate"
                     @like-change="handleItemLiked"
                     @save-deleted="handleItemDeleted"
+                    @dialog-hide="handleDialogHide"
                 />
                 <KeybindingSave 
                     v-for="(bindingSave, index) in displayData" 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEditSaveDialog } from '@/composables/useKeybindingProfileEditDialog';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, toRaw } from 'vue';
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import KeybindingPreview from '@/components/KeybindingPreview.vue';
 import { keybindingSaveApi } from '@/api/keybinding/keybinding_save';
@@ -8,6 +8,8 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod' 
 import { userKeybindingApi } from '@/api/keybinding/keybinding_user';
 import { useConfirm, useToast } from 'primevue';
+import { storeToRefs } from 'pinia';
+import { useDeviceStore } from '@/stores/deviceStore';
 
 interface Props {
     keybidingData: KeybindingDataSave | null
@@ -52,9 +54,9 @@ const validateFormValues = (): boolean => {
 }
 
 const isFormEdited = computed<boolean>(() => {
-    return saveName.value?.trim() === props.keybidingData?.name &&
-        saveDescription.value?.trim() === descriptionOriginal &&
-        isPublic.value === props.keybidingData?.public 
+    return saveName.value?.trim() !== props.keybidingData?.name ||
+        saveDescription.value?.trim() !== descriptionOriginal ||
+        isPublic.value !== props.keybidingData?.public 
 })
 
 const restoreFormValues = () => {
@@ -76,7 +78,7 @@ const saveNewInfo = async () => {
         //set the new data to be the original dat
         descriptionOriginal = saveResult.newData.saveDescription
         emit('upadeSuccess', saveResult.newData)
-        hideDialog()
+        dialogHide()
     } else {
         toast.add({severity: 'error', summary: "Error", detail: saveResult.msg, life: 2000})
     }
@@ -157,28 +159,54 @@ const deleteSave = async (): Promise<boolean> => {
 
 // ===== menu items ===========
 //items in the menu
+const deviceStore = useDeviceStore()
+const {isConnected} = storeToRefs(deviceStore)
+const {sendToDevice} = deviceStore
+
 const leftMenuItems = computed(() => [
     {
-        label: 'Use binding',
-        icon: 'pi pi-times',
-        command: () => {console.log("sdfsdf")}
+        label: 'Use keybinding',
+        icon: 'pi pi-arrow-circle-left',
+        command: () => {console.log("used")}
     },
     {
         label: 'Send to device',
-        icon: 'pi pi-file-import',
-        command: () => {console.log("sdfsdf")}
+        icon: 'pi pi-upload',
+        disabled: !isConnected.value,
+        command: saveToDevice
 
     }
 
 ])
 
+// ==== keybinding actions ====
+const saveToDevice = async () => {
+    if (!isConnected.value || !props.keybidingData) return
+
+    // convert data for export
+    const dataToSend: Record<string, string[]> = {}
+
+    const originalData = JSON.parse(JSON.stringify(props.keybidingData.keyBinding));
+    
+    originalData.forEach((btn: any) => {
+        dataToSend[String(btn.id)] = toRaw(btn.value)
+    })
+
+    console.log(dataToSend)
+
+    await sendToDevice(dataToSend)
+
+}
+
 watch(() => props.keybidingData, async () => {
-    saveName.value = props.keybidingData?.name || ''
-    descriptionOriginal = await keybindingSaveApi.getDescription(props.keybidingData?._id as string)
-    saveDescription.value = descriptionOriginal
-    isPublic.value = props.keybidingData?.public
-    isLiked.value = props.keybidingData?.isLiked
-    likeCount.value = props.keybidingData?.likeCount
+    if (props.keybidingData) {
+        saveName.value = props.keybidingData?.name || ''
+        descriptionOriginal = await keybindingSaveApi.getDescription(props.keybidingData?._id)
+        saveDescription.value = descriptionOriginal
+        isPublic.value = props.keybidingData?.public
+        isLiked.value = props.keybidingData?.isLiked
+        likeCount.value = props.keybidingData?.likeCount
+    }
 })
 
 const selectOptions = [
@@ -190,7 +218,37 @@ const selectOptions = [
 const dialogHide = () => {
     hideDialog()
     emit('dialogHide')
+    // console.log(isFormEdited.value)
+    // //if the form is edited and unsaved, user confirm
+    // if (isFormEdited.value) {
+    //     showConfirmClose()
+    // } else {
+    //     hideDialog()
+    //     emit('dialogHide')
+    // }
+
 } 
+
+// const showConfirmClose = () => {
+//     confirm.require({
+//         header: "Loose edited data",
+//         message: "Do you want to close the dialog and loose all unsaved edits?",
+//         icon: "pi pi-question",
+//         rejectProps: {
+//             label: "Cancel",
+//             outlined: true
+//         },
+//         acceptProps: {
+//             label: "Yes",
+//             outlined: true,
+//             severity: "warn"
+//         },
+//         accept: () => {
+//             hideDialog()
+//             emit('dialogHide')
+//         }
+//     })
+// }
 
 </script>
 
@@ -247,7 +305,7 @@ const dialogHide = () => {
                                     icon="pi pi-save"
                                     outlined
                                     class="button-save"
-                                    :disabled="isFormEdited"
+                                    :disabled="!isFormEdited"
                                     type="submit"
                                 />
     
@@ -256,7 +314,7 @@ const dialogHide = () => {
                                     icon="pi pi-refresh"
                                     outlined
                                     class="button-restore"
-                                    :disabled="isFormEdited"
+                                    :disabled="!isFormEdited"
                                     @click="restoreFormValues"
                                 />
                             </div>
@@ -264,8 +322,8 @@ const dialogHide = () => {
                     </Form>
 
                     <MenuBar
-                    :model="leftMenuItems"
-                    class="actions-cont"
+                        :model="leftMenuItems"
+                        class="actions-cont"
                     />
 
                     <div class="like-delete-cont">
@@ -344,6 +402,7 @@ const dialogHide = () => {
 .form-element{
     display: flex;
     flex-direction: column;
+    margin-bottom: 50px;
 }
 
 .input-label{
@@ -388,7 +447,12 @@ const dialogHide = () => {
 
 /* actions menu */
 .actions-cont {
-    margin-bottom: 30px;
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    margin-bottom: 20px;
+    /* border: 1px solid var(--primary-50);
+    border-radius: var(--border-rad-main); */
 }
 
 /* likes conts */
