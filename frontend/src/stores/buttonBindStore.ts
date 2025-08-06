@@ -14,19 +14,26 @@ export const useButtonBindStore = defineStore("buttonBind", () => {
     const knobElement = ref<KnobBindHome>({state: 'notBinded', values: {left: '', right: '', button: ''}})
 
     //function to determine the button text based on the state of the button
-    const getButtonText = (state: ButtonState, customText?: string): string => {
+    const getButtonText = (state: ButtonState, customText?: string, value?: string[]): string => {
         switch (state) {
             case 'notBinded':
                 return 'Press to bind'
             case 'listening':
                 return 'Capturing key press'
             case 'binded':
-                return customText || 'Binded'
+                return customText || value?.join(" + ") || "Binded"
             case 'multiBinding':
-                return 'multi'
+                if (value) return `multi(${value.length - 1})`
+                else return 'multi'
             default:
                 return 'unknown state'
         }
+    }
+
+    const getStateFromValue = (value: string[]): ButtonState => {
+        if (value.length === 0) return 'notBinded'
+        else if (value[0] === 'multi') return 'multiBinding'
+        else return 'binded'
     }
 
     const resetAllButtons = () => {
@@ -67,8 +74,8 @@ export const useButtonBindStore = defineStore("buttonBind", () => {
         const button = allButtons.value.find(b => b.id === buttonId)
         if (button) {
             // If state is being updated but no text provided, use default
-            if (updates.state && !updates.text) {
-                updates.text = getButtonText(updates.state, updates.text)
+            if (updates.state && !updates.text && updates.value) {
+                updates.text = getButtonText(updates.state, updates.text, updates.value)
             }
             Object.assign(button, updates)
         }
@@ -98,6 +105,7 @@ export const useButtonBindStore = defineStore("buttonBind", () => {
         getButtonText,
         incrementPage,
         setKnob,
-        pasteCopiedValues
+        pasteCopiedValues,
+        getStateFromValue
     }
 })

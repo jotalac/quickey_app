@@ -10,10 +10,17 @@ import { userKeybindingApi } from '@/api/keybinding/keybinding_user';
 import { useConfirm, useToast } from 'primevue';
 import { storeToRefs } from 'pinia';
 import { useDeviceStore } from '@/stores/deviceStore';
+import { useButtonBindStore } from '@/stores/buttonBindStore';
+import { useButtons } from '@/composables/useButtonsBindingHome';
+import { useRouter } from 'vue-router';
 
 interface Props {
     keybidingData: KeybindingDataSave | null
 }
+
+const toast = useToast()
+const confirm = useConfirm()
+const router = useRouter()
 
 
 const{isDialogVisible, hideDialog} = useEditSaveDialog()
@@ -32,8 +39,7 @@ const isPublic = ref<boolean>()
 const isLiked = ref<boolean>()
 const likeCount = ref<number>()
 
-const toast = useToast()
-const confirm = useConfirm()
+
 
 let descriptionOriginal = ""
 
@@ -163,11 +169,15 @@ const deviceStore = useDeviceStore()
 const {isConnected} = storeToRefs(deviceStore)
 const {sendToDevice} = deviceStore
 
+const buttonBindStore = useButtonBindStore()
+const {initButtons, resetButton} = useButtons()
+
 const leftMenuItems = computed(() => [
     {
         label: 'Use keybinding',
         icon: 'pi pi-arrow-circle-left',
-        command: () => {console.log("used")}
+        tooltip: 'Device not connected',
+        command: useKeybinding
     },
     {
         label: 'Send to device',
@@ -195,9 +205,31 @@ const saveToDevice = async () => {
     console.log(dataToSend)
 
     await sendToDevice(dataToSend)
-
 }
 
+const useKeybinding = () => {
+    if (!props.keybidingData) return
+
+    const originalData = JSON.parse(JSON.stringify(props.keybidingData.keyBinding))
+
+    //init the buttons if there are not
+    if (buttonBindStore.allButtons.length === 0) {initButtons()}
+    buttonBindStore.resetAllButtons() //reset current binding
+
+
+    originalData.forEach((btn: any) => {
+        if (btn.id === 'knob') return
+
+        const state = buttonBindStore.getStateFromValue(btn.value)
+        buttonBindStore.updateButton(Number(btn.id), {state: state, value: btn.value})
+    })
+
+    dialogHide()
+    router.push("/app")
+}
+
+
+ 
 watch(() => props.keybidingData, async () => {
     if (props.keybidingData) {
         saveName.value = props.keybidingData?.name || ''

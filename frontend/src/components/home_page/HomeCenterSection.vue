@@ -26,7 +26,6 @@ const {
     copiedBtnNumber,
     resetKnob,
     changePage,
-    bindButtonValue,
     listeningButton,
     totalPages,
     showKnob,

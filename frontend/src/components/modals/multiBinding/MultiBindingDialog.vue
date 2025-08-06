@@ -47,7 +47,7 @@ const handleSave = () => {
         buttonBindStore.updateButton(activeButtonId.value!, {
             value: multiBindingValues,
             state: "multiBinding",
-            text: `multi(${multiBindingValues.length - 1})`
+            // text: `multi(${multiBindingValues.length - 1})`
         })
     } else {
         
