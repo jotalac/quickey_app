@@ -3,6 +3,7 @@ import KeyBinding from "../../models/keybinding_model"
 import { IUser } from "../../@types/user"
 import mongoose, { FilterQuery, PipelineStage, ObjectId } from "mongoose"
 import { IKeyBinding } from "../../@types/keybinding"
+import Like from "../../models/like_model"
 
 const verfiyBindingName = async (req: Request, res: Response) => {
     try {
@@ -197,6 +198,45 @@ const updateSave = async (req: Request, res: Response) => {
     }
 }
 
+const deleteSave = async (req: Request, res: Response) => {
+    const user = req.user as IUser
+    const {saveId} = req.params
+    
+    if (!saveId || !user) {
+        res.status(400).json({
+            status: "error",
+            msg: "Not all data provided"
+        })
+        return
+    }
+
+    try {
+        const deletedSave = await KeyBinding.deleteOne({_id: saveId, userId: user._id})
+        
+        // check if something was deleted
+        if (deletedSave.deletedCount === 0) {
+            res.status(400).json({
+                status: "error",
+                msg: "Save not found for specified user"
+            })
+            return
+        }
+
+        //delete all likes for the save
+        await Like.deleteMany({keyBindingId: saveId})
+
+        res.status(200).json({
+            status: "success",
+            msg: "Save deleted successfully"
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            msg: "Error deleting save"
+        })
+    }
+}
+
 //helper funcations
 const bindingNameValid = async (userId: string, saveName: string): Promise<Boolean> => {
     const exists = await KeyBinding.exists({
@@ -246,4 +286,4 @@ const getTotalCountResults = async (pipeline: PipelineStage[]) => {
     return countResult[0]?.count || 0
 }
 
-export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription, updateSave}
+export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription, updateSave, deleteSave}

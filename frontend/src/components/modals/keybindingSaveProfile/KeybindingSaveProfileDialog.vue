@@ -7,7 +7,7 @@ import { keybindingSaveApi } from '@/api/keybinding/keybinding_save';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod' 
 import { userKeybindingApi } from '@/api/keybinding/keybinding_user';
-import { useToast } from 'primevue';
+import { useConfirm, useToast } from 'primevue';
 
 interface Props {
     keybidingData: KeybindingDataSave | null
@@ -19,7 +19,8 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
     dialogHide: [],
     upadeSuccess: [updatedData: any],
-    likeChange: [isLiked: any]
+    likeChange: [isLiked: any],
+    saveDeleted: [saveId: string]
 }>()
 
 // name and description edit
@@ -30,6 +31,7 @@ const isLiked = ref<boolean>()
 const likeCount = ref<number>()
 
 const toast = useToast()
+const confirm = useConfirm()
 
 let descriptionOriginal = ""
 
@@ -106,6 +108,50 @@ const likeButtonToggle = async () => {
         isLiked.value = originalLikedState
         likeCount.value = originalLikeCount
         console.error('Error toggling like:', error)
+    }
+}
+
+// ===== delete save ======
+const deleteSaveConfirm = () => {
+    confirm.require({
+        header: "Delete save",
+        message: "Do you want to permanently delete this save?",
+        icon: "pi pi-trash",
+        rejectProps: {
+            label: "Cancel",
+            outlined: true
+        },
+        acceptProps: {
+            label: "Yes",
+            outlined: true,
+            severity: "warn"
+        },
+        accept: async () => {
+            const deleted = await deleteSave()
+
+            if (deleted) {
+                if (props.keybidingData?._id) {
+                    emit("saveDeleted", props.keybidingData._id)
+                }
+                dialogHide()
+            } else {
+                toast.add({severity: 'error', summary: "Error", detail: "Error deleting this save", life: 2000})
+            }    
+        },
+
+    })
+}
+
+const deleteSave = async (): Promise<boolean> => {
+    if (!props.keybidingData?._id) return false
+    try {
+        const response = await userKeybindingApi.deleteKeybindingSave(props.keybidingData?._id) 
+        
+        if (response.status === 'success') return true
+        else return false
+    } catch (error) {
+        console.log(error);
+        return false
     }
 }
 
@@ -216,24 +262,40 @@ const dialogHide = () => {
                             </div>
                         </div>
                     </Form>
-                    <div class="like-cont">
-                        <Button 
-                            :label="isLiked ? 'Liked' : 'Like'"
-                            :icon="isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                            :class="['button-like', { active: isLiked }]"
+
+                    <MenuBar
+                    :model="leftMenuItems"
+                    class="actions-cont"
+                    />
+
+                    <div class="like-delete-cont">
+                        <ConfirmDialog/>
+                        <div class="like-cont">
+                            <Button 
+                                :label="isLiked ? 'Liked' : 'Like'"
+                                :icon="isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                                :class="['button-like', { active: isLiked }]"
+                                rounded
+                                outlined
+                                @click="likeButtonToggle"
+                            />
+                            <p class="like-count-text"><i class="pi pi-heart-fill like-count-icon"/>{{ likeCount }}</p>
+                        </div>
+                        
+                        <Button
+                            label="Delete"
+                            icon="pi pi-trash"
                             rounded
-                            outlined
-                            @click="likeButtonToggle"
+                            class="delete-button"     
+                            variant="text"
+                            severity="warn"
+                            @click="deleteSaveConfirm"     
                         />
-    
-                        <p class="like-count-text"><i class="pi pi-heart-fill like-count-icon"/>{{ likeCount }}</p>
 
                     </div>
                 </div>
 
-                <MenuBar
-                    :model="leftMenuItems"
-                />
+       
             </div>
 
 
@@ -324,10 +386,22 @@ const dialogHide = () => {
     color: var(--gray-bright);
 }
 
+/* actions menu */
+.actions-cont {
+    margin-bottom: 30px;
+}
+
 /* likes conts */
+.like-delete-cont{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .like-cont{
     display: flex;
-    flex-direction: row;
     align-items: center;
 }
 
@@ -348,6 +422,5 @@ const dialogHide = () => {
 .button-like.active{
     color: var(--red-vivid);
 }
-
 
 </style>

@@ -40,6 +40,18 @@ export const userKeybindingApi = {
         }
     },
 
+    async deleteKeybindingSave(saveId: string) {
+        try {
+            const response = await api.delete(`/keybinding/${saveId}/delete`)
+
+            return response.data
+        } catch (error: any) {
+            console.log(error)
+            return {status: "error", msg: error.response?.data?.msg || "Error deleting save"}
+        }
+
+    },
+
     async getKeybindingUser(searchText: string, filterCategories: string[], sortBy: string, publicFilter: string, likedFilter: boolean, page: Number, limit: Number) {
         try {
             console.log(filterCategories)

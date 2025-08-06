@@ -137,6 +137,15 @@ const handleItemLiked = (likeData: any) => {
     }
 }
 
+const handleItemDeleted = (saveId: string) => {
+        const index = displayData.value.findIndex(item => item._id === saveId)
+
+        if (index !== -1) {
+            displayData.value.splice(index, 1)
+            totalRecords.value--
+        }
+}
+
 
 </script>
 
@@ -229,6 +238,7 @@ const handleItemLiked = (likeData: any) => {
                     :keybiding-data="currentDialogData"
                     @upade-success="handleItemUpdate"
                     @like-change="handleItemLiked"
+                    @save-deleted="handleItemDeleted"
                 />
                 <KeybindingSave 
                     v-for="(bindingSave, index) in displayData" 
