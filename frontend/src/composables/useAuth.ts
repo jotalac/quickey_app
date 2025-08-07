@@ -21,6 +21,7 @@ export function useAuth() {
                     currentUser.value = response.data.user
                 } else {
                     logout()
+
                     return false
                 }
             }
@@ -44,9 +45,11 @@ export function useAuth() {
         currentUser.value = null
 
         //redirect to login
-        if (window.location.pathname === '/profile') {
-            window.location.href = '/login'
-        }
+        // if (window.location.pathname === '/profile') {
+        //     // window.location.href = '/login'
+        //     const router = useRouter()
+        //     router.push("/login")
+        // }
     }
 
 

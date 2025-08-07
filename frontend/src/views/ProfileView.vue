@@ -31,9 +31,15 @@ const handleTabChange = (index: number) => {
         <ProfileMenu class="left-menu" @tab-changed="handleTabChange"/>
         <div class="content-area">
             <ProfileDashboard v-if="activeTab === 0" />
-            <h1 v-else-if="activeTab === 1">Profile nibba</h1>
-            <h1 v-else-if="activeTab === 2">settings</h1>
-            <h1 v-else-if="activeTab === 3">sercurinty</h1>
+            
+            <div v-else class="placeholded">
+                <h1>Not availible yet</h1>
+                <i class="pi pi-clock"/>
+
+            </div>
+            <!-- <h1 v-else-if="activeTab === 1">Soon</h1>
+            <h1 v-else-if="activeTab === 2">Soon</h1>
+            <h1 v-else-if="activeTab === 3">Soon</h1> -->
         </div>
     </div>
 
@@ -43,6 +49,7 @@ const handleTabChange = (index: number) => {
 .profile-layout{
     display: flex;
     flex-direction: column;
+    position: relative;
     width: 95vw;
     height: 85%;
     background-color: var(--blue-dark);
@@ -55,6 +62,23 @@ const handleTabChange = (index: number) => {
     width: 100%;
     height: 100%;
 }
+
+.placeholded{
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1em;
+}
+
+.placeholded i {
+    font-size: 2em;
+    margin-left: 20px;
+}
+
+
 
 
 

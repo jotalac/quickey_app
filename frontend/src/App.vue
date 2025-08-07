@@ -21,7 +21,7 @@ onMounted(async () => {
     toast.add({severity: 'warn', summary: "Session expired", detail: "Your have been logged out for security reasons", life: 3000})    
   }
 
-  //init constants
+  //init constants from server
   await constantsStore.getFilterCategories()
 })
 

@@ -53,9 +53,6 @@ api.interceptors.response.use(
             } catch (error) {                
                 //refresh failed
                 console.log("Token refresh failed");
-                localStorage.removeItem('accessToken')
-                localStorage.removeItem('refreshToken')
-                localStorage.removeItem('user')
                 logout()
 
     
@@ -63,6 +60,10 @@ api.interceptors.response.use(
 
                 
             }
+        }
+        //handle too many requests
+        if (error.response?.status === 429) {
+            console.log("Too many requests, slow down little")
         }
         return Promise.reject(error)
     }

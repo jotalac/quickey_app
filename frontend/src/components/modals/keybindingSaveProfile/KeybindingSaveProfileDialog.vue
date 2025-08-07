@@ -13,6 +13,7 @@ import { useDeviceStore } from '@/stores/deviceStore';
 import { useButtonBindStore } from '@/stores/buttonBindStore';
 import { useButtons } from '@/composables/useButtonsBindingHome';
 import { useRouter } from 'vue-router';
+import type { KnobBindHome } from '@/types/buttonBindHome';
 
 interface Props {
     keybidingData: KeybindingDataSave | null
@@ -218,7 +219,11 @@ const useKeybinding = () => {
 
 
     originalData.forEach((btn: any) => {
-        if (btn.id === 'knob') return
+        if (btn.id === 'knob') {
+            const state = btn.value.every((value: string) => value === '') ? 'notBinded' : 'binded'
+            const knobElement: KnobBindHome = {state: state, values: {left: btn.value[0], right: btn.value[1], button: btn.value[2]}}
+            buttonBindStore.setKnob(knobElement)
+        }
 
         const state = buttonBindStore.getStateFromValue(btn.value)
         buttonBindStore.updateButton(Number(btn.id), {state: state, value: btn.value})

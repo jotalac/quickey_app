@@ -25,6 +25,11 @@ app.use(ConfirmationService)
 app.use(ToastService)
 app.directive('animateonscroll', AnimateOnScroll)
 
+//disable warings in production
+if (import.meta.env.PROD) {
+    app.config.warnHandler = () => {}
+}
+
 //google login
 app.use(vue3GoogleLogin, {
     clientId: "334363320387-vat0donvkrlt35a07rvf54rkgoltbq6s.apps.googleusercontent.com",
