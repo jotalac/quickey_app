@@ -255,37 +255,8 @@ const selectOptions = [
 const dialogHide = () => {
     hideDialog()
     emit('dialogHide')
-    // console.log(isFormEdited.value)
-    // //if the form is edited and unsaved, user confirm
-    // if (isFormEdited.value) {
-    //     showConfirmClose()
-    // } else {
-    //     hideDialog()
-    //     emit('dialogHide')
-    // }
-
 } 
 
-// const showConfirmClose = () => {
-//     confirm.require({
-//         header: "Loose edited data",
-//         message: "Do you want to close the dialog and loose all unsaved edits?",
-//         icon: "pi pi-question",
-//         rejectProps: {
-//             label: "Cancel",
-//             outlined: true
-//         },
-//         acceptProps: {
-//             label: "Yes",
-//             outlined: true,
-//             severity: "warn"
-//         },
-//         accept: () => {
-//             hideDialog()
-//             emit('dialogHide')
-//         }
-//     })
-// }
 
 </script>
 
@@ -424,6 +395,7 @@ const dialogHide = () => {
 
 .left-edit-section{
     width: 40%;
+    max-width: 800px;
     height: 90%;
     display: flex;
     flex-direction: column;
@@ -522,6 +494,19 @@ const dialogHide = () => {
 
 .button-like.active{
     color: var(--red-vivid);
+}
+
+
+/* resposnsiblity */
+@media (max-width: 1150px) {
+    .dialog-content{
+        flex-direction: column;
+    }
+
+    .left-edit-section{
+        width: 80%;
+        margin-bottom: 50px;
+    }
 }
 
 </style>

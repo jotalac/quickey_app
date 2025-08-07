@@ -45,7 +45,7 @@ const onTabChange = (event: any) => {
         </div> -->
 
         <Button
-            outlined
+            text
             label="Logout"
             icon="pi pi-times"
             rounded
