@@ -197,7 +197,8 @@ onMounted(async () => {
         'One tap control',
         'Portable and powerful',
         'Plug-and-play simplicity',
-        'Customize everything'
+        'Customize everything',
+        'Get it now'
       ]"
       :typingSpeed="90"
       :pauseDuration="1500"
