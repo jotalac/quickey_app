@@ -5,28 +5,25 @@ export interface AuthUser {
     username: string
 }
 
+let inMemoryAccessToken: string | null = null
+
 export class AuthService {
     private static readonly STORAGE_KEYS = {
-        ACCESS_TOKEN: 'accessToken',
-        REFRESH_TOKEN: 'refreshToken',
         USER: 'user'
     } as const
 
     //token management
     static saveAuthData(data: AuthResponse['data']): void {
-        if (data) {
-            localStorage.setItem(this.STORAGE_KEYS.ACCESS_TOKEN, data.tokens.accessToken)
-            localStorage.setItem(this.STORAGE_KEYS.REFRESH_TOKEN, data.tokens.refreshToken)
+        if (data && data.tokens) {
+            // localStorage.setItem(this.STORAGE_KEYS.ACCESS_TOKEN, data.tokens.accessToken)
+            // localStorage.setItem(this.STORAGE_KEYS.REFRESH_TOKEN, data.tokens.refreshToken)
+            inMemoryAccessToken = data.tokens.accessToken
             localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(data.user))
         }
     }
 
     static getAccessToken(): string | null{
-        return localStorage.getItem(this.STORAGE_KEYS.ACCESS_TOKEN)
-    }
-
-    static getRefreshToken(): string | null{
-        return localStorage.getItem(this.STORAGE_KEYS.REFRESH_TOKEN)
+        return inMemoryAccessToken
     }
 
     static getUser(): AuthUser | null {
@@ -39,8 +36,7 @@ export class AuthService {
     }
 
     static logout() {
-        localStorage.removeItem(this.STORAGE_KEYS.ACCESS_TOKEN)
-        localStorage.removeItem(this.STORAGE_KEYS.REFRESH_TOKEN)
+        inMemoryAccessToken = null
         localStorage.removeItem(this.STORAGE_KEYS.USER)
     }
 

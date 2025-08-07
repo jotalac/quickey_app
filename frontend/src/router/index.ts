@@ -10,6 +10,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import EmailVerifyView from '@/views/EmailVerifyView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import { AuthService } from '@/api/auth/auth_service'
+import { useAuth } from '@/composables/useAuth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,7 +54,6 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
-      meta: { requiresAuth: true }
     },
     {
       path: '/privacy-policy',
@@ -84,14 +84,21 @@ const router = createRouter({
 })
 
 //simple auth guard
-router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth) {
-    if (!AuthService.isLoggedIn()) {
-      next('/login')
-      return
-    }
-  }
-  next()
-})
+// router.beforeEach(async(to, from, next) => {
+//   const {hasCheckedAuth, initializeAuth, isLoggedIn} = useAuth()
+
+//   if (!hasCheckedAuth) {
+//     await initializeAuth()
+//   }
+
+//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
+//   console.log(isLoggedIn.value)
+//   if (requiresAuth && !isLoggedIn.value) {
+//     next('/login')
+//     return
+//   }
+//   next()
+// })
 
 export default router

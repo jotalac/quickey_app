@@ -14,13 +14,8 @@ const constantsStore = useConstantsStore()
 // const isLoggedIn = ref(true)
 const toast = useToast()
 
-onMounted(async () => {
-  const result = await initializeAuth()
-
-  if (!result) {
-    toast.add({severity: 'warn', summary: "Session expired", detail: "Your have been logged out for security reasons", life: 3000})    
-  }
-
+onMounted(async () => {  
+  await initializeAuth()
   //init constants from server
   await constantsStore.getFilterCategories()
 })

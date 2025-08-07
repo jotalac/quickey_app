@@ -56,7 +56,7 @@ const validateLogin = async (req: LoginRequest, res: Response) => {
             return
         }
 
-        const loginResponse = generateLoginResponse(user)
+        const loginResponse = generateLoginResponse(user, res)
 
         res.status(200).json(loginResponse)
 
@@ -80,10 +80,18 @@ const findUser = async (name: string) => {
     })
 }
 
-const generateLoginResponse = (user: IUser) => {
+const generateLoginResponse = (user: IUser, res: Response) => {
     //generate tokens
     const accessToken = generateJWT(user)
     const refreshToken = generateRefreshToken(user)
+
+    //set the refresh token in httpOnly cookie
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', //send only through https
+        sameSite: 'strict',
+        maxAge: 1000 * 60 * 60 * 24 * 3 // 3 days 
+    })
 
     const authData = {
         status: "success",
@@ -96,7 +104,6 @@ const generateLoginResponse = (user: IUser) => {
             },
             tokens: {
                 accessToken,
-                refreshToken,
                 tokenType: "Bearer"
             }
         }
@@ -105,4 +112,13 @@ const generateLoginResponse = (user: IUser) => {
     return authData
 }
 
-export {validateLogin, generateLoginResponse}
+const logout = (req: Request, res: Response) => {
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    })
+    res.status(200).json({ status: 'success', msg: 'Logged out successfully' });
+}
+
+export {validateLogin, generateLoginResponse, logout}

@@ -60,7 +60,7 @@ export const googleSSO = async (req: Request, res: Response) => {
             })
         }
 
-        const loginResponse = generateLoginResponse(user)
+        const loginResponse = generateLoginResponse(user, res)
 
         res.status(200).json(loginResponse)
 

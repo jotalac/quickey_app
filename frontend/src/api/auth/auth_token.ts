@@ -12,18 +12,21 @@ export interface AuthResponse{
         }
         tokens: {
             accessToken: string
-            refreshToken: string
             tokenType: string
         }
     }
 }
 
 export const authApi = {
-    async refreshToken(refreshToken: string) {
+    async refreshToken() {
         //uses axios to prevert axios loop with automatic token refresh
-        const response = await axios.post('/api/auth/refresh-token', {refreshToken})
+        const response = await axios.post('/api/auth/refresh-token', {}, {withCredentials: true})
 
         return response.data
+    },
+
+    async logoutServer() {
+        await api.post('/auth/logout')
     },
 
     async googleSSO(credential: string) {

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { authApi } from "./auth/auth_token";
 import { useAuth } from "@/composables/useAuth";
+import { AuthService } from "./auth/auth_service";
 
 export const api = axios.create({
     baseURL: '/api'
@@ -11,7 +12,7 @@ const {logout} = useAuth()
 //add auth token to header with each request
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('accessToken')
+        const token = AuthService.getAccessToken()
         if (token) {
             config.headers.Authorization = `Bearer ${token}`
         }
@@ -35,15 +36,11 @@ api.interceptors.response.use(
             originalRequest._retry = true
 
             try {
-                const refreshToken = localStorage.getItem("refreshToken")
-                if (!refreshToken) {throw new Error("No refresh token")}
-
-                // try to refresh the token
-                const refreshResponse = await authApi.refreshToken(refreshToken)
+                // try to refresh the token - it is send automatically in the cookie
+                const refreshResponse = await authApi.refreshToken()
 
                 if (refreshResponse.status === 'success') {                    
-                    localStorage.setItem('accessToken', refreshResponse.data.accessToken) // store new token
-                    localStorage.setItem('refreshToken', refreshResponse.data.refreshToken) // store new token
+                    AuthService.saveAuthData(refreshResponse.data)
 
                     //send the orignal requst with correct auth headers
                     originalRequest.headers.Authorization = `Bearer ${refreshResponse.data.accessToken}`
@@ -54,11 +51,7 @@ api.interceptors.response.use(
                 //refresh failed
                 console.log("Token refresh failed");
                 logout()
-
-    
                 return Promise.reject(error)
-
-                
             }
         }
         //handle too many requests

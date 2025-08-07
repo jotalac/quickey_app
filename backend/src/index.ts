@@ -7,6 +7,7 @@ import connectDB from "./db/connectDB"
 import mongoose from "mongoose"
 import helmet from "helmet"
 import { generalLimiter } from "./middleware/rate_limiter"
+import cookieParser from "cookie-parser"
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(helmet()) //preventing some attacks
 app.use(generalLimiter) //rate limiter for api
+app.use(cookieParser())
 
 // error handling for invalid json syntax
 const invalidJsonHandler: ErrorRequestHandler = (err, req, res, next) => {

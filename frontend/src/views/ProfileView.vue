@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 import { useRouter } from 'vue-router';
 import { AuthService } from '@/api/auth/auth_service';
@@ -7,14 +7,10 @@ import ProfileMenu from '@/components/profile/ProfileMenu.vue'
 import ProfileDashboard from '@/components/profile/ProfileDashboard.vue';
 
 const router = useRouter()
-const {logout} = useAuth()
+const {logout, isLoggedIn} = useAuth()
 const user = AuthService.getUser()
 const activeTab = ref(0)
 
-const logoutUser = () => {
-    logout()
-    router.push('/login')
-}
 
 const handleTabChange = (index: number) => {
     activeTab.value = index
@@ -23,6 +19,9 @@ const handleTabChange = (index: number) => {
 // onMounted(() => {
 //     user?.username = JSON.parse(localStorage.getItem("user") as string).username 
 // })
+onBeforeMount(()=> {
+    if (!isLoggedIn) router.push("/login")
+})
 
 </script>
 
