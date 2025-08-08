@@ -23,13 +23,13 @@ const animationDuration = computed(() => `${props.speed}s`);
     :class="`text-[#b5b5b5a4] bg-clip-text inline-block ${!props.disabled ? 'animate-shine' : ''} ${props.className}`"
     :style="{
       backgroundImage:
-        'linear-gradient(120deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 60%)',
+        'linear-gradient(120deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 60%)',
       backgroundSize: '200% 100%',
       WebkitBackgroundClip: 'text',
       animationDuration: animationDuration
     }"
   >
-    {{ props.text }}
+  {{ props.text }}
   </div>
 </template>
 
@@ -46,4 +46,6 @@ const animationDuration = computed(() => `${props.speed}s`);
 .animate-shine {
   animation: shine 5s linear infinite;
 }
+
+
 </style>

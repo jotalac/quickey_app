@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ButtonBox from "@/components/home_page/ButtonBox.vue"
 import RoundPageButton from "@/components/home_page/RoundPageButton.vue"
-import {onMounted, toRaw, watch} from "vue"
+import {onMounted, toRaw} from "vue"
 import {useButtons} from "@/composables/useButtonsBindingHome"
 import { Button } from "primevue"
 import { Icon } from '@iconify/vue'
@@ -15,6 +15,7 @@ import { useMultiBindingDialogStore } from "@/stores/multiBindingDialogStore"
 import KnobBindingDialog from "@/components/modals/knobBinding/KnobBindingDialog.vue"
 import { useKnobDialogStore } from "@/stores/knobDialogStore"
 import { useDeviceActions } from "@/composables/useButtonActions"
+import { useAiKeybindingDialog } from "@/composables/useAiKeybindingDialog"
 
 const {importData} = useDeviceActions()
 //use the composable functoins
@@ -24,14 +25,12 @@ const {
     currentPageButtons,
     initButtons,
     copiedBtnNumber,
-    resetKnob,
     changePage,
     listeningButton,
     totalPages,
     showKnob,
     knobElement,
     resetButton,
-    getButtonValue,
     pasteCopied
     
 } = useButtons()
@@ -50,6 +49,8 @@ const {
 } = deviceStore
 
 const multiBindingDialogStore = useMultiBindingDialogStore()
+
+const {showDialog} = useAiKeybindingDialog()
 
 // init buttons when componets are visible
 onMounted(() => {
@@ -106,9 +107,9 @@ const saveDataToDevice = async () => {
 
 //context menu actions
 const contextMenu = ref()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const activeButtonContext = ref<any>(null)
-const showMultiBindingDialog = ref<boolean>(false)
-const buttonForMultibinding = ref<any>(null)
+
 
 const menuItems = computed(() => [
     {
@@ -116,6 +117,13 @@ const menuItems = computed(() => [
         icon: 'pi pi-pencil',
         command: () => {
             multiBindingDialogStore.openDialog(activeButtonContext.value)
+        }
+    },
+    {
+        label: 'AI generate',
+        icon: 'pi pi-asterisk',
+        command: () => {
+            showDialog(activeButtonContext.value)
         }
     },
     { 
@@ -158,6 +166,7 @@ const knobDialogStore = useKnobDialogStore()
 
          <MultiBindingDialog/>
          <KnobBindingDialog />
+         <AiKeybindingDialog />
 
         <div id="connection-cont">
             <p class="device-info">{{ deviceInfo.name }} - {{ deviceInfo.firmware }}</p>

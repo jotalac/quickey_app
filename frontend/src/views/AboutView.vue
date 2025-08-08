@@ -29,10 +29,9 @@ import blenderImage from '@/assets/images/landing_page/blender.webp'
 //components
 import BlockInfo from '@/components/about/BlockInfo.vue'
 import ScrollText from '@/components/about/ScrollText.vue'
-import { Dialog, Toast } from 'primevue'
+import { Dialog } from 'primevue'
 import SendEmailDialog from '@/components/about/SendEmailDialog.vue'
 import FaqSection from '@/components/about/FaqSection.vue'
-import RotatingText from '@/components/vue_bits/RotatingText.vue'
 import TextType from '@/components/vue_bits/TextType.vue'
 import ShinyText from '@/components/vue_bits/ShinyText.vue'
 
@@ -265,7 +264,7 @@ onMounted(async () => {
     <!-- supported app carousel -->
     <p class="apps-text" >Works seamlessly with... and others</p>
     <div class="apps-display-cont">
-      <Image v-for="image in appCarousel" :src="image" alt="supported-app-image" class="img-app" v-animateonscroll="{ enterClass: 'animate-fadein', leaveClass: 'animate-fadeout' }"/>
+      <Image v-for="image in appCarousel" v-bind:key="image" :src="image" alt="supported-app-image" class="img-app" v-animateonscroll="{ enterClass: 'animate-fadein', leaveClass: 'animate-fadeout' }"/>
     </div>
 
     <!-- videos showcase -->
