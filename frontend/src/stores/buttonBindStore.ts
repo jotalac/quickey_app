@@ -76,6 +76,9 @@ export const useButtonBindStore = defineStore("buttonBind", () => {
             // If state is being updated but no text provided, use default
             if (updates.state && !updates.text && updates.value) {
                 updates.text = getButtonText(updates.state, updates.text, updates.value)
+            } 
+            else if (updates.state && !updates.text) {
+                updates.text = getButtonText(updates.state, updates.text)
             }
             Object.assign(button, updates)
         }

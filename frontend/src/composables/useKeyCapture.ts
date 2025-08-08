@@ -12,8 +12,6 @@ export const useKeyCapture = () => {
         capturing.value = true
         currentKeys.value = new Set()
         capturingButton.value = buttonId
-
-        console.log("Started capturing button press");
     }
 
     const stopCapturing = () => {
@@ -21,19 +19,20 @@ export const useKeyCapture = () => {
         capturingButton.value = null
         currentKeys.value = new Set()
 
-        console.log('Stopped capturing')
     }
 
     const stopCapturingClickOut = () => {
         if (!capturing.value || capturingButton.value === null) return
 
-        store.updateButton(capturingButton.value, {state: 'notBinded'})
+        store.updateButton(capturingButton.value, {state: 'notBinded', value: []})
+         
+        
 
         stopCapturing()
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-        if (!capturing.value || capturingButton === null) return
+        if (!capturing.value || capturingButton.value === null) return
 
         //dont want other effects when pressing the buttons
         event.preventDefault()
@@ -50,13 +49,18 @@ export const useKeyCapture = () => {
 
         const keyCombination = Array.from(currentKeys.value)
         const keyDisplay = keyCombination.join(" + ")
-        console.log("Key combination captured");
         
-        store.updateButton(capturingButton.value, {
-            state: 'binded',
-            text: keyDisplay,
-            value: keyCombination
-        })
+        if (keyCombination.length === 0) {
+            store.updateButton(capturingButton.value, {
+                state: 'notBinded',
+            })
+        } else {
+            store.updateButton(capturingButton.value, {
+                state: 'binded',
+                text: keyDisplay,
+                value: keyCombination
+            })
+        }
 
         //stop capturing
         stopCapturing()

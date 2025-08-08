@@ -5,14 +5,28 @@ import { Icon } from '@iconify/vue';
 import ShinyText from '@/components/vue_bits/ShinyText.vue';
 import SuggestionAi from './SuggestionAi.vue';
 
-// interface Props {
-//     keyNumber: number
-// }
-
-// const props = defineProps<Props>()
 const {isDialogVisible, hideDialog, activeKey} = useAiKeybindingDialog()
 
+const remainingGenerations = ref(0)
+const totalGenerations = ref(0)
+const suggestedGenerations = ref<string[]>(["Generate google shit broskiu wh", "Inn csgo select the first gun", "Adobe create new empty layer"])
+
 const promptText = ref('')
+
+const isGenerating = ref(false)
+const generatedOutput = ref<string | null>(null)
+
+const applySuggestion = (newText: string) => {
+    promptText.value = newText
+} 
+
+const generateOutput = async () => {
+    isGenerating.value = true
+    //do the api call and generate the output
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    isGenerating.value = false
+    
+}
 
 </script>
 
@@ -34,22 +48,20 @@ const promptText = ref('')
                 />
     
                 <div class="suggestions-cont">
-                    <p>Suggestions</p>
-                    <SuggestionAi text="Generate google shit broskiu wh"/>
-                    <SuggestionAi text="In csgo select the first gun"/>
-                    <SuggestionAi text="Adobe create new empty layer"/>
+                    <p>Prompts suggestions:</p>
+                    <SuggestionAi v-for="(suggestion, index) in suggestedGenerations" v-bind:key="index"  :text="suggestion" @suggestion-clicked="applySuggestion"/>
                 </div>
     
             </div>
             
             <div class="buttons-cont">
                 <div class="generate-info">
-                    <Button outlined class="generate-btn">
+                    <Button outlined class="generate-btn" @click="generateOutput">
                         <Icon icon="mingcute:ai-fill" class="ai-btn-icon"/>
                         <ShinyText text="Generate" class="shiny-text" :speed="2"/>
                     </Button>
         
-                    <p>Remaining 1/3</p>
+                    <p>Remaining {{ remainingGenerations }}/{{ totalGenerations }}</p>
                 </div>
 
                 <div class="dialog-buttons">
@@ -57,8 +69,9 @@ const promptText = ref('')
                         :class="['control-button-dialog', 'dialog-save-button']" 
                         outlined
                         icon="pi pi-file-check"
-                        disabled
                         label="Save"
+                        :disabled="generatedOutput === null"
+                        :loading="isGenerating"
                     />
                     <Button 
                         class="control-button-dialog" 

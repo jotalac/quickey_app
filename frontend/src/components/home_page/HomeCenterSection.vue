@@ -16,6 +16,7 @@ import KnobBindingDialog from "@/components/modals/knobBinding/KnobBindingDialog
 import { useKnobDialogStore } from "@/stores/knobDialogStore"
 import { useDeviceActions } from "@/composables/useButtonActions"
 import { useAiKeybindingDialog } from "@/composables/useAiKeybindingDialog"
+import { useAuth } from "@/composables/useAuth"
 
 const {importData} = useDeviceActions()
 //use the composable functoins
@@ -51,6 +52,7 @@ const {
 const multiBindingDialogStore = useMultiBindingDialogStore()
 
 const {showDialog} = useAiKeybindingDialog()
+const {isLoggedIn} = useAuth()
 
 // init buttons when componets are visible
 onMounted(() => {
@@ -122,6 +124,7 @@ const menuItems = computed(() => [
     {
         label: 'AI generate',
         icon: 'pi pi-asterisk',
+        disabled: !isLoggedIn.value,
         command: () => {
             showDialog(activeButtonContext.value)
         }

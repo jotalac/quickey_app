@@ -11,6 +11,10 @@ const emit = defineEmits<{
 
 const textDispaly = props.text.length > 20 ? props.text.slice(0, 20) + "..." : props.text
 
+const suggestionClick = () => {
+    emit('suggestionClicked', props.text)
+}
+
 </script>
 
 <template>
@@ -23,6 +27,7 @@ const textDispaly = props.text.length > 20 ? props.text.slice(0, 20) + "..." : p
         :label="textDispaly"
         class="suggestion"
         icon="pi pi-question"
+        @click="suggestionClick"
     />
 
 

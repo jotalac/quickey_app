@@ -60,7 +60,7 @@ export const useButtons = () => {
         //diable listening on all other buttons
         stopListeningAll()
         store.updateButton(buttonId, {
-            state: 'listening',
+            state: 'listening'
         })
 
         startCapturing(buttonId)
@@ -72,7 +72,7 @@ export const useButtons = () => {
 
         store.allButtons.forEach(btn => {
             if (btn.state === 'listening') {
-                store.updateButton(btn.id, {state: 'notBinded'})
+                store.updateButton(btn.id, {state: 'notBinded', value: []})
             }
         })
     }
