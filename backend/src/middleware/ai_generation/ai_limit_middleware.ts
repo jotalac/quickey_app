@@ -22,7 +22,7 @@ const aiKeybindingGenerationLimit = async (req: Request, res: Response, next: Ne
             return
         }
 
-        (req as any).aiUsage = {used: usedNumber, remaining: DAILY_LIMIT - usedNumber - 1}
+        (req as any).aiUsage = {remaining: DAILY_LIMIT - usedNumber - 1}
         next()
     } catch (error) {
         res.status(500).json({status: "error", msg: "Error validating daily limit"})
@@ -39,11 +39,10 @@ const getTimeRemaining = async (userId: string) => {
         .lean()
 
         let minutesUntilNext = null
-
         if (oldestRecord?.createdAt) {
             const nextFree = new Date(oldestRecord.createdAt).getTime() + 24 * 60 * 60 * 1000
             const msLeft = nextFree - Date.now()
-            minutesUntilNext = Math.ceil(msLeft / 1000 * 60)
+            minutesUntilNext = Math.ceil(msLeft / (1000 * 60))
         }
 
         return minutesUntilNext

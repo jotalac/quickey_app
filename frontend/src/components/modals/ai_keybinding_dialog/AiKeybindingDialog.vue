@@ -6,16 +6,9 @@ import ShinyText from '@/components/vue_bits/ShinyText.vue';
 import SuggestionAi from './SuggestionAi.vue';
 import { aiGenKeybindingApi } from '@/api/ai_generation/ai_gen_keybinding_api';
 import { useToast } from 'primevue';
+import { useButtonBindStore } from '@/stores/buttonBindStore';
 
-// interface limitsResponse {
-//     status: string,
-//     msg: string,
-//     data?: {
-//         dailyLimit: number,
-//         remaining: number,
-//         availibleIn?: number
-//     }
-// }
+const buttonBindStore = useButtonBindStore()
 
 const {isDialogVisible, hideDialog, activeKey} = useAiKeybindingDialog()
 const toast = useToast()
@@ -36,10 +29,40 @@ const applySuggestion = (newText: string) => {
 } 
 
 const generateOutput = async () => {
-    isGenerating.value = true
-    //do the api call and generate the output
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    isGenerating.value = false
+    try {
+        isGenerating.value = true
+        
+        const response = await aiGenKeybindingApi.generateKeybinding(promptText.value)
+
+        if (response.status === "error") {
+            console.log(response)
+            if (response.availibleIn) availibleIn.value = response.availibleIn
+            if (response.data?.remaining) remainingGenerations.value = response.data.remaining
+            toast.add({severity: "warn", summary: "Error", detail: response.msg, life: 2000})
+        }
+        else {
+            console.log(response)
+            remainingGenerations.value = response.data.remaining 
+
+            if (typeof activeKey.value === 'number') {
+                buttonBindStore.updateButton(activeKey.value, {
+                    state: "multiBinding",
+                    value: response.data?.actions
+                })
+
+                hideDialog()
+            }
+
+        }
+
+    } catch (error) {
+        console.log(error)
+    } finally {
+        isGenerating.value = false
+
+    }
+    
+    
 }
 
 //get the limits before opening
@@ -48,7 +71,7 @@ watch(isDialogVisible, async () => {
     const response: any = await aiGenKeybindingApi.getGenerationLimits()
 
     if (response.status === "error") {
-        toast.add({severity: 'error', summary: "Error", detail: response.msg})
+        toast.add({severity: 'error', summary: "Error", detail: response.msg, life: 2000})
         hideDialog()
         return
     }
@@ -66,7 +89,6 @@ watch(isDialogVisible, async () => {
 </script>
 
 <template>
-    <Toast/>
     <Dialog
         v-model:visible="isDialogVisible"
         modal
@@ -93,7 +115,7 @@ watch(isDialogVisible, async () => {
             
             <div class="buttons-cont">
                 <div class="generate-info">
-                    <Button outlined class="generate-btn" @click="generateOutput" :disabled="isGenerating || promptText === ''">
+                    <Button outlined class="generate-btn" @click="generateOutput" :disabled="isGenerating || promptText.length < 5 || remainingGenerations === 0">
                         <Icon icon="mingcute:ai-fill" class="ai-btn-icon"/>
                         <ShinyText text="Generate" class="shiny-text" :speed="2"/>
                     </Button>

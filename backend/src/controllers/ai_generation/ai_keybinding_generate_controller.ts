@@ -6,8 +6,7 @@ import { getTimeRemaining } from "../../middleware/ai_generation/ai_limit_middle
 
 const aiGenerateKeybinding = async (req: Request, res: Response) => {
     try {
-        let {prompt} = req.body
-        prompt = prompt.trim()
+        const prompt = req.body?.prompt.trim()
         const user = req.user as IUser
         const usageData = (req as any).aiUsage
 
@@ -35,19 +34,18 @@ const aiGenerateKeybinding = async (req: Request, res: Response) => {
             res.status(502).json({
                 status: "error",
                 msg: "Model returned empty output, try improving your prompt!",
-                remaining: usageData.remaining,
-                used: usageData.used
+                data: {
+                    remaining: usageData?.remaining ?? null
+                }
             })
             return
         }
-
         res.status(200).json({
             status: "success",
             msg: "Keybinding generated",
             data: {
                 actions: actions,
                 remaining: usageData.remaining,
-                used: usageData.used
             }
         })
     } catch (error) {
@@ -70,7 +68,7 @@ const getAiLimits = async (req: Request, res: Response) => {
         const usedNumber = await AiGenerationKeybinding.countDocuments({userId: user._id})
 
         if (usedNumber >= DAILY_LIMIT) {
-            const minutesUntilNext = getTimeRemaining(user._id)
+            const minutesUntilNext = await getTimeRemaining(user._id)
             res.status(200).json({
                 status: "success",
                 msg: "AI generation daily limit reached",
