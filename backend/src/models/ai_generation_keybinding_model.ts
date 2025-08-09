@@ -11,10 +11,10 @@ const AiGenerationKeybindingSchema = new Schema<IAiGenerationKeybinding>({
     prompt: {type: String, required: true},
     model: {type: String, required: true},
     generatedNodes: { type: [String], required: true},
-    createdAt: {type: Date, default: Date.now, expires: 1000 * 60 * 60 * 24} //delete after 24 hours
+    createdAt: {type: Date, default: Date.now, expires: 60 * 60 * 24} //delete after 24 hours
 })
 
 // Efficient quota counting (user + time range)
-AiGenerationKeybindingSchema.index({ user: 1, createdAt: 1 })
+AiGenerationKeybindingSchema.index({ userId: 1, createdAt: 1 })
 
 export default mongoose.model<IAiGenerationKeybinding>('AiGenerationKeybinding', AiGenerationKeybindingSchema)

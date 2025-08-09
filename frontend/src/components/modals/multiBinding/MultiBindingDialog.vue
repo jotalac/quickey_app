@@ -33,8 +33,7 @@ watch([isVisible, activeButtonId], ([visible, buttonId]) => {
 
 const handleSave = () => {
     const multiBindingValues: string[] = actionsBinded.value.map((actionData, index) => {
-        if (!actionData.requiresInput) return `${index}_${actionData.value}_`
-        
+        if (!actionData.requiresInput) return `${index}_${actionData.actionCode}_`
         return `${index}_${actionData.actionCode}_${actionData.value.trim()}`
 
     })
@@ -51,10 +50,7 @@ const handleSave = () => {
         })
     } else {
         
-        buttonBindStore.updateButton(activeButtonId.value!, {
-            value: [],
-            state: 'notBinded'
-        })
+        buttonBindStore.updateButton(activeButtonId.value!, {value: [], state: 'notBinded'})
     }
 
     // emit('save', activeButtonId.value!, multiBindingValues)

@@ -18,14 +18,14 @@ const aiKeybindingGenerationLimit = async (req: Request, res: Response, next: Ne
 
         if (usedNumber >= DAILY_LIMIT) {
             const minutesUntilNext = getTimeRemaining(user._id)
-            res.status(429).json({status: "error", msg: "AI generation daily limit reached", wait: minutesUntilNext})
+            res.status(429).json({status: "error", msg: "AI generation daily limit reached", availibleIn: minutesUntilNext})
             return
         }
 
         (req as any).aiUsage = {used: usedNumber, remaining: DAILY_LIMIT - usedNumber - 1}
         next()
     } catch (error) {
-        
+        res.status(500).json({status: "error", msg: "Error validating daily limit"})
     }
 }
 
@@ -55,4 +55,4 @@ const getTimeRemaining = async (userId: string) => {
 
 }
 
-export {aiKeybindingGenerationLimit}
+export {aiKeybindingGenerationLimit, getTimeRemaining}

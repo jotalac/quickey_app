@@ -7,7 +7,7 @@ interface AuthFormResponse{
 }
 
 export const authFormApi = {
-    async checkEmailAvailible(email: string): Promise<Boolean>{
+    async checkEmailAvailible(email: string): Promise<boolean>{
         try {
             const response = await api.get(`/auth/form/check-email?email=${encodeURIComponent(email)}`)
             console.log(response.data);
@@ -19,7 +19,7 @@ export const authFormApi = {
         }
     },
 
-    async checkUsernameAvailible(username: string): Promise<Boolean>{
+    async checkUsernameAvailible(username: string): Promise<boolean>{
         try {
             const response = await api.get(`/auth/form/check-username?username=${username}`)
             console.log(response.data);

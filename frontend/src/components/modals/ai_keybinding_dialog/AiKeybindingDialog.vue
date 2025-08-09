@@ -1,17 +1,32 @@
 <script setup lang="ts">
 import { useAiKeybindingDialog } from '@/composables/useAiKeybindingDialog';
-import { ref } from 'vue';
+import {  watch, ref } from 'vue';
 import { Icon } from '@iconify/vue';
 import ShinyText from '@/components/vue_bits/ShinyText.vue';
 import SuggestionAi from './SuggestionAi.vue';
+import { aiGenKeybindingApi } from '@/api/ai_generation/ai_gen_keybinding_api';
+import { useToast } from 'primevue';
+
+// interface limitsResponse {
+//     status: string,
+//     msg: string,
+//     data?: {
+//         dailyLimit: number,
+//         remaining: number,
+//         availibleIn?: number
+//     }
+// }
 
 const {isDialogVisible, hideDialog, activeKey} = useAiKeybindingDialog()
+const toast = useToast()
 
 const remainingGenerations = ref(0)
 const totalGenerations = ref(0)
+const availibleIn = ref(0)
 const suggestedGenerations = ref<string[]>(["Generate google shit broskiu wh", "Inn csgo select the first gun", "Adobe create new empty layer"])
 
 const promptText = ref('')
+const promptLengthLimit = 400
 
 const isGenerating = ref(false)
 const generatedOutput = ref<string | null>(null)
@@ -25,12 +40,33 @@ const generateOutput = async () => {
     //do the api call and generate the output
     await new Promise(resolve => setTimeout(resolve, 2000));
     isGenerating.value = false
-
 }
+
+//get the limits before opening
+watch(isDialogVisible, async () => {
+    if (!isDialogVisible.value) return //get the data only when SHOWING the dialog
+    const response: any = await aiGenKeybindingApi.getGenerationLimits()
+
+    if (response.status === "error") {
+        toast.add({severity: 'error', summary: "Error", detail: response.msg})
+        hideDialog()
+        return
+    }
+
+    remainingGenerations.value = response.data.remaining
+    totalGenerations.value = response.data.dailyLimit
+
+    //add the countdown to new availibility
+    if (remainingGenerations.value === 0) { 
+        availibleIn.value = response.data.availibleIn
+    }
+
+})
 
 </script>
 
 <template>
+    <Toast/>
     <Dialog
         v-model:visible="isDialogVisible"
         modal
@@ -44,7 +80,8 @@ const generateOutput = async () => {
                     v-model="promptText"
                     class="prompt-input"
                     placeholder="Prompt (describe your action)"
-                    maxlength="400"
+                    :maxlength="promptLengthLimit"
+                    :disabled="isGenerating"
                 />
     
                 <div class="suggestions-cont">
@@ -61,7 +98,8 @@ const generateOutput = async () => {
                         <ShinyText text="Generate" class="shiny-text" :speed="2"/>
                     </Button>
         
-                    <p>Remaining {{ remainingGenerations }}/{{ totalGenerations }}</p>
+                    <p>Remaining <span>{{ remainingGenerations }}/{{ totalGenerations }}</span></p>
+                    <p v-if="availibleIn">Refresh in: <span>{{ availibleIn }} minutes</span></p>
                 </div>
 
                 <div class="dialog-buttons">
@@ -117,6 +155,7 @@ const generateOutput = async () => {
     flex-direction: column;
     align-items: center;
     width: 300px;
+    padding: 0 5px
 }
 
 .suggestions-cont p {
@@ -137,9 +176,17 @@ const generateOutput = async () => {
     align-items: center;
 }
 
+.generate-info span{
+    color: var(--blue-vivid);
+}
+
 .generate-info p {
     color: var(--gray-main);
+    margin-right: 30px;
 }
+
+
+
 
 .generate-btn{
     color: var(--blue-vivid);
