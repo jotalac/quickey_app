@@ -34,9 +34,7 @@ const aiGenerateKeybinding = async (req: Request, res: Response) => {
             res.status(502).json({
                 status: "error",
                 msg: "Model returned empty output, try improving your prompt!",
-                data: {
-                    remaining: usageData?.remaining ?? null
-                }
+                remaining: usageData?.remaining,
             })
             return
         }

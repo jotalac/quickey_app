@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import {computed} from 'vue'
 
 interface Props {
-    text: string
+    text: string,
+    isDisabled: boolean
 }
 
 const props = defineProps<Props>()
@@ -9,7 +11,7 @@ const emit = defineEmits<{
     suggestionClicked: [suggestionText: string]
 }>()
 
-const textDispaly = props.text.length > 20 ? props.text.slice(0, 20) + "..." : props.text
+const textDispaly = computed(() => { return props.text.length > 20 ? props.text.slice(0, 20) + "..." : props.text})
 
 const suggestionClick = () => {
     emit('suggestionClicked', props.text)
@@ -28,6 +30,7 @@ const suggestionClick = () => {
         class="suggestion"
         icon="pi pi-question"
         @click="suggestionClick"
+        :disabled="props.isDisabled"
     />
 
 

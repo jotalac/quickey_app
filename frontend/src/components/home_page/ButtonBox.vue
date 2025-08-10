@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ButtonState } from '@/types/buttonBindHome';
 import { Icon } from '@iconify/vue'
-import { ref } from 'vue';
+import { ref, watch} from 'vue';
 
 
 
@@ -29,11 +29,19 @@ const bindButtonClick = (e: Event) => {
     }
 }
 
-
 const openContextMenu = (event: MouseEvent) => {
     event.preventDefault()
     emit('contextMenu', props.buttonId, event)
 }
+
+//do the flash animaiton when ai or multibinding
+const flashUpdate = ref(false)
+watch(() => props.state, () => {
+    if (props.state === 'multiBinding') {
+        flashUpdate.value = true
+        setTimeout(() => {flashUpdate.value = false}, 500)
+    }
+})
 
 </script>
 
@@ -46,7 +54,8 @@ const openContextMenu = (event: MouseEvent) => {
             listening: props.state === 'listening' || props.activeContextMenu === props.buttonId,
             binded: props.state === 'binded',
             multi: props.state === 'multiBinding',
-            readOnly: props.mode === 'read'
+            readOnly: props.mode === 'read',
+            flash: flashUpdate
             }
         ]"
         :id="`key-${props.buttonId}`"
@@ -121,6 +130,12 @@ const openContextMenu = (event: MouseEvent) => {
 .button-bind.listening{
     background-color: var(--blue-sky-bright);
     box-shadow: 0 0 30px rgba(44, 153, 207, 0.322);
+}
+
+.button-bind.flash{
+    background-color: var(--blue-vivid) !important;
+    box-shadow: 5px 5px 0 var(--blue-sky-dark) ,0 0 20px rgba(13, 99, 198, 0.288);
+    transition: background-color 0.5s ease-in-out !important;
 }
 
 /* .button-bind.removed{

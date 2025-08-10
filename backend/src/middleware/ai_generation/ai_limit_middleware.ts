@@ -17,11 +17,11 @@ const aiKeybindingGenerationLimit = async (req: Request, res: Response, next: Ne
         const usedNumber = await AiGenerationKeybinding.countDocuments({userId: user._id})
 
         if (usedNumber >= DAILY_LIMIT) {
-            const minutesUntilNext = getTimeRemaining(user._id)
-            res.status(429).json({status: "error", msg: "AI generation daily limit reached", availibleIn: minutesUntilNext})
+            const minutesUntilNext = await getTimeRemaining(user._id)
+            res.status(429).json({status: "error", msg: "AI generation daily limit reached", remaining: 0, availibleIn: minutesUntilNext})
             return
-        }
-
+        }        
+        
         (req as any).aiUsage = {remaining: DAILY_LIMIT - usedNumber - 1}
         next()
     } catch (error) {

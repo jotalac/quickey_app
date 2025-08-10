@@ -7,6 +7,7 @@ import SuggestionAi from './SuggestionAi.vue';
 import { aiGenKeybindingApi } from '@/api/ai_generation/ai_gen_keybinding_api';
 import { useToast } from 'primevue';
 import { useButtonBindStore } from '@/stores/buttonBindStore';
+import suggestionList from '@/assets/static_data/ai_prompt_suggestions.json'
 
 const buttonBindStore = useButtonBindStore()
 
@@ -16,13 +17,13 @@ const toast = useToast()
 const remainingGenerations = ref(0)
 const totalGenerations = ref(0)
 const availibleIn = ref(0)
-const suggestedGenerations = ref<string[]>(["Generate google shit broskiu wh", "Inn csgo select the first gun", "Adobe create new empty layer"])
+const promptSuggestions = ref<string[]>([])
+// const suggestedGenerations = ref<string[]>(["Generate google shit broskiu wh", "Inn csgo select the first gun", "Adobe create new empty layer"])
 
 const promptText = ref('')
 const promptLengthLimit = 400
 
 const isGenerating = ref(false)
-const generatedOutput = ref<string | null>(null)
 
 const applySuggestion = (newText: string) => {
     promptText.value = newText
@@ -37,12 +38,14 @@ const generateOutput = async () => {
         if (response.status === "error") {
             console.log(response)
             if (response.availibleIn) availibleIn.value = response.availibleIn
-            if (response.data?.remaining) remainingGenerations.value = response.data.remaining
+            if (response.data?.remaining !== undefined) remainingGenerations.value = response.data.remaining
             toast.add({severity: "warn", summary: "Error", detail: response.msg, life: 2000})
         }
         else {
             console.log(response)
             remainingGenerations.value = response.data.remaining 
+
+            if (response.data?.availibleIn) availibleIn.value = response.data.availibleIn
 
             if (typeof activeKey.value === 'number') {
                 buttonBindStore.updateButton(activeKey.value, {
@@ -50,6 +53,7 @@ const generateOutput = async () => {
                     value: response.data?.actions
                 })
 
+                promptText.value = ""
                 hideDialog()
             }
 
@@ -65,9 +69,11 @@ const generateOutput = async () => {
     
 }
 
-//get the limits before opening
+//on dialog open
 watch(isDialogVisible, async () => {
     if (!isDialogVisible.value) return //get the data only when SHOWING the dialog
+    availibleIn.value = 0
+    //get limits
     const response: any = await aiGenKeybindingApi.getGenerationLimits()
 
     if (response.status === "error") {
@@ -82,6 +88,14 @@ watch(isDialogVisible, async () => {
     //add the countdown to new availibility
     if (remainingGenerations.value === 0) { 
         availibleIn.value = response.data.availibleIn
+    }
+
+    //get the suggestions
+    const listLength = suggestionList.length
+    promptSuggestions.value = []
+    for (let n = 0; n <= 2; n++) {
+        const randomIndex = Math.round(Math.random() * listLength)
+        promptSuggestions.value?.push(suggestionList[randomIndex])
     }
 
 })
@@ -108,7 +122,7 @@ watch(isDialogVisible, async () => {
     
                 <div class="suggestions-cont">
                     <p>Prompts suggestions:</p>
-                    <SuggestionAi v-for="(suggestion, index) in suggestedGenerations" v-bind:key="index"  :text="suggestion" @suggestion-clicked="applySuggestion"/>
+                    <SuggestionAi v-for="(suggestion, index) in promptSuggestions" v-bind:key="index"  :text="suggestion" :is-disabled="isGenerating" @suggestion-clicked="applySuggestion" />
                 </div>
     
             </div>
@@ -125,20 +139,21 @@ watch(isDialogVisible, async () => {
                 </div>
 
                 <div class="dialog-buttons">
-                    <Button 
+                    <!-- <Button 
                         :class="['control-button-dialog', 'dialog-save-button']" 
                         outlined
                         icon="pi pi-file-check"
                         label="Save"
                         :disabled="generatedOutput === null"
                         :loading="isGenerating"
-                    />
+                    /> -->
                     <Button 
                         class="control-button-dialog" 
                         outlined
                         label="Cancel"
                         icon="pi pi-times-circle"
                         @click="hideDialog"
+                        :disabled="isGenerating"
                     />
                 </div>
             </div>
