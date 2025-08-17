@@ -3,11 +3,13 @@ import { useDeviceStore } from '@/stores/deviceStore'
 import { storeToRefs } from 'pinia'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from "primevue/usetoast";
+import { useButtons } from './useButtonsBindingHome';
 
 
 export function useDeviceActions () {
     const deviceStore = useDeviceStore()
     const buttonStore = useButtonBindStore()
+    const {copiedBtnNumber} = useButtons()
 
     // const {isConnected} = storeToRefs(deviceStore)
     const {importFromDevice} = deviceStore
@@ -31,6 +33,7 @@ export function useDeviceActions () {
                 },
                 accept: () => {
                     buttonStore.resetAllButtons()
+                    copiedBtnNumber.value = null
                     toast.add({ severity: 'info', summary: 'Reseted', detail: 'All binding reseted', life: 2000 });
                 },
                 reject: () => {

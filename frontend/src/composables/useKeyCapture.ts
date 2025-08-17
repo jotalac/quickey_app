@@ -2,6 +2,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useButtonBindStore } from '@/stores/buttonBindStore'
 
 export const useKeyCapture = () => {
+    const MAX_KEYS = 20
+
     const store = useButtonBindStore()
     const capturing = ref<boolean>(false)
     const currentKeys = ref<Set<string>>(new Set())
@@ -33,12 +35,17 @@ export const useKeyCapture = () => {
 
     const handleKeyDown = (event: KeyboardEvent) => {
         if (!capturing.value || capturingButton.value === null) return
-
+        
         //dont want other effects when pressing the buttons
         event.preventDefault()
         event.stopPropagation()
-
+        
         currentKeys.value.add(event.code)
+
+        //check if isnt pressed to many keys
+        if (currentKeys.value.size >= MAX_KEYS) {
+            commitKeys()
+        }
     }
 
     const handleKeyUp = (event: KeyboardEvent) => {
@@ -47,6 +54,12 @@ export const useKeyCapture = () => {
         event.preventDefault()
         event.stopPropagation()
 
+        commitKeys()
+    }
+
+    const commitKeys = () => {
+        if (capturingButton.value === null) return
+        
         const keyCombination = Array.from(currentKeys.value)
         const keyDisplay = keyCombination.join(" + ")
         

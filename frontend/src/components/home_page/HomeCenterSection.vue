@@ -32,7 +32,8 @@ const {
     showKnob,
     knobElement,
     resetButton,
-    pasteCopied
+    pasteCopied,
+    getButtonValue
     
 } = useButtons()
 
@@ -139,6 +140,7 @@ const menuItems = computed(() => [
     { 
         label: 'Copy',
         icon: 'pi pi-copy',
+        disabled: getButtonValue(activeButtonContext.value)?.value.length === 0,
         command: () => {
             copiedBtnNumber.value = activeButtonContext.value
         }

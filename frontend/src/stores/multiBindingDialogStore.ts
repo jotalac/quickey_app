@@ -3,10 +3,13 @@ import { ref, computed } from 'vue'
 import type { MultiBindingAction } from '@/types/buttonBindHome'
 
 export const useMultiBindingDialogStore = defineStore('dialog', () => {
+    const MAX_NODES = 20
+
     // State
     const isVisible = ref(false)
     const activeButtonId = ref<number | null>(null)
     const actionsBinded = ref<MultiBindingAction[]>([])
+    const isAtLimit = computed(() => actionsBinded.value.length >= MAX_NODES)
 
     //states for listening for buttons
     const capturingKeyPress = ref(false)
@@ -50,7 +53,7 @@ export const useMultiBindingDialogStore = defineStore('dialog', () => {
         actionsBinded.value = []
     }
 
-    const addAction = (action: MultiBindingAction) => {
+    const addAction = (action: MultiBindingAction) => {        
         actionsBinded.value.push(action)
     }
 
@@ -71,7 +74,6 @@ export const useMultiBindingDialogStore = defineStore('dialog', () => {
 
     const startCapturing = (actionId: string) => {
         capturingKeyPress.value = true
-        // capturingCurrentKey.value = ''
         capturingActionId.value = actionId
 
         console.log("Started capturing on id: " + actionId);
@@ -80,10 +82,10 @@ export const useMultiBindingDialogStore = defineStore('dialog', () => {
     const stopCapturing = () => {
         capturingKeyPress.value = false
         capturingActionId.value = null
-        // capturingCurrentKey.value = ''
     } 
 
     const handleKeyCapture = (keyCode: string) => {
+
         if (capturingActionId.value){
             const actionIndex = actionsBinded.value.findIndex(action => action.id === capturingActionId.value)
             if (actionIndex !== -1) {
@@ -107,6 +109,7 @@ export const useMultiBindingDialogStore = defineStore('dialog', () => {
         closeDialog,
         addAction,
         removeAction,
+        isAtLimit,
 
 
         //capturing

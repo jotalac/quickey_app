@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { useActionCategories } from '@/composables/useActionCategories';
 import { useMultiBindingDialogStore } from '@/stores/multiBindingDialogStore';
 import { storeToRefs } from 'pinia';
-import { ref, watch } from 'vue'
+import { watch } from 'vue'
 import ActionsDisplay from '@/components/modals/multiBinding/ActionsDisplay.vue';
 import ActionsSelection from '@/components/modals/multiBinding/ActionsSelection.vue';
 import { useButtonBindStore } from '@/stores/buttonBindStore';
@@ -13,11 +12,10 @@ import { useMulitBindingImport } from '@/composables/useMultiBindingImport';
 // }>()
 
 const multiBindingDialogStore = useMultiBindingDialogStore()
-const { categories } = useActionCategories()
 const {importExistingValues} = useMulitBindingImport()
 
-const {isVisible, activeButtonId, dialogTitle, hasActions, actionsBinded} = storeToRefs(multiBindingDialogStore)
-const {closeDialog, addAction, removeAction} = multiBindingDialogStore
+const {isVisible, activeButtonId, dialogTitle, actionsBinded} = storeToRefs(multiBindingDialogStore)
+const {closeDialog} = multiBindingDialogStore
 
 const buttonBindStore = useButtonBindStore()
 

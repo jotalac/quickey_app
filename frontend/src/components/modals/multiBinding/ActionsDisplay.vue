@@ -2,10 +2,9 @@
 import { VueDraggable } from 'vue-draggable-plus';
 import type { MultiBindingAction } from '@/types/buttonBindHome';
 import { Icon } from '@iconify/vue';
-import { ref, watch} from 'vue';
 import { useMultiBindingDialogStore } from '@/stores/multiBindingDialogStore';
 import { storeToRefs } from 'pinia';
-import type { DefineComponent } from 'vue';
+
 
 //import all possible action node components
 import DefaultActionNode from '@/components/modals/multiBinding/actionNodes/DefaultActionNode.vue';
@@ -30,7 +29,7 @@ const getActionComponent = (actionCode: string) => {
 }
 
 const multiBindingDialogStore = useMultiBindingDialogStore()
-const { actionsBinded } = storeToRefs(multiBindingDialogStore)
+const { actionsBinded, isAtLimit } = storeToRefs(multiBindingDialogStore)
 
 const handleActionsChange = (newActions: MultiBindingAction[]) => {
     console.log(newActions);    
@@ -39,6 +38,12 @@ const handleActionsChange = (newActions: MultiBindingAction[]) => {
 const handleRemoveAction = (actionId: string) => {
     // emit('removeAction', index)
     multiBindingDialogStore.removeAction(actionId)
+}
+
+const dragGroup = {
+    name: 'actions',
+    pull: false,
+    put: () => !isAtLimit.value
 }
 
 
@@ -56,9 +61,10 @@ const handleRemoveAction = (actionId: string) => {
         <VueDraggable
             :key="actionsBinded.length"
             v-model="actionsBinded"
-            :group="{name: 'actions', pull: false, put: true}"
+            :group="dragGroup"
             class="action-sequence"
             :scroll="true"
+            
 
             @update:model-value="handleActionsChange"
             item-key="id"
@@ -72,14 +78,6 @@ const handleRemoveAction = (actionId: string) => {
             move-class="draggable-move"
             handle=".drag-handle"
         >
-
-
-            <!-- <DefaultActionNode
-                v-for="(element, index) in actionsBinded"
-                :index="index"
-                :action-element="element"
-                @remove="handleRemoveAction"
-            /> -->
   
             <component 
                 v-for="(element, index) in actionsBinded"
