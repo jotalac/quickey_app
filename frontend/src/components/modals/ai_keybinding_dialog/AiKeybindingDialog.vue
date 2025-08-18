@@ -74,7 +74,7 @@ watch(isDialogVisible, async () => {
     if (!isDialogVisible.value) return //get the data only when SHOWING the dialog
     availibleIn.value = 0
     //get limits
-    const response: any = await aiGenKeybindingApi.getGenerationLimits()
+    const response = await aiGenKeybindingApi.getGenerationLimits()
 
     if (response.status === "error") {
         toast.add({severity: 'error', summary: "Error", detail: response.msg, life: 2000})
@@ -91,14 +91,17 @@ watch(isDialogVisible, async () => {
     }
 
     //get the suggestions
+    getNewSuggestions()
+})
+
+const getNewSuggestions = () => {
     const listLength = suggestionList.length
     promptSuggestions.value = []
     for (let n = 0; n <= 2; n++) {
         const randomIndex = Math.round(Math.random() * listLength)
         promptSuggestions.value?.push(suggestionList[randomIndex])
     }
-
-})
+}
 
 </script>
 
@@ -121,7 +124,7 @@ watch(isDialogVisible, async () => {
                 />
     
                 <div class="suggestions-cont">
-                    <p>Prompts suggestions:</p>
+                    <p>Prompts suggestions: <i class="pi pi-refresh refresh-button" @click="getNewSuggestions"/></p>
                     <SuggestionAi v-for="(suggestion, index) in promptSuggestions" v-bind:key="index"  :text="suggestion" :is-disabled="isGenerating" @suggestion-clicked="applySuggestion" />
                 </div>
     
@@ -196,8 +199,21 @@ watch(isDialogVisible, async () => {
 }
 
 .suggestions-cont p {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
     color: var(--gray-main);
+    width: 100%;
+}
+
+.refresh-button {
+    font-size: var(--bigger-text);
+
+}
+.refresh-button:hover{
+    cursor: pointer;
+    color: var(--gray-bright);
 }
 
 .buttons-cont{

@@ -16,9 +16,7 @@ export class AuthService {
     static saveAuthData(data: AuthResponse['data']): void {
         if (data && data.tokens) {
             inMemoryAccessToken = data.tokens.accessToken
-            console.log(inMemoryAccessToken)
-            localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(data.user))
-            
+            localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(data.user))            
         }
     }
 

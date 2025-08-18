@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import placeholderImage from "@/assets/images/profile/profile_placeholder.png"
-import { AuthService } from '@/api/auth/auth_service';
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 
@@ -15,7 +13,6 @@ const items = ref([
     {label: 'Security', icon: 'pi pi-lock'},
 ])
 
-const username = AuthService.getUser()?.username
 
 const {logout} = useAuth()
 const logoutUser = () => {
@@ -28,7 +25,7 @@ const emit = defineEmits<{
     tabChanged: [index: number]
 }>()
 
-const onTabChange = (event: any) => {
+const onTabChange = () => {
     console.log(activeIndex.value)
     emit('tabChanged', activeIndex.value)
 }
@@ -38,11 +35,6 @@ const onTabChange = (event: any) => {
 <template>
     <div class="menu-section">
         <TabMenu :model="items" v-model:activeIndex="activeIndex" @tab-change="onTabChange"></TabMenu>
-
-        <!-- <div class="profile-section">
-            <img :src='placeholderImage' alt='profile picture' id='menu-profile-picture'/>
-            <span class="menu-name">{{ username }}</span>
-        </div> -->
 
         <Button
             text

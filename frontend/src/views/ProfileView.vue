@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 import { useRouter } from 'vue-router';
-import { AuthService } from '@/api/auth/auth_service';
 import ProfileMenu from '@/components/profile/ProfileMenu.vue'
 import ProfileDashboard from '@/components/profile/ProfileDashboard.vue';
+import ProfileDisplay from '@/components/profile/ProfileDisplay.vue';
 
 const router = useRouter()
-const {logout, isLoggedIn} = useAuth()
-const user = AuthService.getUser()
+const {isLoggedIn} = useAuth()
 const activeTab = ref(0)
 
 
@@ -30,15 +29,13 @@ onBeforeMount(()=> {
         <ProfileMenu class="left-menu" @tab-changed="handleTabChange"/>
         <div class="content-area">
             <ProfileDashboard v-if="activeTab === 0" />
-            
+            <ProfileDisplay v-else-if="activeTab === 1"/>
+
             <div v-else class="placeholded">
                 <h1>Not availible yet</h1>
                 <i class="pi pi-clock"/>
 
             </div>
-            <!-- <h1 v-else-if="activeTab === 1">Soon</h1>
-            <h1 v-else-if="activeTab === 2">Soon</h1>
-            <h1 v-else-if="activeTab === 3">Soon</h1> -->
         </div>
     </div>
 

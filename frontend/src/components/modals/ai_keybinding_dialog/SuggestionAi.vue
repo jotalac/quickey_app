@@ -39,6 +39,7 @@ const suggestionClick = () => {
 <style scoped>
 .suggestion{
     width: 100%;
+    justify-content: start;
     background-color: var(--blue-dark);
     padding: 5px;
     border-radius: var(--border-rad-main);
@@ -47,6 +48,7 @@ const suggestionClick = () => {
     cursor: pointer;
     margin: 7px 0px;
     padding: 5px;
+    padding-left: 10px;
 }
 
 :deep(.p-button-icon) {
