@@ -8,7 +8,7 @@ export interface ButtonBindHome {
 }
 
 export interface ButtonBindSave {
-    id: String,
+    id: string,
     value: string[]
 }
 

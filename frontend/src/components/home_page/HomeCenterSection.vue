@@ -25,7 +25,7 @@ const {
     currentPage,
     currentPageButtons,
     initButtons,
-    copiedBtnNumber,
+    copiedValues,
     changePage,
     listeningButton,
     totalPages,
@@ -140,15 +140,16 @@ const menuItems = computed(() => [
     { 
         label: 'Copy',
         icon: 'pi pi-copy',
-        disabled: getButtonValue(activeButtonContext.value)?.value.length === 0,
+        disabled: getButtonValue(activeButtonContext.value)?.value.length === 0, //dont copy empty value
         command: () => {
-            copiedBtnNumber.value = activeButtonContext.value
+            copiedValues.value = getButtonValue(activeButtonContext.value)?.value || []
+            console.log(copiedValues.value)
         }
     },
     { 
         label: 'Paste',
         icon: 'pi pi-arrow-down-right',
-        disabled: copiedBtnNumber.value === null,
+        disabled: copiedValues.value === null,
         command: () => {
             pasteCopied(activeButtonContext.value)
         }

@@ -1,12 +1,11 @@
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import type { ButtonState, ButtonBindHome, KnobBindHome } from '@/types/buttonBindHome'
 import { useButtonBindStore } from '@/stores/buttonBindStore'
-import { button } from '@primeuix/themes/aura/inputnumber'
 import { useKeyCapture } from '@/composables/useKeyCapture'
 
 export const useButtons = () => {
     const store = useButtonBindStore()
-    const { startCapturing, stopCapturing, capturing, capturingButton } = useKeyCapture()
+    const { startCapturing, stopCapturing} = useKeyCapture()
 
     // Computed values (derived state)
     const currentPageButtons = computed(() => {
@@ -114,9 +113,9 @@ export const useButtons = () => {
         showKnob: computed(() => store.showKnob),
         knobElement: computed(() => store.knobElement),
         currentPageButtons,
-        copiedBtnNumber: computed({
-            get: () => store.copiedBtnNumber,
-            set: (val) => store.copiedBtnNumber = val
+        copiedValues: computed({
+            get: () => store.copiedValues,
+            set: (val) => store.copiedValues = val
         }),
 
         
