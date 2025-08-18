@@ -1,13 +1,10 @@
-import { api } from "@/api/api";
 import { AuthService, type AuthUser } from "@/api/auth/auth_service";
 import { authApi } from "@/api/auth/auth_token";
 import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
 
 const currentUser = ref<AuthUser | null>(null)
 const isAuthLoading = ref(false)
 const hasCheckedAuth = ref(false)
-const router = useRouter()
 
 export function useAuth() {
     const isLoggedIn = computed(() => !!currentUser.value)

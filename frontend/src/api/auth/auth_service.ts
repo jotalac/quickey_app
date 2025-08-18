@@ -1,4 +1,4 @@
-import { authApi, type AuthResponse } from "./auth_token"
+import { type AuthResponse } from "./auth_token"
 
 export interface AuthUser {
     id: string
@@ -15,10 +15,10 @@ export class AuthService {
     //token management
     static saveAuthData(data: AuthResponse['data']): void {
         if (data && data.tokens) {
-            // localStorage.setItem(this.STORAGE_KEYS.ACCESS_TOKEN, data.tokens.accessToken)
-            // localStorage.setItem(this.STORAGE_KEYS.REFRESH_TOKEN, data.tokens.refreshToken)
             inMemoryAccessToken = data.tokens.accessToken
+            console.log(inMemoryAccessToken)
             localStorage.setItem(this.STORAGE_KEYS.USER, JSON.stringify(data.user))
+            
         }
     }
 

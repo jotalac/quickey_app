@@ -3,6 +3,7 @@ import KeyBinding from "../../models/keybinding_model"
 import { IUser } from "../../@types/user"
 import { bindingNameValid } from "./keybinding_user_controller"
 import { KEYBINDING_CATEGORIES } from "../../constants/keybinding_categories"
+import { isPassportNumber } from "validator"
 
 const saveKeyBinding = async (req: Request, res: Response) => {
     const {bindingData, name, description = "", category} = req.body
@@ -82,14 +83,47 @@ const validateDescription = (description: string): boolean => {
 
 const validateKeybindingData = (keyBinding: any) => {
     if (!Array.isArray(keyBinding)) return false
-    if (keyBinding.length === 0) return false
+    if (keyBinding.length !== 28) return false
 
     //check that every item has requiered structure
-    return keyBinding.every((item: any) => 
-        item &&
-        typeof item.id === 'string' &&
-        Array.isArray(item.value) 
-    )
+    // return keyBinding.every((item: any) => 
+    //     item &&
+    //     typeof item.id === 'string' &&
+    //     Array.isArray(item.value) 
+    // )
+
+    let knobCount = 0
+    const numericIds = new Set<number>()
+
+    for (const item of keyBinding) {
+        if (!item || typeof item.id !== 'string' || !Array.isArray(item.value)) return false
+
+        //validate the values
+        if (item.value.length > 0) {
+            for (const v of item.value) {
+                if (typeof v !== 'string') return false
+                if (v.length > 700) return false
+            }
+        }
+
+        //validate the IDs
+        if (item.id === "knob") {
+            knobCount++
+            if (knobCount > 1) return false
+            continue
+        }
+
+        if (!/^(?:[1-9]|1[0-9]|2[0-7])$/.test(item.id)) return false
+        const num = parseInt(item.id, 10)
+        if (numericIds.has(num)) return false
+        numericIds.add(num)
+    }
+
+    //check if ids and knob is correct
+    if (knobCount !== 1) return false
+    if (numericIds.size !== 27) return false
+
+    return true
 }
 
 const validateCategory = (category: string): boolean => {

@@ -31,7 +31,7 @@ const handleRemoveAction = () => {
         <!-- Action content -->
         <div class="node-content">
             <p class="node-key">{{ props.actionElement.label }}</p>
-            <InputText v-model="props.actionElement.value" class="node-content-input" type="text" placeholder="Write some text"/>
+            <InputText v-model="actionElement.value" class="node-content-input" type="text" placeholder="Write some text" maxlength="500"/>
         </div>
         
         <!-- Remove button -->

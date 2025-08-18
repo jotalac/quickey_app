@@ -10,7 +10,7 @@ const router = express.Router()
 
 router.post("/validate-name", authenticateToken, verfiyBindingName)
 
-router.post("/save", authenticateToken, keyBindingSaveLimiter ,saveKeyBinding)
+router.post("/save", authenticateToken, keyBindingSaveLimiter, saveKeyBinding)
 
 router.get("/get-categories", getCategories)
 
