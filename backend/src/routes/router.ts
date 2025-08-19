@@ -3,6 +3,7 @@ import aboutRouter from "./about_router"
 import authRouter from './auth_router'
 import keybindingRouter from './keybinding_router'
 import aiRouter from './ai_router'
+import profileRouter from './profile_router'
 
 const router = express.Router()
 
@@ -13,5 +14,7 @@ router.use("/api/auth", authRouter)
 router.use("/api/keybinding", keybindingRouter)
 
 router.use("/api/ai", aiRouter)
+
+router.use("/api/profile", profileRouter)
 
 export default router

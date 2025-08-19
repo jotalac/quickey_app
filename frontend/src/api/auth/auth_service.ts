@@ -2,7 +2,8 @@ import { type AuthResponse } from "./auth_token"
 
 export interface AuthUser {
     id: string
-    username: string
+    username: string,
+    role: string
 }
 
 let inMemoryAccessToken: string | null = null

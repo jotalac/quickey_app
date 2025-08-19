@@ -1,5 +1,10 @@
 import {Document, Model} from "mongoose"
 
+export interface SocialMediaLink {
+    platform: string,
+    url: string,
+}
+
 export interface IUser extends Document {
     _id: string,
     username: string,
@@ -8,18 +13,22 @@ export interface IUser extends Document {
     role: "user" | "admin",
     registerType: "local" | "sso",
     profilePicture: string | null,
+    bio: string | null
     createdAt: Date
+    socialLinks: SocialMediaLink[]
+
     
     comparePassword(candidatePassword: string): Promise<boolean>, // Add this
     // Add virtual property
-    profile: {
-        id: string;
-        username: string;
-        email: string;
-        registerType: string;
-        profilePicture: string | null;
-        createdAt: Date;
-    };
+    // profile: {
+    //     id: string;
+    //     username: string;
+    //     email: string;
+    //     registerType: string;
+    //     profilePicture: string | null;
+    //     bio: string | null,
+    //     createdAt: Date;
+    // };
 }
 
 export interface IUserModel extends Model<IUser> {

@@ -1,5 +1,38 @@
 <script setup lang="ts">
+import { AuthService } from '@/api/auth/auth_service';
+import { profileDisplayApi } from '@/api/profile/profile_display_api';
 import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
+import { useToast } from 'primevue';
+import { onMounted, ref } from 'vue';
+
+const toast = useToast()
+
+//account data display 
+const user = AuthService.getUser()
+const userEmail = ref<string | null>()
+const createdAt = ref<string | null>()
+const bio = ref<string | null>()
+
+
+onMounted(async () => {
+  try {
+    //get user data
+    const accountDataResponse = await profileDisplayApi.getAccountData() 
+    
+    if (accountDataResponse.status === "success") {
+      userEmail.value = accountDataResponse.data.email
+      createdAt.value = accountDataResponse.data.createdAt.split("T")[0]
+      bio.value = accountDataResponse.data.bio
+    } else {
+      toast.add({severity: "error", summary: "Error getting user data", life: 1500})
+
+    }
+    
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 </script>
 
 <template>
@@ -11,8 +44,8 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
         shape="circle"
         class="avatar"
       />
-      <h2 class="user-name">John Doe</h2>
-      <Badge class="user-role-pill">admin</Badge>
+      <h2 class="user-name">{{user?.username}}</h2>
+      <Badge class="user-role-pill">{{user?.role}}</Badge>
 
       <div class="side-stats">
         <div class="stat">
@@ -42,15 +75,17 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
         <div class="kv-grid">
         <div class="kv">
             <span class="k">Email</span>
-            <span class="v">john.doe@example.com</span>
+            <Skeleton v-if="!userEmail" width="200px" height="30px" class="skeleton-loading"/>
+            <span class="v">{{userEmail}}</span>
         </div>
         <div class="kv">
             <span class="k">Username</span>
-            <span class="v">John Doe</span>
+            <span class="v">{{user?.username}}</span>
         </div>
         <div class="kv">
             <span class="k">Member Since</span>
-            <span class="v">2024-05-10</span>
+            <Skeleton v-if="!createdAt" width="200px" height="30px" class="skeleton-loading"/>
+            <span class="v">{{ createdAt }}</span>
         </div>
         <div class="kv">
             <span class="k">Plan</span>
@@ -65,9 +100,8 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
 
     <div class="section-block">
         <h3 class="section-title">Bio</h3>
-        <p class="bio">
-        Short bio or note goes here. You can edit this later to describe your workflow, preferences, or anything relevant.
-        </p>
+        <Skeleton v-if="!bio" width="90%" height="100px" class="skeleton-loading"/>
+        <p class="bio">{{ bio }}</p>
     </div>
 
     <div class="section-block">
@@ -77,22 +111,28 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
         <li>
             <span class="dot"></span>
             Generate me a sequence for crossing the li...
-            <Button class="copy-ai-button" label="copy result" variant="text" size="small" icon="pi pi-copy"/>
-            <time>2h ago</time>
+            <div class="copy-time-cont">
+                <Button class="copy-ai-button" label="" variant="text" size="small" icon="pi pi-copy"/>
+                <time>2h ago</time>
+            </div>
         </li>
         <li>
             <span class="dot"></span>
             Generated AI macro sequence for the wind...
             
-            <Button class="copy-ai-button" label="copy result" variant="text" size="small" icon="pi pi-copy"/>
-            <time>5h ago</time>
+            <div class="copy-time-cont">
+                <Button class="copy-ai-button" label="" variant="text" size="small" icon="pi pi-copy"/>
+                <time>2h ago</time>
+            </div>
         </li>
         <li>
             <span class="dot"></span>
             In vs code select all the dis...
 
-            <Button class="copy-ai-button" label="copy result" variant="text" size="small" icon="pi pi-copy"/>
-            <time>Yesterday</time>
+            <div class="copy-time-cont">
+                <Button class="copy-ai-button" label="" variant="text" size="small" icon="pi pi-copy"/>
+                <time>2h ago</time>
+            </div>
         </li>
         </ul>
     </div>
@@ -100,7 +140,7 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
     <div class="section-block">
         <h3 class="section-title">Social media</h3>
         <div class="social-media-cont">
-            <i class="pi pi-instagram social-media-icon"/>
+            <i class="pi pi-instagram social-media-icon" />
             <!-- <a href="https://instagram.com/user" rel="ugc nofollow">Instagram</a> -->
             <i class="pi pi-twitter social-media-icon"/>
             <i class="pi pi-facebook social-media-icon"/>
@@ -280,10 +320,12 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
     color: var(--gray-bright);
 }
 .activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: var(--smaller-text);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: var(--smaller-text);
+    max-height: 200px;
+    overflow-y: scroll;
 }
 .activity-list li {
   display: flex;
@@ -292,10 +334,16 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
   position: relative;
   padding-left: 5px;
 }
+
+.copy-time-cont{
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    padding: 0 15px;
+}
 .activity-list time {
     font-size: var(--small-text);
     color: var(--gray-bright);
-    margin-left: auto;
     text-transform: uppercase;
 }
 .dot {
@@ -308,6 +356,8 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
 }
 .copy-ai-button{
     padding: 0px 10px;
+    margin-right: 10px;
+    color: var(--gray-bright);
 }
 
 .social-media-cont{

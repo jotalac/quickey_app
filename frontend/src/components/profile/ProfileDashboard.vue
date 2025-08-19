@@ -3,7 +3,7 @@ import { AuthService } from '@/api/auth/auth_service';
 import { userKeybindingApi } from '@/api/keybinding/keybinding_user';
 import { useConstantsStore } from '@/stores/constantsStore';
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, ref, TransitionGroup, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import KeybindingSave from '@/components/profile/KeybindingSave.vue';
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveProfileDialog.vue';

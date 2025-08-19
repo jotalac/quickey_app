@@ -1,6 +1,11 @@
 import mongoose, {Schema} from "mongoose";
 import bcrypt from 'bcrypt'
-import { IUser, IUserModel } from "../@types/user.js";
+import { IUser, IUserModel, SocialMediaLink } from "../@types/user.js";
+
+const socialLinksSchema = new Schema<SocialMediaLink>({
+    platform: {type: String, required: true},
+    url: {type: String, required: true}
+})
 
 const userSchema = new  Schema<IUser>({
     username: {
@@ -34,25 +39,23 @@ const userSchema = new  Schema<IUser>({
         default: null,
         required: false
     },
+    bio: {
+        type: String,
+        default: null,
+        required: false,
+        maxlength: [1000, "Maximum description length is 1000 characters"]
+    },
     createdAt: {
       type: Date,
       default: Date.now
+    },
+    socialLinks: {
+        type: [socialLinksSchema],
+        required: false,
+        default: []
     }
 })
 
-// userSchema.pre('save', async function (next) {
-//     if (!this.isModified('password')) {
-//         return next();
-//     }
-    
-//     try {
-//         const salt = await bcrypt.genSalt(12);
-//         this.password = await bcrypt.hash(this.password, salt);
-//         next();
-//     } catch (error: any) {
-//         next(error);
-//     }
-// });
 
 // Instance method to compare candidate password with the user's hashed password
 userSchema.methods.comparePassword = async function (candidatePassword: string) {
@@ -70,16 +73,16 @@ userSchema.statics.findByEmail = function (email: string) {
 }
 
 // Virtual property to return a simplified user profile
-userSchema.virtual('profile').get(function () {
-    return {
-        id: this._id,
-        username: this.username,
-        email: this.email,
-        registerType: this.registerType,
-        profilePicture: this.profilePicture,
-        createdAt: this.createdAt
-    };
-});
+// userSchema.virtual('profile').get(function () {
+//     return {
+//         id: this._id,
+//         username: this.username,
+//         email: this.email,
+//         registerType: this.registerType,
+//         profilePicture: this.profilePicture,
+//         createdAt: this.createdAt
+//     };
+// });
 
 const User = mongoose.model<IUser, IUserModel>("User", userSchema)
 
