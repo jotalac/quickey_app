@@ -22,7 +22,7 @@ export const profileDisplayApi = {
             return response.data
         } catch (error: any) {
             console.log(error)
-            return {status: "error", data: {totalCount: 0, sharedCount: 0, favoriteCount: 0}}
+            return {status: "error", msg: error.response?.data?.msg}
         }
-    },
+    }
 }

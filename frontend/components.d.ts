@@ -33,6 +33,7 @@ declare module 'vue' {
     Column: typeof import('primevue/column')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     ContextMenu: typeof import('primevue/contextmenu')['default']
+    CountUp: typeof import('./src/components/vue_bits/CountUp.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     DefaultAction: typeof import('./src/components/modals/actionNodes/DefaultAction.vue')['default']
     DefaultActionNode: typeof import('./src/components/modals/multiBinding/actionNodes/DefaultActionNode.vue')['default']

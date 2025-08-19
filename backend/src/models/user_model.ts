@@ -5,7 +5,7 @@ import { IUser, IUserModel, SocialMediaLink } from "../@types/user.js";
 const socialLinksSchema = new Schema<SocialMediaLink>({
     platform: {type: String, required: true},
     url: {type: String, required: true}
-})
+}, {_id: false})
 
 const userSchema = new  Schema<IUser>({
     username: {
@@ -41,8 +41,8 @@ const userSchema = new  Schema<IUser>({
     },
     bio: {
         type: String,
-        default: null,
-        required: false,
+        default: "",
+        required: true,
         maxlength: [1000, "Maximum description length is 1000 characters"]
     },
     createdAt: {

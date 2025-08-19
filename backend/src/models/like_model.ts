@@ -21,17 +21,7 @@ const likeSchema = new Schema<ILike>({
 // Enforce uniqueness: one like per user per save.
 likeSchema.index({ userId: 1, keyBindingId: 1 }, { unique: true });
 
-//handle toggling the like button
-// likeSchema.statics.toggleLike = async function(userId: ObjectId, itemId: ObjectId) {
-//     const existingLike = await this.findOne({ userId, itemId });
-//     if (existingLike) {
-//       await this.deleteOne({ _id: existingLike._id });
-//       return { liked: false };
-//     } else {
-//       await this.create({ userId, itemId });
-//       return { liked: true };
-//     }
-// };
+likeSchema.index({userId: 1})
 
 //check if specified user 
 likeSchema.statics.hasUserLiked = async function (userId: string, keyBindingId: string) {

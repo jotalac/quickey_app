@@ -498,7 +498,7 @@ const dialogHide = () => {
 
 
 /* resposnsiblity */
-@media (max-width: 1150px) {
+@media (max-width: 1350px) {
     .dialog-content{
         flex-direction: column;
     }

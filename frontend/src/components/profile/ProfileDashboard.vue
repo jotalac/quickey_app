@@ -370,9 +370,7 @@ const handleDialogHide = () => {
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 30px;
-    padding-bottom: 50px;
     width: 100%;
-    /* height: 100%; */
     overflow: auto;
 }
 

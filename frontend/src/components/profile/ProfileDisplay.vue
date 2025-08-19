@@ -3,7 +3,8 @@ import { AuthService } from '@/api/auth/auth_service';
 import { profileDisplayApi } from '@/api/profile/profile_display_api';
 import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
 import { useToast } from 'primevue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import CountUp from '../vue_bits/CountUp.vue';
 
 const toast = useToast()
 
@@ -13,23 +14,82 @@ const userEmail = ref<string | null>()
 const createdAt = ref<string | null>()
 const bio = ref<string | null>()
 
+//keybinding stats refs
+const totalKeybindings = ref<number | null>(null)
+const sharedKeybindings = ref<number | null>(null)
+const likedKeybindings = ref<number | null>(null)
+
+const socialMediaLinks = ref<{icon: string, url: string}[]>([])
+const handleSocialLink = (socialLinkData: {platform: string, url: string}[]) => {
+  for (const socialLink of socialLinkData) {
+    let iconClass = ''
+    switch (socialLink.platform) {
+      case "instagram": 
+        iconClass = 'pi pi-instagram';
+        break;
+      case "facebook":
+        iconClass = 'pi pi-facebook'
+        break
+      case "reddit":
+        iconClass = 'pi pi-reddit'
+        break
+      case "x":
+        iconClass = 'pi pi-twitter'
+        break
+      case "linkedin":
+        iconClass = ' pi pi-linkedin'
+        break
+      default:
+        continue
+    }
+    socialMediaLinks.value.push({icon: iconClass, url: socialLink.url})
+  }
+}
+
+const keybindingStats = computed(() => [
+  { name: 'bindings', value: totalKeybindings.value, delay: 0},
+  { name: 'shared', value: sharedKeybindings.value, delay: 0.3},
+  { name: 'liked', value: likedKeybindings.value, delay: 0.6}
+])
+
+let canceled = false
+onUnmounted(() => {canceled = true})
 
 onMounted(async () => {
   try {
     //get user data
-    const accountDataResponse = await profileDisplayApi.getAccountData() 
-    
-    if (accountDataResponse.status === "success") {
-      userEmail.value = accountDataResponse.data.email
-      createdAt.value = accountDataResponse.data.createdAt.split("T")[0]
-      bio.value = accountDataResponse.data.bio
-    } else {
-      toast.add({severity: "error", summary: "Error getting user data", life: 1500})
+    const [accountDataResult, keybindingDataResult] = await Promise.allSettled([
+      profileDisplayApi.getAccountData(),
+      profileDisplayApi.getProfileBindingStats()
+    ]) 
 
+    if (canceled) return //dont handle the data if user left the page
+
+    if (accountDataResult.status === "fulfilled") {      
+      userEmail.value = accountDataResult.value.data.email
+      createdAt.value = accountDataResult.value.data.createdAt.split("T")[0]
+      bio.value = accountDataResult.value.data.bio
+      handleSocialLink(accountDataResult.value.data.socialLinks)
+    } else { 
+      toast.add({severity: "error", summary: "Error getting user data", life: 1500})
     }
+
+    //get keybinding stats
+    if (keybindingDataResult.status === "fulfilled") {
+      totalKeybindings.value = keybindingDataResult.value.data.totalCount
+      sharedKeybindings.value = keybindingDataResult.value.data.sharedCount
+      likedKeybindings.value = keybindingDataResult.value.data.likedCount
+    } else { 
+      toast.add({severity: "error", summary: "Error getting keybinding stats", life: 1500})
+    }
+    
+    
     
   } catch (error) {
     console.log(error)
+    if (!canceled) {
+      toast.add({severity: "error", summary: "Error getting data", life: 1500})
+    }
   }
 })
 
@@ -48,23 +108,16 @@ onMounted(async () => {
       <Badge class="user-role-pill">{{user?.role}}</Badge>
 
       <div class="side-stats">
-        <div class="stat">
-          <span class="num">38</span>
-          <span class="lbl">Bindings</span>
-        </div>
-        <div class="stat">
-          <span class="num">12</span>
-          <span class="lbl">Shared</span>
-        </div>
-        <div class="stat">
-          <span class="num">5</span>
-          <span class="lbl">Favs</span>
+        <div v-for="statObj in keybindingStats" :key="statObj.name" class="stat">
+          <Skeleton v-if="statObj.value === null" width="200px" height="20px"/>
+          <CountUp v-else class="num" :to="statObj.value"/>
+          <span class="lbl">{{ statObj.name }}</span>
         </div>
       </div>
 
       <div class="side-actions">
-        <Button label="Edit" size="small" outlined icon="pi pi-pencil"/>
-        <Button label="Logout" size="small" outlined severity="warn" icon="pi pi-times"/>
+        <Button label="Edit" size="small" text icon="pi pi-pencil"/>
+        <!-- <Button label="Logout" size="small" outlined severity="warn" icon="pi pi-times"/> -->
       </div>
     </div>
 
@@ -73,28 +126,24 @@ onMounted(async () => {
     <div class="section-block">
         <h3 class="section-title">Account</h3>
         <div class="kv-grid">
-        <div class="kv">
-            <span class="k">Email</span>
-            <Skeleton v-if="!userEmail" width="200px" height="30px" class="skeleton-loading"/>
-            <span class="v">{{userEmail}}</span>
-        </div>
-        <div class="kv">
-            <span class="k">Username</span>
-            <span class="v">{{user?.username}}</span>
-        </div>
-        <div class="kv">
-            <span class="k">Member Since</span>
-            <Skeleton v-if="!createdAt" width="200px" height="30px" class="skeleton-loading"/>
-            <span class="v">{{ createdAt }}</span>
-        </div>
-        <div class="kv">
-            <span class="k">Plan</span>
-            <span class="v plan">Free Tier</span>
-        </div>
-        <!-- <div class="kv wide">
-            <span class="k">Last Login</span>
-            <span class="v">2025-08-17 14:23</span>
-        </div> -->
+          <div class="kv">
+              <span class="k">Email</span>
+              <Skeleton v-if="!userEmail" width="200px" height="30px" class="skeleton-loading"/>
+              <span class="v">{{userEmail}}</span>
+          </div>
+          <div class="kv">
+              <span class="k">Username</span>
+              <span class="v">{{user?.username}}</span>
+          </div>
+          <div class="kv">
+              <span class="k">Member Since</span>
+              <Skeleton v-if="!createdAt" width="200px" height="30px" class="skeleton-loading"/>
+              <span class="v">{{ createdAt }}</span>
+          </div>
+          <div class="kv">
+              <span class="k">Plan</span>
+              <span class="v plan">Free Tier</span>
+          </div>
         </div>
     </div>
 
@@ -104,7 +153,7 @@ onMounted(async () => {
         <p class="bio">{{ bio }}</p>
     </div>
 
-    <div class="section-block">
+    <div class="section-block ai-gen-cont">
         <h3 class="section-title">AI generations (last 24 hours)</h3>
         <span class="ai-gen-remaining">Remaining 5/15</span>
         <ul class="activity-list">
@@ -140,12 +189,7 @@ onMounted(async () => {
     <div class="section-block">
         <h3 class="section-title">Social media</h3>
         <div class="social-media-cont">
-            <i class="pi pi-instagram social-media-icon" />
-            <!-- <a href="https://instagram.com/user" rel="ugc nofollow">Instagram</a> -->
-            <i class="pi pi-twitter social-media-icon"/>
-            <i class="pi pi-facebook social-media-icon"/>
-            <i class="pi pi-reddit social-media-icon"/>
-            <i class="pi pi-linkedin social-media-icon"/>
+          <a v-for="socialLink in socialMediaLinks" :key="socialLink.url" :href="socialLink.url" rel="ugc nofollow" target="_blank"><i class="social-media-icon" :class="socialLink.icon"/></a>
         </div>
     </div>
     </section>
@@ -161,7 +205,7 @@ onMounted(async () => {
     gap: 20px;
     align-items: start;
     padding: 10px;
-    overflow-y: scroll;
+    align-items: stretch;
 }
 
 @media (max-width: 880px) {
@@ -256,6 +300,9 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  max-height: 100%;
+  padding-right: 10px;
+  overflow-y: auto;
 }
 
 .section-block {
@@ -313,12 +360,18 @@ onMounted(async () => {
   line-height: 1.45;
   font-size: var(--smaller-text);
   max-width: 800px;
+  max-height: 500px;
+  min-height: 100px;
 }
 
 .ai-gen-remaining{
     font-size: var(--smaller-text);
     color: var(--gray-bright);
 }
+.ai-gen-cont{
+  background: linear-gradient(30deg, var(--blue-dark) 0%, var(--blue-vivid) 200%);
+}
+
 .activity-list {
     display: flex;
     flex-direction: column;

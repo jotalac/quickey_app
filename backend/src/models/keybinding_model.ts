@@ -71,6 +71,8 @@ const keyBindingSchema = new Schema<IKeyBinding>({
 // enforce uniqueness on user and save name combiantion
 keyBindingSchema.index({userId: 1, name: 1}, {unique: true})
 
+keyBindingDataSchema.index({userId: 1})
+
 const KeyBinding = mongoose.model("keyBinding", keyBindingSchema)
 
 export default KeyBinding
