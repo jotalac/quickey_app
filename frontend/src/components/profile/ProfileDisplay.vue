@@ -17,7 +17,7 @@ const {copiedValues} = useButtons()
 const user = AuthService.getUser()
 const userEmail = ref<string | null>()
 const createdAt = ref<string | null>()
-const bio = ref<string | null>()
+const bio = ref<string | null>(null)
 
 //keybinding stats refs
 const totalKeybindings = ref<number | null>(null)
@@ -196,7 +196,7 @@ const copyAiGenData = (copiedData: string[]) => {
 
     <div class="section-block">
         <h3 class="section-title">Bio</h3>
-        <Skeleton v-if="!bio" width="90%" height="100px" class="skeleton-loading"/>
+        <Skeleton v-if="bio === null" width="90%" height="100px" class="skeleton-loading"/>
         <p class="bio">{{ bio }}</p>
     </div>
 
@@ -227,11 +227,13 @@ const copyAiGenData = (copiedData: string[]) => {
               </div>         
           </li>
         </ul>
+        <span v-else class="empty-data-msg">No AI generations</span>
     </div>
 
     <div class="section-block">
         <h3 class="section-title">Social media</h3>
         <div class="social-media-cont">
+          <span v-if="socialMediaLinks.length === 0" class="empty-data-msg">No social media links</span>
           <a v-for="socialLink in socialMediaLinks" :key="socialLink.url" :href="socialLink.url" rel="ugc nofollow" target="_blank"><i class="social-media-icon" :class="socialLink.icon"/></a>
         </div>
     </div>
@@ -295,7 +297,6 @@ const copyAiGenData = (copiedData: string[]) => {
 .user-role-pill {
   align-self: center;
   font-size: var(--small-text);
-  letter-spacing: 0.15em;
   font-weight: bold;
   padding: 10px 15px;
   border-radius: var(--border-rad-bigger);
@@ -489,5 +490,9 @@ const copyAiGenData = (copiedData: string[]) => {
 .social-media-icon:hover{
     color: var(--primary-0);
     cursor: pointer;
+}
+
+.empty-data-msg{
+  color: var(--gray-main);
 }
 </style>
