@@ -62,6 +62,7 @@ const getCategoryIcon = (categoryName: string) => {
             <!-- hovering areas  -->
             <div 
                 v-for="sectionNumber in 3"
+                :key="sectionNumber"
                 class="hover-section"
                 :class="'hover-page-' + sectionNumber"
                 @mouseenter="handlePageChange(sectionNumber)">

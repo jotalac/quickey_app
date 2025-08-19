@@ -24,5 +24,17 @@ export const profileDisplayApi = {
             console.log(error)
             return {status: "error", msg: error.response?.data?.msg}
         }
+    },
+
+    async getAiGenData() {
+        try {
+            const response = await api.get('/profile/get-ai-gen-data')
+            console.log(response.data);
+            
+            return response.data
+        } catch (error: any) {
+            console.log(error)
+            return {status: "error", msg: error.response?.data?.msg}
+        }
     }
 }

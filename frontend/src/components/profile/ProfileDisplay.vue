@@ -5,8 +5,13 @@ import placeholderImage from '@/assets/images/profile/profile_placeholder.png'
 import { useToast } from 'primevue';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import CountUp from '../vue_bits/CountUp.vue';
+import { aiGenKeybindingApi } from '@/api/ai_generation/ai_gen_keybinding_api';
+import { useButtons } from '@/composables/useButtonsBindingHome';
+import { useRouter } from 'vue-router';
 
 const toast = useToast()
+const router = useRouter()
+const {copiedValues} = useButtons()
 
 //account data display 
 const user = AuthService.getUser()
@@ -18,6 +23,12 @@ const bio = ref<string | null>()
 const totalKeybindings = ref<number | null>(null)
 const sharedKeybindings = ref<number | null>(null)
 const likedKeybindings = ref<number | null>(null)
+
+//ai gen data
+const aiGenLimit = ref<number | null>(null)
+const aiGenRemaining = ref<number | null>(null)
+const aiGenAvailibleIn = ref<number | null>(null)
+const aiGenHistoryData = ref<{prompt: string, createdAt: string, generatedNodes: string[]}[]>([])
 
 const socialMediaLinks = ref<{icon: string, url: string}[]>([])
 const handleSocialLink = (socialLinkData: {platform: string, url: string}[]) => {
@@ -57,34 +68,36 @@ onUnmounted(() => {canceled = true})
 
 onMounted(async () => {
   try {
-    //get user data
-    const [accountDataResult, keybindingDataResult] = await Promise.allSettled([
+    const [accountDataResult, keybindingDataResult, aiLimitsResult, aiGenHistroyResult] = await Promise.allSettled([
       profileDisplayApi.getAccountData(),
-      profileDisplayApi.getProfileBindingStats()
+      profileDisplayApi.getProfileBindingStats(),
+      aiGenKeybindingApi.getGenerationLimits(),
+      profileDisplayApi.getAiGenData()
+      
     ]) 
 
     if (canceled) return //dont handle the data if user left the page
 
-    if (accountDataResult.status === "fulfilled") {      
-      userEmail.value = accountDataResult.value.data.email
-      createdAt.value = accountDataResult.value.data.createdAt.split("T")[0]
-      bio.value = accountDataResult.value.data.bio
-      handleSocialLink(accountDataResult.value.data.socialLinks)
+    //handle account general info
+    if (accountDataResult.status === "fulfilled") {     
+      setAccountData(accountDataResult.value.data) 
     } else { 
       toast.add({severity: "error", summary: "Error getting user data", life: 1500})
     }
 
-    //get keybinding stats
+    //handle keybinding stats
     if (keybindingDataResult.status === "fulfilled") {
-      totalKeybindings.value = keybindingDataResult.value.data.totalCount
-      sharedKeybindings.value = keybindingDataResult.value.data.sharedCount
-      likedKeybindings.value = keybindingDataResult.value.data.likedCount
+      setKeybindingStats(keybindingDataResult.value.data)
     } else { 
       toast.add({severity: "error", summary: "Error getting keybinding stats", life: 1500})
     }
-    
-    
-    
+
+    //handle ai gen data
+    if (aiLimitsResult.status === 'fulfilled' && aiGenHistroyResult.status === 'fulfilled') {
+      setAiGenData(aiLimitsResult.value.data, aiGenHistroyResult.value.data)
+    } else {
+      toast.add({severity: "error", summary: "Error getting ai generation data", life: 1500})
+    }
   } catch (error) {
     console.log(error)
     if (!canceled) {
@@ -92,6 +105,40 @@ onMounted(async () => {
     }
   }
 })
+
+const setAccountData = (data: {email: string, createdAt: string, bio: string, socialLinks: any}) => {
+      userEmail.value = data.email
+      createdAt.value = data.createdAt.split("T")[0]
+      bio.value = data.bio
+      handleSocialLink(data.socialLinks)
+}
+
+const setKeybindingStats = (data) => {
+  totalKeybindings.value = data.totalCount
+  sharedKeybindings.value = data.sharedCount
+  likedKeybindings.value = data.likedCount
+}
+
+const setAiGenData = (dataLimits: any, dataHistory: any) => {
+  aiGenLimit.value = dataLimits.dailyLimit
+  aiGenRemaining.value = dataLimits.remaining
+  aiGenAvailibleIn.value = dataLimits.availibleIn
+  
+  aiGenHistoryData.value = dataHistory.map((item: any) => {
+    const hoursAgo = ((Date.now() - Date.parse(item.createdAt)) / (1000 * 60 * 60)).toFixed(1)
+    return {
+      ...item,
+      createdAt: `${hoursAgo}h ago`
+    }
+  })  
+}
+
+const copyAiGenData = (copiedData: string[]) => {
+  copiedValues.value = copiedData
+  router.push("/app")
+
+  toast.add({severity: 'info', summary: "Copied", detail: "Copied AI generated output", life: 800})
+}
 
 </script>
 
@@ -155,34 +202,30 @@ onMounted(async () => {
 
     <div class="section-block ai-gen-cont">
         <h3 class="section-title">AI generations (last 24 hours)</h3>
-        <span class="ai-gen-remaining">Remaining 5/15</span>
-        <ul class="activity-list">
-        <li>
-            <span class="dot"></span>
-            Generate me a sequence for crossing the li...
-            <div class="copy-time-cont">
-                <Button class="copy-ai-button" label="" variant="text" size="small" icon="pi pi-copy"/>
-                <time>2h ago</time>
-            </div>
-        </li>
-        <li>
-            <span class="dot"></span>
-            Generated AI macro sequence for the wind...
-            
-            <div class="copy-time-cont">
-                <Button class="copy-ai-button" label="" variant="text" size="small" icon="pi pi-copy"/>
-                <time>2h ago</time>
-            </div>
-        </li>
-        <li>
-            <span class="dot"></span>
-            In vs code select all the dis...
 
-            <div class="copy-time-cont">
-                <Button class="copy-ai-button" label="" variant="text" size="small" icon="pi pi-copy"/>
-                <time>2h ago</time>
-            </div>
-        </li>
+        <div class="ai-gen-info-cont">
+          <span>Remaining {{aiGenRemaining}}/{{ aiGenLimit }}</span>
+          <span v-if="aiGenRemaining === 0">{{ `Availible in ${aiGenAvailibleIn} minutes` }}</span>
+
+        </div>
+        
+        <ul v-if="aiGenHistoryData.length !== 0" class="activity-list">
+
+          <li v-for="aiGen in aiGenHistoryData" :key="aiGen.createdAt">
+            <span class="dot"></span>
+            <span class="prompt truncate-1">{{ aiGen.prompt }}</span>   
+              <div class="copy-time-cont">
+                <Button 
+                  class="copy-ai-button" 
+                  label="" variant="text" 
+                  icon="pi pi-copy" 
+                  v-tooltip="aiGen.generatedNodes.length === 0 ? 'Empty result' : 'Copy result'" 
+                  :disabled="aiGen.generatedNodes.length === 0"
+                  @click="copyAiGenData(aiGen.generatedNodes)"
+                />
+                <time>{{aiGen.createdAt}}</time>
+              </div>         
+          </li>
         </ul>
     </div>
 
@@ -300,9 +343,9 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-height: 100%;
+  /* max-height: 100%; */
   padding-right: 10px;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .section-block {
@@ -364,12 +407,16 @@ onMounted(async () => {
   min-height: 100px;
 }
 
-.ai-gen-remaining{
-    font-size: var(--smaller-text);
-    color: var(--gray-bright);
+.ai-gen-info-cont{
+  display: flex;
+  font-size: var(--smaller-text);
+  color: var(--gray-bright);
+  gap: 30px;
 }
+
 .ai-gen-cont{
   background: linear-gradient(30deg, var(--blue-dark) 0%, var(--blue-vivid) 200%);
+  /* flex: 1; */
 }
 
 .activity-list {
@@ -377,7 +424,8 @@ onMounted(async () => {
     flex-direction: column;
     gap: 8px;
     font-size: var(--smaller-text);
-    max-height: 200px;
+    max-height: 150px;
+    flex: 1;
     overflow-y: scroll;
 }
 .activity-list li {
@@ -398,6 +446,7 @@ onMounted(async () => {
     font-size: var(--small-text);
     color: var(--gray-bright);
     text-transform: uppercase;
+    width: 70px;
 }
 .dot {
   width: 8px;
@@ -407,6 +456,17 @@ onMounted(async () => {
   box-shadow: 0 0 0 3px rgba(109,84,255,0.18);
   flex-shrink: 0;
 }
+.prompt{
+  flex: 1;
+  min-width: 0;
+}
+
+.truncate-1{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .copy-ai-button{
     padding: 0px 10px;
     margin-right: 10px;
