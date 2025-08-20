@@ -8,10 +8,13 @@ import CountUp from '../vue_bits/CountUp.vue';
 import { aiGenKeybindingApi } from '@/api/ai_generation/ai_gen_keybinding_api';
 import { useButtons } from '@/composables/useButtonsBindingHome';
 import { useRouter } from 'vue-router';
+import { useProfileEditDialog } from '@/composables/useProfileEditDialog';
+import ProfileEditDialog from '../modals/profile_edit_dialog/ProfileEditDialog.vue';
 
 const toast = useToast()
 const router = useRouter()
 const {copiedValues} = useButtons()
+const {showDialog} = useProfileEditDialog()
 
 //account data display 
 const user = AuthService.getUser()
@@ -143,6 +146,8 @@ const copyAiGenData = (copiedData: string[]) => {
 </script>
 
 <template>
+  <ProfileEditDialog :username="user?.username || ''" :bio="bio || ''" :social-media-link="socialMediaLinks"/>
+
   <div class="profile-wrap">
     <!-- LEFT SIDEBAR -->
     <div class="profile-side">
@@ -163,7 +168,7 @@ const copyAiGenData = (copiedData: string[]) => {
       </div>
 
       <div class="side-actions">
-        <Button label="Edit" size="small" text icon="pi pi-pencil"/>
+        <Button label="Edit" size="small" text icon="pi pi-pencil" @click="showDialog"/>
         <!-- <Button label="Logout" size="small" outlined severity="warn" icon="pi pi-times"/> -->
       </div>
     </div>

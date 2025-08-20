@@ -133,7 +133,7 @@ const otherItems = ref([
     text-decoration: none;
     font-size: var(--normal-text);
     text-transform: uppercase;
-    color: var(--gray-main);
+    color: var(--gray-bright);
     margin-right: 30px;
     transition: all 0.1s ease-in-out;
 }
@@ -150,7 +150,7 @@ const otherItems = ref([
 
 #login-button-nav{
     position: absolute !important;
-    color: var(--gray-main);
+    color: var(--gray-bright);
     right: 70px;
 
     /* margin-left: auto; */
@@ -158,7 +158,7 @@ const otherItems = ref([
 
 #login-button-nav a{
     text-decoration: none;
-    color: var(--gray-main);
+    color: var(--gray-bright);
 }
 #login-button-nav:hover a{
     text-decoration: none;
