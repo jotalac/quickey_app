@@ -15,8 +15,8 @@ const items = ref([
 
 
 const {logout} = useAuth()
-const logoutUser = () => {
-    logout()
+const logoutUser = async () => {
+    await logout()
     router.push('/login')
 }
 

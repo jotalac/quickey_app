@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { Icon } from '@iconify/vue';
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 import { authApi } from '@/api/auth/auth_token';
 import { AuthService } from '@/api/auth/auth_service';
@@ -64,8 +64,13 @@ const onFormSubmit = async ({valid, values, reset}: {valid: boolean, values: any
 }
 
 // loggins 
-const {setCurrentUser} = useAuth()
+const {setCurrentUser, isLoggedIn} = useAuth()
 const {handleGoogleSuccess, handleGoogleError} = useGoogleLogin()
+
+onBeforeMount(() => {
+    
+    if (AuthService.getUser()) router.push("/profile")
+})
 
 </script>
 

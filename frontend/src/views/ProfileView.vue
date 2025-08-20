@@ -5,9 +5,9 @@ import { useRouter } from 'vue-router';
 import ProfileMenu from '@/components/profile/ProfileMenu.vue'
 import ProfileDashboard from '@/components/profile/ProfileDashboard.vue';
 import ProfileDisplay from '@/components/profile/ProfileDisplay.vue';
+import { AuthService } from '@/api/auth/auth_service';
 
 const router = useRouter()
-const {isLoggedIn} = useAuth()
 const activeTab = ref(0)
 
 
@@ -15,11 +15,8 @@ const handleTabChange = (index: number) => {
     activeTab.value = index
 }
 
-// onMounted(() => {
-//     user?.username = JSON.parse(localStorage.getItem("user") as string).username 
-// })
 onBeforeMount(()=> {
-    if (!isLoggedIn) router.push("/login")
+    if (!AuthService.getUser()) router.push("/login")
 })
 
 </script>
