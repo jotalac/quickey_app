@@ -11,6 +11,11 @@ import { useRouter } from 'vue-router';
 import { useProfileEditDialog } from '@/composables/useProfileEditDialog';
 import ProfileEditDialog from '../modals/profile_edit_dialog/ProfileEditDialog.vue';
 
+export interface SocialLinks {
+  platform: string,
+  url: string
+}
+
 const toast = useToast()
 const router = useRouter()
 const {copiedValues} = useButtons()
@@ -34,7 +39,9 @@ const aiGenAvailibleIn = ref<number | null>(null)
 const aiGenHistoryData = ref<{prompt: string, createdAt: string, generatedNodes: string[]}[]>([])
 
 const socialMediaLinks = ref<{icon: string, url: string}[]>([])
-const handleSocialLink = (socialLinkData: {platform: string, url: string}[]) => {
+const socialLinksProp = ref<SocialLinks[]>([]) 
+const handleSocialLink = (socialLinkData: SocialLinks[]) => {
+  socialLinksProp.value = socialLinkData
   for (const socialLink of socialLinkData) {
     let iconClass = ''
     switch (socialLink.platform) {
@@ -56,6 +63,8 @@ const handleSocialLink = (socialLinkData: {platform: string, url: string}[]) => 
       default:
         continue
     }
+    if (!socialLink.url) continue 
+
     socialMediaLinks.value.push({icon: iconClass, url: socialLink.url})
   }
 }
@@ -146,7 +155,7 @@ const copyAiGenData = (copiedData: string[]) => {
 </script>
 
 <template>
-  <ProfileEditDialog :username="user?.username || ''" :bio="bio || ''" :social-media-link="socialMediaLinks"/>
+  <ProfileEditDialog :username="user?.username || ''" :bio="bio || ''" :social-media-link="socialLinksProp"/>
 
   <div class="profile-wrap">
     <!-- LEFT SIDEBAR -->
