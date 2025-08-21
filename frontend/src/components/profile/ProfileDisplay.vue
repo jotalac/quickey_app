@@ -10,6 +10,7 @@ import { useButtons } from '@/composables/useButtonsBindingHome';
 import { useRouter } from 'vue-router';
 import { useProfileEditDialog } from '@/composables/useProfileEditDialog';
 import ProfileEditDialog from '../modals/profile_edit_dialog/ProfileEditDialog.vue';
+import { useAuth } from '@/composables/useAuth';
 
 export interface SocialLinks {
   platform: string,
@@ -22,7 +23,7 @@ const {copiedValues} = useButtons()
 const {showDialog} = useProfileEditDialog()
 
 //account data display 
-const user = AuthService.getUser()
+const {currentUser} = useAuth()
 const userEmail = ref<string | null>()
 const createdAt = ref<string | null>()
 const bio = ref<string | null>(null)
@@ -155,7 +156,7 @@ const copyAiGenData = (copiedData: string[]) => {
 </script>
 
 <template>
-  <ProfileEditDialog :username="user?.username || ''" :bio="bio || ''" :social-media-link="socialLinksProp"/>
+  <ProfileEditDialog :username="currentUser?.username || ''" :bio="bio || ''" :social-media-link="socialLinksProp"/>
 
   <div class="profile-wrap">
     <!-- LEFT SIDEBAR -->
@@ -165,8 +166,8 @@ const copyAiGenData = (copiedData: string[]) => {
         shape="circle"
         class="avatar"
       />
-      <h2 class="user-name">{{user?.username}}</h2>
-      <Badge class="user-role-pill">{{user?.role}}</Badge>
+      <h2 class="user-name">{{currentUser?.username}}</h2>
+      <Badge class="user-role-pill">{{currentUser?.role}}</Badge>
 
       <div class="side-stats">
         <div v-for="statObj in keybindingStats" :key="statObj.name" class="stat">
@@ -194,7 +195,7 @@ const copyAiGenData = (copiedData: string[]) => {
           </div>
           <div class="kv">
               <span class="k">Username</span>
-              <span class="v">{{user?.username}}</span>
+              <span class="v">{{currentUser?.username}}</span>
           </div>
           <div class="kv">
               <span class="k">Member Since</span>
@@ -420,6 +421,7 @@ const copyAiGenData = (copiedData: string[]) => {
   max-width: 800px;
   max-height: 500px;
   min-height: 100px;
+  white-space: pre-line;
 }
 
 .ai-gen-info-cont{

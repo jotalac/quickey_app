@@ -8,6 +8,7 @@ import KeybindingSave from '@/components/profile/KeybindingSave.vue';
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveProfileDialog.vue';
 import { useEditSaveDialog } from '@/composables/useKeybindingProfileEditDialog';
+import { useAuth } from '@/composables/useAuth';
 
 //search and filter values
 const searchValues = ref('')
@@ -21,7 +22,7 @@ const currentPage = ref(1)
 const pageSize = ref(15)
 const totalRecords = ref(0)
 
-const user = AuthService.getUser()
+const {currentUser} = useAuth()
 
 const constantsStore = useConstantsStore()
 const {keybindingCategories} = storeToRefs(constantsStore)
@@ -158,7 +159,7 @@ const handleDialogHide = () => {
         <!-- title -->
         <div class="dashboard-header">
             <span class="header-title">My saves</span>
-            <span class="header-name"><i class="pi pi-user"/>{{ user?.username }}</span>
+            <span class="header-name"><i class="pi pi-user"/>{{ currentUser?.username }}</span>
         </div>
         
         <!-- seach bar  -->

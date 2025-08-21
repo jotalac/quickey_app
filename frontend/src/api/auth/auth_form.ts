@@ -10,7 +10,6 @@ export const authFormApi = {
     async checkEmailAvailible(email: string): Promise<boolean>{
         try {
             const response = await api.get(`/auth/form/check-email?email=${encodeURIComponent(email)}`)
-            console.log(response.data);
             
             return response.data.availible || false
         } catch (error) {
@@ -22,7 +21,6 @@ export const authFormApi = {
     async checkUsernameAvailible(username: string): Promise<boolean>{
         try {
             const response = await api.get(`/auth/form/check-username?username=${username}`)
-            console.log(response.data);
             
             return response.data.availible || false
         } catch (error) {
@@ -33,10 +31,7 @@ export const authFormApi = {
 
     async sendRegisterForm(username: string, email: string, password: string, passwordConfirm: string) {
         try {
-            const response = await api.post('/auth/register', {username, email, password, passwordConfirm})
-
-            console.log(response.data);
-            
+            const response = await api.post('/auth/register', {username, email, password, passwordConfirm})            
 
             return response.data
         } catch (error: any) {

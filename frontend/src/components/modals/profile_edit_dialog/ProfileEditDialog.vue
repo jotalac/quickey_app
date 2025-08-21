@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { authFormApi } from '@/api/auth/auth_form';
+import { profileEditApi } from '@/api/profile/profile_edit_api';
 import type { SocialLinks } from '@/components/profile/ProfileDisplay.vue';
+import { useAuth } from '@/composables/useAuth';
 import { useProfileEditDialog } from '@/composables/useProfileEditDialog';
 import {ref, computed, onBeforeMount, watch} from 'vue'
 
@@ -12,6 +14,7 @@ interface Props {
 }
 
 const {isDialogVisible, hideDialog} = useProfileEditDialog()
+const {initializeAuth} = useAuth()
 
 const props = defineProps<Props>()
 
@@ -24,12 +27,16 @@ const instagramLink = ref()
 const facebookLink = ref()
 const redditLink = ref()
 const xLink = ref()
-const socialLinksValid = ref([
-    {platform: 'instagram', valid: true},
-    {platform: 'facebook', valid: true}, 
-    {platform: 'x', valid: true}, 
-    {platform: 'reddit', valid: true}]
+const socialLinksValid = ref({
+    instagram: true,
+    facebook: true, 
+    x: true, 
+    reddit: true}
 )
+const allSocialLinksValid = computed(() =>
+  Object.values(socialLinksValid.value).every(v => v)
+)
+
 
 const usernameEdited = computed(() => newUsername.value.trim() !== props.username)
 const usernameValid = ref<{valid: boolean, msg: string}>({valid: true, msg: ""}) 
@@ -49,10 +56,16 @@ const setSocialMediaLinks = (socialLinks: SocialLinks[]) => {
     xLink.value = socialLinks.find((item) => item.platform === 'x')?.url
 }
 
-//usrename validation and save
-const saveUsername = () => {
-    // const usernameValid = await validateUsername()
-    // if (!usernameValid.valid) return
+// === usrename handling ===
+const saveUsername = async () => {
+    try {
+        const response = await profileEditApi.editUsername(newUsername.value)
+
+        console.log(response)
+        initializeAuth()
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 const validateUsername = async () => {
@@ -74,13 +87,49 @@ const validateUsername = async () => {
     usernameValid.value = {valid: true, msg: "Usrename valid"}
 }
 
-//social media links validation and save
-const validateSocialLink = (link: string, platform: string, newValue: string) => {
-    if (!newValue.startsWith(link)) {
-        const linkItem = socialLinksValid.value.find((socMedia) => socMedia.platform === platform)
-        if (linkItem) linkItem.valid = false
+// == bio handling ==
+const saveBio = async () => {
+    try {
+        const response = await profileEditApi.editBio(newBio.value)
+
+        console.log(response)
+    } catch (error) {
+        console.log(error)
     }
 }
+
+//=== social media handling ===
+const validateInstagramLink = () => {
+    if (!instagramLink.value.startsWith("https://www.instagram.com/") && instagramLink.value !== '') {
+        socialLinksValid.value.instagram = false
+    } else {
+        socialLinksValid.value.instagram = true
+    }
+}
+const validateFacebookLink = () => {
+    console.log()
+    if (!facebookLink.value.startsWith("https://www.facebook.com/") && facebookLink.value !== '') {
+        socialLinksValid.value.facebook = false
+    } else {
+        socialLinksValid.value.facebook = true
+    }
+}
+const validateXLink = () => {
+    if (!xLink.value.startsWith("https://x.com/") && xLink.value !== '') {
+        socialLinksValid.value.x = false
+    } else {
+        socialLinksValid.value.x = true
+    }
+}
+const validateRedditLink = () => {
+    if (!redditLink.value.startsWith("https://www.reddit.com/user/") && redditLink.value !== '') {
+        socialLinksValid.value.reddit = false
+    } else {
+        socialLinksValid.value.reddit = true
+    }
+}
+
+
 
 </script>
 
@@ -120,7 +169,7 @@ const validateSocialLink = (link: string, platform: string, newValue: string) =>
                 <span class="section-label">Bio</span>
                     <Textarea v-model="newBio" name="newBio" class="bio-textarea" placeholder="Your new bio " maxlength="1000"/>
                     <div class="button-area">
-                        <Button label="Save" class="button-save" severity="success" icon="pi pi-save" :disabled="!bioEdited" />
+                        <Button label="Save" class="button-save" severity="success" icon="pi pi-save" :disabled="!bioEdited" @click="saveBio"/>
                         <Button label="Reset" class="button-save" outlined @click="newBio = props.bio" :disabled="!bioEdited"/>
                     </div>
             </div>
@@ -142,28 +191,50 @@ const validateSocialLink = (link: string, platform: string, newValue: string) =>
                         <i class="pi pi-instagram social-media-icon"/>
                         <InputText 
                             v-model="instagramLink" 
-                            placeholder="https://instagram.com/example" 
+                            placeholder="https://www.instagram.com/example" 
                             class="social-link-input" 
-                            @blur="validateSocialLink('https://instagram.com/', 'instagram', instagramLink)"
-                            :class="socialLinksValid.find((linkItem) => linkItem.platform === 'instagram')?.valid ? '': 'input-invalid'"
+                            @blur="validateInstagramLink"
+                            :class="socialLinksValid.instagram ? '': 'input-invalid'"
+                            maxlength="200"
                         />
                     </div>
                     <div class="social-media-cont">
                         <i class="pi pi-facebook social-media-icon"/>
-                        <InputText v-model="facebookLink" placeholder="https://facebook.com/example" class="social-link-input"/>
+                        <InputText 
+                            v-model="facebookLink" 
+                            placeholder="https://www.facebook.com/example" 
+                            class="social-link-input" 
+                            maxlength="200"
+                            @blur="validateFacebookLink"
+                            :class="socialLinksValid.facebook ? '': 'input-invalid'"                            
+                        />
                     </div>
                     <div class="social-media-cont">
                         <i class="pi pi-reddit social-media-icon"/>
-                        <InputText v-model="redditLink" placeholder="https://reddit.com/user/example" class="social-link-input"/>
+                        <InputText 
+                            v-model="redditLink" 
+                            placeholder="https://www.reddit.com/user/example" 
+                            class="social-link-input" 
+                            maxlength="200"
+                            @blur="validateRedditLink"
+                            :class="socialLinksValid.reddit ? '': 'input-invalid'"                            
+                        />
                     </div>
                     <div class="social-media-cont">
                         <i class="pi pi-twitter social-media-icon"/>
-                        <InputText v-model="xLink" placeholder="https://x.com/example" class="social-link-input"/>
+                        <InputText 
+                            v-model="xLink" 
+                            placeholder="https://x.com/example" 
+                            class="social-link-input" 
+                            maxlength="200"
+                            @blur="validateXLink"
+                            :class="socialLinksValid.x ? '': 'input-invalid'"                            
+                        />
                     </div>
 
                     <div class="button-area">
-                        <Button label="Save" class="button-save" severity="success" icon="pi pi-save" />
-                        <Button label="Reset" class="button-save" outlined/>
+                        <Button label="Save" class="button-save" severity="success" icon="pi pi-save" :disabled="!allSocialLinksValid"/>
+                        <Button label="Reset" class="button-save" outlined @click="setSocialMediaLinks(props.socialMediaLink)"/>
                     </div>
             </div>
 

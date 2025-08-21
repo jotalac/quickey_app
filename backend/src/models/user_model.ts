@@ -4,7 +4,7 @@ import { IUser, IUserModel, SocialMediaLink } from "../@types/user.js";
 
 const socialLinksSchema = new Schema<SocialMediaLink>({
     platform: {type: String, required: true},
-    url: {type: String, required: false, default: ""}
+    url: {type: String, required: false, default: "", maxlength: 200}
 }, {_id: false})
 
 const userSchema = new  Schema<IUser>({
