@@ -42,6 +42,7 @@ const aiGenHistoryData = ref<{prompt: string, createdAt: string, generatedNodes:
 const socialMediaLinks = ref<{icon: string, url: string}[]>([])
 const socialLinksProp = ref<SocialLinks[]>([]) 
 const handleSocialLink = (socialLinkData: SocialLinks[]) => {
+  socialMediaLinks.value = []
   socialLinksProp.value = socialLinkData
   for (const socialLink of socialLinkData) {
     let iconClass = ''
@@ -153,10 +154,19 @@ const copyAiGenData = (copiedData: string[]) => {
   toast.add({severity: 'info', summary: "Copied", detail: "Copied AI generated output", life: 800})
 }
 
+//handle emits form profile edit
+const bioUpdated = (newBio: string) => {
+  bio.value = newBio
+}
+
+const socialLinksUpdated = (links: SocialLinks[]) => {
+  handleSocialLink(links)
+}
+
 </script>
 
 <template>
-  <ProfileEditDialog :username="currentUser?.username || ''" :bio="bio || ''" :social-media-link="socialLinksProp"/>
+  <ProfileEditDialog :username="currentUser?.username || ''" :bio="bio || ''" :social-media-link="socialLinksProp" @bio-updated="bioUpdated" @social-links-updated="socialLinksUpdated"/>
 
   <div class="profile-wrap">
     <!-- LEFT SIDEBAR -->

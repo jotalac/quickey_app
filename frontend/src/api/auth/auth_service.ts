@@ -1,7 +1,7 @@
 import { type AuthResponse } from "./auth_token"
 
 export interface AuthUser {
-    id: string
+    id: string,
     username: string,
     role: string
 }

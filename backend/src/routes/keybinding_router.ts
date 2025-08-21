@@ -1,5 +1,4 @@
 import express from "express"
-import { verifyToken } from "../controllers/auth/jwt_controller"
 import { getCategories, saveKeyBinding } from "../controllers/keybinding/save_keybinding_controller"
 import { authenticateToken } from "../middleware/auth_middleware"
 import {deleteSave, getBindingUser, getDescription, updateSave, verfiyBindingName} from "../controllers/keybinding/keybinding_user_controller"

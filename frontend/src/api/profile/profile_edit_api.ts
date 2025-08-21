@@ -24,4 +24,15 @@ export const profileEditApi = {
         }
     },
 
+    async editSocialMediaLinks(links: {platform: string, url: string}[]) {
+        try {
+            const response = await api.patch('/profile/edit/social-media-links', {links})
+            
+            return response.data
+        } catch (error: any) {
+            console.log(error)
+            return {status: "error", msg: error.response?.data?.msg}
+        }
+    },
+
 }

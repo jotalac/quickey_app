@@ -5,7 +5,7 @@ import { verifyEmail } from "../controllers/auth/email_verify_controller";
 import { loginLimiter, registrationLimiter } from "../middleware/rate_limiter";
 import passport from "passport"
 import ssoRouter from "./sso_router"
-import { refreshToken, verifyToken } from "../controllers/auth/jwt_controller";
+import { refreshToken } from "../controllers/auth/jwt_controller";
 import { authenticateToken } from "../middleware/auth_middleware";
 import { logout, validateLogin } from "../controllers/auth/login_controller";
 
@@ -27,6 +27,6 @@ router.use("/sso", ssoRouter)
 
 router.post("/refresh-token", refreshToken)
 
-router.get("/validate-token", authenticateToken, verifyToken)
+// router.get("/validate-token", authenticateToken, verifyToken)
 
 export default router

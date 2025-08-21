@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { authFormApi } from '@/api/auth/auth_form';
+import type { AuthUser } from '@/api/auth/auth_service';
 import { profileEditApi } from '@/api/profile/profile_edit_api';
 import type { SocialLinks } from '@/components/profile/ProfileDisplay.vue';
 import { useAuth } from '@/composables/useAuth';
 import { useProfileEditDialog } from '@/composables/useProfileEditDialog';
+import { useToast } from 'primevue';
 import {ref, computed, onBeforeMount, watch} from 'vue'
 
 
@@ -14,9 +16,12 @@ interface Props {
 }
 
 const {isDialogVisible, hideDialog} = useProfileEditDialog()
-const {initializeAuth} = useAuth()
+const {initializeAuth, setCurrentUser} = useAuth()
+const toast = useToast()
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{bioUpdated: [bioText: string], socialLinksUpdated: [newLinks: SocialLinks[]]}>()
 
 //initial values
 const newUsername = ref('')
@@ -36,6 +41,12 @@ const socialLinksValid = ref({
 const allSocialLinksValid = computed(() =>
   Object.values(socialLinksValid.value).every(v => v)
 )
+const socialLinksEdited = computed(() => {
+    return instagramLink.value.trim() !== props.socialMediaLink.find((item) => item.platform === 'instagram')?.url ||
+    facebookLink.value.trim() !== props.socialMediaLink.find((item) => item.platform === 'facebook')?.url ||
+    redditLink.value.trim() !== props.socialMediaLink.find((item) => item.platform === 'reddit')?.url ||
+    xLink.value.trim() !== props.socialMediaLink.find((item) => item.platform === 'x')?.url
+})
 
 
 const usernameEdited = computed(() => newUsername.value.trim() !== props.username)
@@ -60,9 +71,15 @@ const setSocialMediaLinks = (socialLinks: SocialLinks[]) => {
 const saveUsername = async () => {
     try {
         const response = await profileEditApi.editUsername(newUsername.value)
-
-        console.log(response)
-        initializeAuth()
+        
+        if (response.status === 'success') {
+            const newName = response.data as AuthUser
+            setCurrentUser(newName)
+            toast.add({severity: "success", summary: "Username changed!", life: 700})
+        } else {
+            toast.add({severity: "error", summary: "Error changing username", life: 1000})
+        }
+        
     } catch (error) {
         console.log(error)
     }
@@ -92,7 +109,13 @@ const saveBio = async () => {
     try {
         const response = await profileEditApi.editBio(newBio.value)
 
-        console.log(response)
+        if (response.status === 'success') {
+            emit('bioUpdated', newBio.value.trim())
+            toast.add({severity: "success", summary: "Bio updated!", life: 700})
+        } else {
+            toast.add({severity: "error", summary: "Error saving new bio", life: 1000})
+        }
+
     } catch (error) {
         console.log(error)
     }
@@ -126,6 +149,31 @@ const validateRedditLink = () => {
         socialLinksValid.value.reddit = false
     } else {
         socialLinksValid.value.reddit = true
+    }
+}
+
+const saveSocialMediaLinks = async () => {
+    validateInstagramLink()
+    validateFacebookLink()
+    validateRedditLink()
+    validateXLink()
+    try {
+        const response = await profileEditApi.editSocialMediaLinks([
+            {platform: 'instagram', url: instagramLink.value}, 
+            {platform: 'facebook', url: facebookLink.value}, 
+            {platform: 'reddit', url: redditLink.value}, 
+            {platform: 'x', url: xLink.value}
+        ])
+
+        if (response.status === 'success') {
+            emit('socialLinksUpdated', response.data)
+            toast.add({severity: "success", summary: "Links updated!", life: 700})
+        } else {
+            toast.add({severity: "error", summary: "Error saving new links", life: 1000})
+        }
+
+    } catch (error) {
+        console.log(error)
     }
 }
 
@@ -233,8 +281,8 @@ const validateRedditLink = () => {
                     </div>
 
                     <div class="button-area">
-                        <Button label="Save" class="button-save" severity="success" icon="pi pi-save" :disabled="!allSocialLinksValid"/>
-                        <Button label="Reset" class="button-save" outlined @click="setSocialMediaLinks(props.socialMediaLink)"/>
+                        <Button label="Save" class="button-save" severity="success" icon="pi pi-save" :disabled="!allSocialLinksValid || !socialLinksEdited" @click="saveSocialMediaLinks"/>
+                        <Button label="Reset" class="button-save" outlined @click="setSocialMediaLinks(props.socialMediaLink)" :disabled="!socialLinksEdited"/>
                     </div>
             </div>
 
