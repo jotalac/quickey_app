@@ -35,4 +35,19 @@ export const profileEditApi = {
         }
     },
 
+    async editProfilePicture(newFile: File) {
+        try {
+            //setup formbody for automatic adjust for image sending
+            const formData = new FormData()
+            formData.append("profilePic", newFile)
+
+            const response = await api.post('/profile/edit/profile-picture', formData)
+            
+            return response.data
+        } catch (error: any) {
+            console.log(error)
+            return {status: "error", msg: error.response?.data?.msg}
+        }
+    },
+
 }

@@ -1,6 +1,9 @@
 import { Request, Response } from "express"
 import { IUser } from "../../@types/user"
 import User from "../../models/user_model"
+import path from "path"
+import sharp from "sharp"
+import fs from "fs"
 
 interface socialMediaLink {
     platform: string,
@@ -134,6 +137,54 @@ const editSocialMediaLinks = async (req: Request, res: Response) => {
     }
 }
 
+const PUBLIC_IMAGE_FOLDER = path.join(__dirname, "..", "..", "..", "uploads", "profile")
+
+const saveNewProfilePicture = async (req: Request, res: Response) => {
+    try {
+        const user = req.user as IUser
+        if (!user._id) {
+            res.status(401).json({status: "error", msg: "User not authorized"})
+            return
+        }
+        
+        const file = (req as any).file as Express.Multer.File | undefined
+        if (!file) {
+            res.status(400).json({status: "error", msg: "No file provided"})
+            return
+        }
+
+        const newName = await processImage(file)
+        if (!newName) {
+            res.status(500).json({status: "error", msg: "Error saving new image"})
+            return 
+        }
+
+        //delete the old profile picutre
+        if (user.profilePicture) {
+            const oldPath = path.join(PUBLIC_IMAGE_FOLDER, user.profilePicture)
+            fs.unlink(oldPath, (e) => {})
+        }
+
+        await User.updateOne({_id: user._id}, {profilePicture: newName})
+
+        const publicUrl = `${process.env.APP_URL}/uploads/profile/${newName}`
+
+        res.status(200).json({
+            status: "success",
+            msg: "Profile picture updated",
+            url: publicUrl
+        })
+        
+        
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({status: "error", msg: "Error saving new image"})
+    }
+}
+
+
+// helper functions
 const newNameValid = async (newName: string) => {
     if (newName.length < 3 || newName.length > 20) return false
 
@@ -159,4 +210,32 @@ function validateSocialMediaLinks(links: socialMediaLink[]): boolean {
     return true
 }
 
-export {editUsername, editBio, editSocialMediaLinks}
+const processImage = async (file: Express.Multer.File): Promise<string> => {
+    try {
+        //get the loaciton for new edited file
+        const originalPath = file.path
+        const ext = path.extname(file.filename).toLocaleLowerCase()
+        const newName = file.filename.replace(ext, '.webp')
+        const newPath = path.join(PUBLIC_IMAGE_FOLDER, newName)
+
+        //edit the file, size, quailty and format
+        await sharp(originalPath)
+        .rotate() // auto orient 
+        .resize(256, 256, {fit: 'cover'})
+        .webp({quality: 85})
+        .toFile(newPath)
+        
+        //delete the original file (if it wasnt webp)
+        if (originalPath !== newPath) {
+            fs.unlink(originalPath, () => {})
+        }
+
+        return newName
+    } catch (error) {
+        console.log(error)
+        return ""
+    }
+}
+
+
+export {editUsername, editBio, editSocialMediaLinks, saveNewProfilePicture}

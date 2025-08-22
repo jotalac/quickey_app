@@ -27,6 +27,12 @@ const {currentUser} = useAuth()
 const userEmail = ref<string | null>()
 const createdAt = ref<string | null>()
 const bio = ref<string | null>(null)
+const profilePicUrl = ref()
+
+const profilePicDisplay = computed(() => {
+  if (!profilePicUrl.value) return placeholderImage
+  return profilePicUrl.value
+})
 
 //keybinding stats refs
 const totalKeybindings = ref<number | null>(null)
@@ -120,10 +126,11 @@ onMounted(async () => {
   }
 })
 
-const setAccountData = (data: {email: string, createdAt: string, bio: string, socialLinks: any}) => {
+const setAccountData = (data: {email: string, createdAt: string, bio: string, socialLinks: any, profilePicture: string}) => {
       userEmail.value = data.email
       createdAt.value = data.createdAt.split("T")[0]
       bio.value = data.bio
+      profilePicUrl.value = data.profilePicture
       handleSocialLink(data.socialLinks)
 }
 
@@ -163,16 +170,27 @@ const socialLinksUpdated = (links: SocialLinks[]) => {
   handleSocialLink(links)
 }
 
+const profilePicUpdated = (newUrl: string) => {
+   profilePicUrl.value = newUrl
+}
+
 </script>
 
 <template>
-  <ProfileEditDialog :username="currentUser?.username || ''" :bio="bio || ''" :social-media-link="socialLinksProp" @bio-updated="bioUpdated" @social-links-updated="socialLinksUpdated"/>
+  <ProfileEditDialog 
+    :username="currentUser?.username || ''" 
+    :bio="bio || ''" 
+    :social-media-link="socialLinksProp" 
+    @bio-updated="bioUpdated" 
+    @social-links-updated="socialLinksUpdated"
+    @profile-pic-updated="profilePicUpdated"  
+  />
 
   <div class="profile-wrap">
     <!-- LEFT SIDEBAR -->
     <div class="profile-side">
       <Avatar
-        :image="placeholderImage"
+        :image="profilePicDisplay"
         shape="circle"
         class="avatar"
       />
@@ -432,6 +450,7 @@ const socialLinksUpdated = (links: SocialLinks[]) => {
   max-height: 500px;
   min-height: 100px;
   white-space: pre-line;
+  overflow-y: auto;
 }
 
 .ai-gen-info-cont{

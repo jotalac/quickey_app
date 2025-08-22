@@ -42,6 +42,7 @@ declare module 'vue' {
     Dialog: typeof import('primevue/dialog')['default']
     Divider: typeof import('primevue/divider')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
+    EditSocialMediaLinks: typeof import('./src/components/modals/profile_edit_dialog/EditSocialMediaLinks.vue')['default']
     FaqSection: typeof import('./src/components/about/FaqSection.vue')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']

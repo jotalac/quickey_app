@@ -14,10 +14,14 @@ const getAccountData = async (req: Request, res: Response) => {
             return
         }
         
-        const accountData = await User.findById(userId).select("username email role bio createdAt socialLinks")
+        const accountData = await User.findById(userId).select("username email role bio createdAt socialLinks profilePicture")
         if (!accountData) {
             res.status(401).json({status: "error", msg: "User not found"})
             return
+        }
+
+        if (accountData.profilePicture) {
+            accountData.profilePicture = `${process.env.APP_URL}/uploads/profile/${accountData.profilePicture}`
         }
         
         res.status(200).json({

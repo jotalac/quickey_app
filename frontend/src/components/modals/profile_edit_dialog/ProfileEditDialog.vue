@@ -6,7 +6,8 @@ import type { SocialLinks } from '@/components/profile/ProfileDisplay.vue';
 import { useAuth } from '@/composables/useAuth';
 import { useProfileEditDialog } from '@/composables/useProfileEditDialog';
 import { useToast } from 'primevue';
-import {ref, computed, onBeforeMount, watch} from 'vue'
+import {ref, computed, watch} from 'vue'
+import EditSocialMediaLinks from '@/components/modals/profile_edit_dialog/EditSocialMediaLinks.vue';
 
 
 interface Props {
@@ -16,38 +17,21 @@ interface Props {
 }
 
 const {isDialogVisible, hideDialog} = useProfileEditDialog()
-const {initializeAuth, setCurrentUser} = useAuth()
+const { setCurrentUser} = useAuth()
 const toast = useToast()
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<{bioUpdated: [bioText: string], socialLinksUpdated: [newLinks: SocialLinks[]]}>()
+const emit = defineEmits<{
+    bioUpdated: [bioText: string], 
+    socialLinksUpdated: [newLinks: SocialLinks[]],
+    profilePicUpdated: [profilePicUrl: string]
+}>()
 
 //initial values
 const newUsername = ref('')
 const newBio = ref('')
 const profilePicFile = ref<File | null>(null)
-
-const instagramLink = ref()
-const facebookLink = ref()
-const redditLink = ref()
-const xLink = ref()
-const socialLinksValid = ref({
-    instagram: true,
-    facebook: true, 
-    x: true, 
-    reddit: true}
-)
-const allSocialLinksValid = computed(() =>
-  Object.values(socialLinksValid.value).every(v => v)
-)
-const socialLinksEdited = computed(() => {
-    return instagramLink.value.trim() !== props.socialMediaLink.find((item) => item.platform === 'instagram')?.url ||
-    facebookLink.value.trim() !== props.socialMediaLink.find((item) => item.platform === 'facebook')?.url ||
-    redditLink.value.trim() !== props.socialMediaLink.find((item) => item.platform === 'reddit')?.url ||
-    xLink.value.trim() !== props.socialMediaLink.find((item) => item.platform === 'x')?.url
-})
-
 
 const usernameEdited = computed(() => newUsername.value.trim() !== props.username)
 const usernameValid = ref<{valid: boolean, msg: string}>({valid: true, msg: ""}) 
@@ -57,15 +41,7 @@ const bioEdited = computed(() => newBio.value.trim() !== props.bio)
 watch(() => isDialogVisible.value, () => {
     newBio.value = props.bio
     newUsername.value = props.username
-    setSocialMediaLinks(props.socialMediaLink)
 })
-
-const setSocialMediaLinks = (socialLinks: SocialLinks[]) => {
-    instagramLink.value = socialLinks.find((item) => item.platform === 'instagram')?.url
-    facebookLink.value = socialLinks.find((item) => item.platform === 'facebook')?.url
-    redditLink.value = socialLinks.find((item) => item.platform === 'reddit')?.url
-    xLink.value = socialLinks.find((item) => item.platform === 'x')?.url
-}
 
 // === usrename handling ===
 const saveUsername = async () => {
@@ -121,63 +97,31 @@ const saveBio = async () => {
     }
 }
 
-//=== social media handling ===
-const validateInstagramLink = () => {
-    if (!instagramLink.value.startsWith("https://www.instagram.com/") && instagramLink.value !== '') {
-        socialLinksValid.value.instagram = false
-    } else {
-        socialLinksValid.value.instagram = true
-    }
-}
-const validateFacebookLink = () => {
-    console.log()
-    if (!facebookLink.value.startsWith("https://www.facebook.com/") && facebookLink.value !== '') {
-        socialLinksValid.value.facebook = false
-    } else {
-        socialLinksValid.value.facebook = true
-    }
-}
-const validateXLink = () => {
-    if (!xLink.value.startsWith("https://x.com/") && xLink.value !== '') {
-        socialLinksValid.value.x = false
-    } else {
-        socialLinksValid.value.x = true
-    }
-}
-const validateRedditLink = () => {
-    if (!redditLink.value.startsWith("https://www.reddit.com/user/") && redditLink.value !== '') {
-        socialLinksValid.value.reddit = false
-    } else {
-        socialLinksValid.value.reddit = true
-    }
-}
+// === image upload handle ===
+const uploadNewImage = async (event: any) => {
+    const newFile: File | undefined = event.files?.[0]
 
-const saveSocialMediaLinks = async () => {
-    validateInstagramLink()
-    validateFacebookLink()
-    validateRedditLink()
-    validateXLink()
+    if (!newFile) {
+        console.log("No file selected for upload")
+        return 
+    }
+
+    console.log(newFile.name, newFile.size, newFile.type )
+
     try {
-        const response = await profileEditApi.editSocialMediaLinks([
-            {platform: 'instagram', url: instagramLink.value}, 
-            {platform: 'facebook', url: facebookLink.value}, 
-            {platform: 'reddit', url: redditLink.value}, 
-            {platform: 'x', url: xLink.value}
-        ])
+        const response = await profileEditApi.editProfilePicture(newFile)
 
         if (response.status === 'success') {
-            emit('socialLinksUpdated', response.data)
-            toast.add({severity: "success", summary: "Links updated!", life: 700})
+            emit('profilePicUpdated', response.url)
+            toast.add({severity: "success", summary: "Profile picture updated!", life: 700})
+            event.options?.clear?.()
         } else {
-            toast.add({severity: "error", summary: "Error saving new links", life: 1000})
+            toast.add({severity: "error", summary: response.msg, life: 1000})
         }
-
     } catch (error) {
         console.log(error)
     }
 }
-
-
 
 </script>
 
@@ -225,65 +169,16 @@ const saveSocialMediaLinks = async () => {
 
             <div class="edit-cont upload-cont">
                 <span class="section-label">Profile picture</span>
-                <FileUpload name="newProfilePicture" mode="advanced" :multiple="false" accept="image/*" :file-limit="1" :max-file-size="1500000">
+                <FileUpload name="newProfilePicture" @uploader="uploadNewImage($event)" :custom-upload="true" mode="advanced" :multiple="false" accept="image/*" :file-limit="1" :max-file-size="4000000">
                     <template #empty>
                         <span class="file-choose-info">Drag and drop images here to upload</span>
-                    </template> -->
+                    </template>
                 </FileUpload>
             </div>
 
             <div class="edit-cont">
                 <span class="section-label">Social media links</span>
-                    
-                    <div class="social-media-cont">
-                        <i class="pi pi-instagram social-media-icon"/>
-                        <InputText 
-                            v-model="instagramLink" 
-                            placeholder="https://www.instagram.com/example" 
-                            class="social-link-input" 
-                            @blur="validateInstagramLink"
-                            :class="socialLinksValid.instagram ? '': 'input-invalid'"
-                            maxlength="200"
-                        />
-                    </div>
-                    <div class="social-media-cont">
-                        <i class="pi pi-facebook social-media-icon"/>
-                        <InputText 
-                            v-model="facebookLink" 
-                            placeholder="https://www.facebook.com/example" 
-                            class="social-link-input" 
-                            maxlength="200"
-                            @blur="validateFacebookLink"
-                            :class="socialLinksValid.facebook ? '': 'input-invalid'"                            
-                        />
-                    </div>
-                    <div class="social-media-cont">
-                        <i class="pi pi-reddit social-media-icon"/>
-                        <InputText 
-                            v-model="redditLink" 
-                            placeholder="https://www.reddit.com/user/example" 
-                            class="social-link-input" 
-                            maxlength="200"
-                            @blur="validateRedditLink"
-                            :class="socialLinksValid.reddit ? '': 'input-invalid'"                            
-                        />
-                    </div>
-                    <div class="social-media-cont">
-                        <i class="pi pi-twitter social-media-icon"/>
-                        <InputText 
-                            v-model="xLink" 
-                            placeholder="https://x.com/example" 
-                            class="social-link-input" 
-                            maxlength="200"
-                            @blur="validateXLink"
-                            :class="socialLinksValid.x ? '': 'input-invalid'"                            
-                        />
-                    </div>
-
-                    <div class="button-area">
-                        <Button label="Save" class="button-save" severity="success" icon="pi pi-save" :disabled="!allSocialLinksValid || !socialLinksEdited" @click="saveSocialMediaLinks"/>
-                        <Button label="Reset" class="button-save" outlined @click="setSocialMediaLinks(props.socialMediaLink)" :disabled="!socialLinksEdited"/>
-                    </div>
+                    <EditSocialMediaLinks :social-media-link="props.socialMediaLink" @updated="emit('socialLinksUpdated', $event)"/>
             </div>
 
 
@@ -381,20 +276,5 @@ const saveSocialMediaLinks = async () => {
     color: var(--gray-bright);
 }
 
-/* === social media links === */
-.social-media-cont{
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.social-media-icon{
-    font-size: 1.7em;
-    color: var(--gray-bright);
-}
-
-.social-link-input{
-    width: 400px;
-}
 
 </style>

@@ -8,13 +8,14 @@ import mongoose from "mongoose"
 import helmet from "helmet"
 import { generalLimiter } from "./middleware/rate_limiter"
 import cookieParser from "cookie-parser"
+import path from "path"
 
 const app = express()
 
 //middleware
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
-app.use(helmet()) //preventing some attacks
+app.use(helmet({crossOriginResourcePolicy: {policy: 'cross-origin'}})) //preventing some attacks
 app.use(generalLimiter) //rate limiter for api
 app.use(cookieParser())
 
@@ -36,6 +37,9 @@ const invalidJsonHandler: ErrorRequestHandler = (err, req, res, next) => {
 app.use(invalidJsonHandler)
 
 app.use("", router)
+
+//serving static uploads
+app.use('/uploads', express.static(path.join(__dirname, "..", "uploads")))
 
 const PORT: number = Number(process.env.PORT) || 3000
 
