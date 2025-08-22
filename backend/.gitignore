@@ -3,4 +3,5 @@
 .env.production
 /dist
 /dist/*.js
-/uploads/*.webp
+/uploads/profile/*
+!/uploads/profile/.gitkeep
