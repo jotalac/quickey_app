@@ -3,4 +3,4 @@
 .env.production
 /dist
 /dist/*.js
-/uploads/*
+/uploads/*.webp
