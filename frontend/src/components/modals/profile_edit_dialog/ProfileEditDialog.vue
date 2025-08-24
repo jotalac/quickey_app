@@ -31,7 +31,7 @@ const emit = defineEmits<{
 //initial values
 const newUsername = ref('')
 const newBio = ref('')
-const profilePicFile = ref<File | null>(null)
+const fileUploadRef = ref<any>(null);
 
 const usernameEdited = computed(() => newUsername.value.trim() !== props.username)
 const usernameValid = ref<{valid: boolean, msg: string}>({valid: true, msg: ""}) 
@@ -114,7 +114,7 @@ const uploadNewImage = async (event: any) => {
         if (response.status === 'success') {
             emit('profilePicUpdated', response.url)
             toast.add({severity: "success", summary: "Profile picture updated!", life: 700})
-            event.options?.clear?.()
+            fileUploadRef.value?.clear(); 
         } else {
             toast.add({severity: "error", summary: response.msg, life: 1000})
         }
@@ -169,7 +169,7 @@ const uploadNewImage = async (event: any) => {
 
             <div class="edit-cont upload-cont">
                 <span class="section-label">Profile picture</span>
-                <FileUpload name="newProfilePicture" @uploader="uploadNewImage($event)" :custom-upload="true" mode="advanced" :multiple="false" accept="image/*" :file-limit="1" :max-file-size="4000000">
+                <FileUpload ref="fileUploadRef" name="profilePic" @uploader="uploadNewImage($event)" :custom-upload="true" mode="advanced" :multiple="false" accept="image/*" :file-limit="1" :max-file-size="4000000">
                     <template #empty>
                         <span class="file-choose-info">Drag and drop images here to upload</span>
                     </template>
