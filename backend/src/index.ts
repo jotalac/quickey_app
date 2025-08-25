@@ -6,7 +6,7 @@ import router from "./routes/router"
 import connectDB from "./db/connectDB"
 import mongoose from "mongoose"
 import helmet from "helmet"
-import { generalLimiter } from "./middleware/rate_limiter"
+import { authForRateLimit, generalLimiter } from "./middleware/rate_limiter"
 import cookieParser from "cookie-parser"
 import path from "path"
 
@@ -16,8 +16,9 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(helmet({crossOriginResourcePolicy: {policy: 'cross-origin'}})) //preventing some attacks
-app.use(generalLimiter) //rate limiter for api
 app.use(cookieParser())
+app.use(authForRateLimit) //generate rate limiter
+app.use(generalLimiter) //rate limiter for api
 
 // error handling for invalid json syntax
 const invalidJsonHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -37,6 +38,7 @@ const invalidJsonHandler: ErrorRequestHandler = (err, req, res, next) => {
 app.use(invalidJsonHandler)
 
 app.use("", router)
+
 
 //serving static uploads
 app.use('/uploads', express.static(path.join(__dirname, "..", "uploads")))

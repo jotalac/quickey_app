@@ -1,5 +1,14 @@
 import rateLimit from 'express-rate-limit'
-import {Request, Response} from 'express'
+import {NextFunction, Request, Response} from 'express'
+import { v4 as uuidv4 } from "uuid";
+import { IUser } from '../@types/user';
+
+export const authForRateLimit = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.cookies.visitorId) {
+        res.cookie("visitorId", uuidv4(), {httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, sameSite: "strict"})
+    }
+    next()
+}
 
 //5 registrations per 10 minutes
 export const registrationLimiter = rateLimit({
@@ -8,6 +17,9 @@ export const registrationLimiter = rateLimit({
     message: {
         status: 'error',
         msg: 'Too many registration attempts, try again later.',
+    },
+    keyGenerator: (req: Request) => {
+        return req.cookies.visitorId || req.ip
     },
     handler: (req: Request, res: Response) => {
         res.status(200).json({
@@ -25,6 +37,9 @@ export const loginLimiter = rateLimit({
         status: 'error',
         msg: 'Too many login attempts, try again later.',
     },
+    keyGenerator: (req: Request) => {
+        return req.cookies.visitorId || req.ip
+    },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             status: 'error',
@@ -41,6 +56,9 @@ export const keyBindingSaveLimiter = rateLimit({
         status: 'error',
         msg: 'Too many save attempts. Try it again later',
     },
+    keyGenerator: (req: Request) => {
+        return (req.user as IUser)._id.toString() || req.cookies.visitorId
+    },
     handler: (req: Request, res: Response) => {
         res.status(200).json({
             status: 'error',
@@ -56,10 +74,50 @@ export const keyBindingUpdateLimiter = rateLimit({
         status: 'error',
         msg: 'Too many updates attempts. Try it again later',
     },
+    keyGenerator: (req: Request) => {
+        return (req.user as IUser)._id.toString() || req.cookies.visitorId
+    },
     handler: (req: Request, res: Response) => {
         res.status(200).json({
             status: 'error',
             msg: 'You’re updating too fast. Take a short break before trying again.',
+        })
+    }
+})
+
+//profile edits rate limiter
+export const usernameChangeRateLimiter = rateLimit({
+    windowMs: 24 * 60 * 60 * 1000,
+    max: 3,
+    message: {
+        status: 'error',
+        msg: 'Too many username changes.',
+    },
+    keyGenerator: (req: Request) => {
+        return (req.user as IUser)._id.toString() || req.cookies.visitorId
+    },
+    handler: (req: Request, res: Response) => {
+        res.status(429).json({
+            status: 'error',
+            msg: 'Username change limit reached (max 3 per 24 hours). Please try again later.'
+        })
+    }
+})
+
+export const profilePicRateLimiter = rateLimit({
+    windowMs: 24 * 60 * 60 * 1000,
+    max: 2,
+    message: {
+        status: 'error',
+        msg: 'Too many profile picture chagnes.',
+    },
+    keyGenerator: (req: Request) => {
+        return (req.user as IUser)._id.toString() || req.cookies.visitorId
+    },
+    handler: (req: Request, res: Response) => {
+        res.status(429).json({
+            status: 'error',
+            msg: 'Profile picture change limit reached (max 2 per 24 hours). Please try again later.'
         })
     }
 })
@@ -73,6 +131,9 @@ export const generalLimiter = rateLimit({
         msg: 'Too many requests.',
     },
     standardHeaders: true,
+    keyGenerator: (req: Request) => {
+        return req.cookies.visitorId || req.ip
+    },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             status: 'error',

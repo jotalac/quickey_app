@@ -31,6 +31,7 @@
     "@types/passport-github": "^1.1.12",
     "@types/passport-github2": "^1.2.9",
     "@types/sharp": "^0.32.0",
+    "@types/uuid": "^10.0.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.5.0",
@@ -46,6 +47,7 @@
     "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
     "sharp": "^0.34.3",
+    "uuid": "^11.1.0",
     "validator": "^13.15.15"
   }
 }

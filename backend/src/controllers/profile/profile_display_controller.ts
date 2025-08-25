@@ -7,7 +7,7 @@ import AiGenKeybindingModel from "../../models/ai_generation_keybinding_model"
 
 const getAccountData = async (req: Request, res: Response) => {    
     try {
-        const userId = (req.user as IUser).id
+        const userId = (req.user as IUser)._id
 
         if (!userId) {
             res.status(401).json({status: "error", msg: "User unauthorized"})
@@ -37,7 +37,7 @@ const getAccountData = async (req: Request, res: Response) => {
 
 const getBindingStats = async (req: Request, res: Response) => {
     try {
-        const userId = (req.user as IUser).id
+        const userId = (req.user as IUser)._id
 
         if (!userId) {
             res.status(401).json({status: "error", msg: "User unauthorized"})
@@ -63,7 +63,7 @@ const getBindingStats = async (req: Request, res: Response) => {
 
 const getAiGenData = async (req: Request, res: Response) => {
     try {
-        const userId = (req.user as IUser).id
+        const userId = (req.user as IUser)._id
 
         if (!userId) {
             res.status(401).json({status: "error", msg: "User unauthorized"})

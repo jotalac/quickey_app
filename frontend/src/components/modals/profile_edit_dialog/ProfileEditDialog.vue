@@ -53,7 +53,7 @@ const saveUsername = async () => {
             setCurrentUser(newName)
             toast.add({severity: "success", summary: "Username changed!", life: 700})
         } else {
-            toast.add({severity: "error", summary: "Error changing username", life: 1000})
+            toast.add({severity: "error", summary: "Error", detail: response.msg, life: 2000})
         }
         
     } catch (error) {
@@ -116,7 +116,9 @@ const uploadNewImage = async (event: any) => {
             toast.add({severity: "success", summary: "Profile picture updated!", life: 700})
             fileUploadRef.value?.clear(); 
         } else {
-            toast.add({severity: "error", summary: response.msg, life: 1000})
+            console.log(response);
+            
+            toast.add({severity: "error", summary: "Error", detail: response.msg, life: 2000})
         }
     } catch (error) {
         console.log(error)
