@@ -122,6 +122,24 @@ export const profilePicRateLimiter = rateLimit({
     }
 })
 
+export const passwordChangeLimiter = rateLimit({
+    windowMs: 24 * 60 * 60 * 1000,
+    max: 4,
+    message: {
+        status: 'error',
+        msg: 'Too many password changes.',
+    },
+    keyGenerator: (req: Request) => {
+        return (req.user as IUser)._id.toString() || req.cookies.visitorId
+    },
+    handler: (req: Request, res: Response) => {
+        res.status(429).json({
+            status: 'error',
+            msg: 'Password change limit reached (max 4 per 24 hours). Please try again later.'
+        })
+    }
+})
+
 //limit the general app usage to 100 requests per minute
 export const generalLimiter = rateLimit({
     windowMs: 60 * 1000,

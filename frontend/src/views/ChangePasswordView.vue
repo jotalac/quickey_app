@@ -14,6 +14,7 @@ const router = useRouter()
 const isLoading = ref(true)
 const validToken = ref<boolean>()
 const token = route.query.token as string;
+const userEmail = ref()
 
 onBeforeMount(async () => {
     const response = await passwrodChnageApi.verifyResetToken(token);
@@ -21,6 +22,7 @@ onBeforeMount(async () => {
         console.log(response);
         
         if (response.valid) {
+            userEmail.value = response.email
             validToken.value = true
         } else {
             validToken.value = false
@@ -74,8 +76,8 @@ const onFormSubmit = async ({valid, values, reset}: {valid: boolean, values: any
             <Icon icon="material-symbols:hourglass-empty" class="icon-header loading-icon"/>
         </div>
         <div v-else-if="validToken" class="cont-header">
-            <h2>Change password</h2>
-            <Icon icon="material-symbols:password" class="icon-header"/>
+            <h2>Change password - <strong>{{ userEmail }}</strong></h2>
+            <!-- <Icon icon="material-symbols:password" class="icon-header"/> -->
         </div>
         <div v-else class="cont-header invalid">
             <h2>Invalid token</h2>
@@ -158,6 +160,7 @@ const onFormSubmit = async ({valid, values, reset}: {valid: boolean, values: any
 
 .cont-header h2{
     font-size: var(--bigger-text);
+    font-weight: normal;
 }
 
 .icon-header{

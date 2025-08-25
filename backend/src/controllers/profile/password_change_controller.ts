@@ -53,13 +53,15 @@ const verifyPasswordResetToken = async (req: Request, res: Response) => {
             return
         }
         
-        const passwordReset = await PasswordReset.findOne({ resetToken: token })
+        const passwordReset = await PasswordReset.findOne({ resetToken: token }).populate('userId', 'email')
         if (!passwordReset) {
             res.status(200).json({status: "success", valid: false, msg: "Invalid token provided"})
             return
         }
 
-        res.status(200).json({status: "success", valid: true})
+        const user = passwordReset.userId as any
+
+        res.status(200).json({status: "success", valid: true, email: user.email})
 
     } catch (error) {
         res.status(500).json({status: "error", msg: "Error verifying token"})
