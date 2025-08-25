@@ -95,4 +95,4 @@ const passwordValid = (password: string) => {
     return true
 }
 
-export {registerFormValidation}
+export {registerFormValidation, passwordValid}

@@ -184,6 +184,7 @@ const saveNewProfilePicture = async (req: Request, res: Response) => {
 }
 
 
+
 // helper functions
 const newNameValid = async (newName: string) => {
     if (newName.length < 3 || newName.length > 20) return false

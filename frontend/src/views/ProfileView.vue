@@ -6,6 +6,7 @@ import ProfileMenu from '@/components/profile/ProfileMenu.vue'
 import ProfileDashboard from '@/components/profile/ProfileDashboard.vue';
 import ProfileDisplay from '@/components/profile/ProfileDisplay.vue';
 import { AuthService } from '@/api/auth/auth_service';
+import ProfileSettings from '@/components/profile/ProfileSettings.vue';
 
 const router = useRouter()
 const activeTab = ref(0)
@@ -27,12 +28,13 @@ onBeforeMount(()=> {
         <div class="content-area">
             <ProfileDashboard v-if="activeTab === 0" />
             <ProfileDisplay v-else-if="activeTab === 1"/>
-
+            <ProfileSettings v-else/>
+<!-- 
             <div v-else class="placeholded">
                 <h1>Not availible yet</h1>
                 <i class="pi pi-clock"/>
 
-            </div>
+            </div> -->
         </div>
     </div>
 

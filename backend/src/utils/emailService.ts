@@ -90,6 +90,29 @@ class EmailService {
         }
     }
 
+    async sendPasswordResetEmail(email: string, username: string, resetToken: string): Promise<boolean> {
+        try {
+            const resetUrl = `${process.env.FRONTEND_URL}/change-password?token=${resetToken}`
+
+            const mailOptions: EmailOptions = {
+                to: email,
+                subject: 'Quickey password reset request',
+                template: 'password_reset',
+                data: {
+                    'username': username,
+                    'resetUrl': resetUrl,
+                    'email': email
+                }
+            }
+
+            await this.sendEmail(mailOptions)
+            return true 
+        } catch (error) {
+            console.log(error);
+            return false
+        } 
+    }
+
 }
 
 export default new EmailService();

@@ -11,6 +11,7 @@ import EmailVerifyView from '@/views/EmailVerifyView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import { AuthService } from '@/api/auth/auth_service'
 import { useAuth } from '@/composables/useAuth'
+import ChnagePasswordView from '@/views/ChangePasswordView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,6 +55,11 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+    },
+    {
+      path: '/change-password',
+      name: 'Password change',
+      component: ChnagePasswordView,
     },
     {
       path: '/privacy-policy',

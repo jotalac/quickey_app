@@ -10,7 +10,6 @@ const items = ref([
     {label: 'Dashboard', icon: 'pi pi-th-large'},
     {label: 'Profile', icon: 'pi pi-user'},
     {label: 'Settings', icon: 'pi pi-cog'},
-    {label: 'Security', icon: 'pi pi-lock'},
 ])
 
 

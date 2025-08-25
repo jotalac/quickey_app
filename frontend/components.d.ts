@@ -88,6 +88,7 @@ declare module 'vue' {
     ProfileDisplay: typeof import('./src/components/profile/ProfileDisplay.vue')['default']
     ProfileEditDialog: typeof import('./src/components/modals/profile_edit_dialog/ProfileEditDialog.vue')['default']
     ProfileMenu: typeof import('./src/components/profile/ProfileMenu.vue')['default']
+    ProfileSettings: typeof import('./src/components/profile/ProfileSettings.vue')['default']
     RotatingText: typeof import('./src/components/vue_bits/RotatingText.vue')['default']
     RoundPageButton: typeof import('./src/components/home_page/RoundPageButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
