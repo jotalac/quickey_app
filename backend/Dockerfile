@@ -24,19 +24,21 @@ RUN npm ci --only=production && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 
+COPY public ./public
+
 #set enviroment
 ENV NODE_ENV=production
 #load production variables
 # COPY .env ./
 
-# Add a non-root user for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
-
-
 # Create uploads directory and set permissions
 RUN mkdir -p uploads/profile uploads/email_images public/images/icons
 RUN chmod -R 755 uploads/ public/
+
+# Add a non-root user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN chown -R appuser:appgroup /app
+USER appuser
 
 EXPOSE 5000
 CMD ["node", "dist/index.js"]

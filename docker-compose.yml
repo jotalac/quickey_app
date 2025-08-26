@@ -15,7 +15,7 @@ services:
     stop_signal: SIGINT
     stop_grace_period: 10s
     init: true  # This helps with signal handling
-    user: "node:node" # run it as a non root user
+    # user: "node:node" # run it as a non root user
     # command: node dist/index.js
  
   caddy:
