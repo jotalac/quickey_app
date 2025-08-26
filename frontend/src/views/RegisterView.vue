@@ -3,7 +3,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { onBeforeMount, ref } from 'vue';
 import { Icon } from '@iconify/vue';
 import { z } from 'zod';
-import { authFormApi } from '@/api/auth/auth_form';
+import { authFormApi } from '@/api/auth/auth_form_api';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue';
 import { AuthService } from '@/api/auth/auth_service';

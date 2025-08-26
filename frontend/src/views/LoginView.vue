@@ -8,11 +8,15 @@ import { AuthService } from '@/api/auth/auth_service';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue';
 import { z } from 'zod' 
-import { authFormApi } from '@/api/auth/auth_form'; 
+import { authFormApi } from '@/api/auth/auth_form_api'; 
 import { useGoogleLogin } from '@/composables/useGoogleLogin';
+import ForgotPasswordDialog from '@/components/modals/ForgotPasswordDialog.vue';
+import { useForgotPasswordDialog } from '@/composables/useForgotPasswordDialog';
 
 const router = useRouter()
 const toast = useToast()
+
+const {showDialog} = useForgotPasswordDialog()
 
 const isSubmitting = ref(false)
 
@@ -110,6 +114,8 @@ onBeforeMount(() => {
                     :loading="isSubmitting"
                 />
             </div>
+            <ForgotPasswordDialog/>
+            <span class="forgotten-password-link" @click="showDialog">Forgot password?</span>
 
             <div class="sso-buttons">
                 <GoogleLogin 
@@ -203,6 +209,13 @@ onBeforeMount(() => {
     color: var(--green-bright);
 }
 
+.forgotten-password-link{
+    margin-right: auto;
+    color: var(--gray-bright);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .error-msg{
     margin-right: auto;
     font-size: var(--smaller-text);
@@ -210,7 +223,7 @@ onBeforeMount(() => {
 }
 
 .sso-buttons{
-    margin-top: 10px;
+    margin-top: 20px;
     width: 100%;
 }
 

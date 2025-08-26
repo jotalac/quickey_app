@@ -48,6 +48,7 @@ declare module 'vue' {
     FileUpload: typeof import('primevue/fileupload')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
     Footer: typeof import('./src/components/Footer.vue')['default']
+    ForgotPasswordDialog: typeof import('./src/components/modals/ForgotPasswordDialog.vue')['default']
     Form: typeof import('@primevue/forms/form')['default']
     FormField: typeof import('@primevue/forms/formfield')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']

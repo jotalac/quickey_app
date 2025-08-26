@@ -5,6 +5,7 @@ import { useProfileDeleteDialog } from '@/composables/useProfileDeleteDialog';
 import { useConfirm, useToast } from 'primevue';
 import { useRouter } from 'vue-router';
 import DeleteProfileDialog from '../modals/DeleteProfileDialog.vue';
+import {ref} from 'vue'
 
 const router = useRouter()
 const {logout} = useAuth()
@@ -12,6 +13,7 @@ const {showDialog} = useProfileDeleteDialog()
 
 const confirm = useConfirm()
 const toast = useToast()
+const isLoading = ref(false)
 
 const confirmChangePassword = () => {
     confirm.require({
@@ -28,6 +30,7 @@ const confirmChangePassword = () => {
             severity: "warn"
         },
         accept: async () => {
+            isLoading.value = true
             const response = await profileSettingsApi.requestPasswordChange()
 
             if (response.status === "success") {
@@ -36,6 +39,7 @@ const confirmChangePassword = () => {
                 toast.add({summary: "Error", detail: response.msg, severity: "error", life: 2000})
             }
 
+            isLoading.value = false
             
         },
 
@@ -44,8 +48,7 @@ const confirmChangePassword = () => {
 
 const handleDeleteAccount = async () => {
     const response = await profileSettingsApi.deleteAccount()
-    console.log("calling function");
-    
+    isLoading.value = true    
 
     if (response.status === "success") {
 
@@ -54,6 +57,8 @@ const handleDeleteAccount = async () => {
     } else {
         toast.add({summary: "Error", detail: response.msg, severity: 'error', life: 3000})
     }
+
+    isLoading.value = true
 } 
 
 const logoutUser = async () => {
@@ -72,12 +77,12 @@ const logoutUser = async () => {
         <div class="menu-cont">
             <div class="menu-row">
                 <p>Change password <i class="pi pi-lock"/></p>
-                <Button label="Change" outlined size="small" severity="warn" @click="confirmChangePassword"/>
+                <Button label="Change" outlined size="small" severity="warn" @click="confirmChangePassword" :loading="isLoading" :disabled="isLoading"/>
             </div>
 
             <div class="menu-row">
                 <p>Delete account <i class="pi pi-user-minus"/></p>
-                <Button label="Delete" outlined size="small" severity="warn" @click="showDialog"/>
+                <Button label="Delete" outlined size="small" severity="warn" @click="showDialog" :loading="isLoading" :disabled="isLoading"/>
             </div>
         </div>
     </div>

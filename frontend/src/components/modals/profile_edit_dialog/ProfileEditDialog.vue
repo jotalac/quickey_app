@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { authFormApi } from '@/api/auth/auth_form';
+import { authFormApi } from '@/api/auth/auth_form_api';
 import type { AuthUser } from '@/api/auth/auth_service';
 import { profileEditApi } from '@/api/profile/profile_edit_api';
 import type { SocialLinks } from '@/components/profile/ProfileDisplay.vue';

@@ -44,6 +44,58 @@ const passwordChangeRequest = async (req: Request, res: Response) => {
     }
 }
 
+const forgotPassword = async (req: Request, res: Response) => {
+    try {
+        const {email} = req.body
+        
+        if (!email) {
+            res.status(400).json({status: "error", msg: "No email provided"})
+            return
+        }
+
+        const user = await User.findOne({email})
+
+        if (!user) {
+            res.status(400).json({status: "error", msg: "Email is not associated to any user."})
+            return
+        }
+
+        // Check if user is registered with SSO
+        if (user.registerType === 'sso') {
+            res.status(400).json({
+                status: "error", 
+                msg: "Cannot change password for Google account users"
+            })
+            return
+        }
+
+        // Delete any existing password reset requests for this user
+        const alreadyExists = await PasswordReset.findOne({userId: user._id})
+
+        if (alreadyExists) {
+            res.status(400).json({
+                status: "error", 
+                msg: "Refresh link already waiting in your email adress."
+            })
+            return
+        }
+
+        const resetToken = uuidv4()
+
+        await PasswordReset.create({userId: user._id, resetToken: resetToken})
+        
+        const emailSend = await emailService.sendPasswordResetEmail(user.email, user.username, resetToken)
+
+        if (emailSend) {
+            res.status(200).json({status: "success", msg: "Password reset link sent to your email"})
+        } else {
+            res.status(500).json({status: "error", msg: "Failed to send reset email"})
+        }
+    } catch (error) {
+        res.status(500).json({status: "error", msg: "Error requesting password change"})
+    }
+}
+
 const verifyPasswordResetToken = async (req: Request, res: Response) => {
     try {
         const {token} = req.body
@@ -116,4 +168,4 @@ const tokenValid = async (token: string): Promise<boolean> => {
 }
 
 
-export {passwordChangeRequest, verifyPasswordResetToken, changePassword}
+export {passwordChangeRequest, verifyPasswordResetToken, changePassword, forgotPassword}

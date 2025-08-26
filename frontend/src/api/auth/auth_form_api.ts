@@ -1,10 +1,5 @@
-import type { AxiosResponse } from "axios";
 import {api} from "@/api/api"
 
-interface AuthFormResponse{
-    status: string,
-    msg: string
-}
 
 export const authFormApi = {
     async checkEmailAvailible(email: string): Promise<boolean>{
@@ -47,6 +42,16 @@ export const authFormApi = {
         } catch (error: any) {
             console.log(error)
             return {msg: error.response?.data?.msg || 'Something went wrong. Try again later.'}
+            
+        }
+    },
+
+    async forgotPassword(email: string) {
+        try {            
+            const response = await api.post('/auth/forgot-password', {email})
+            return response.data
+        } catch (error: any) {
+            return {status: "error", msg: error.response?.data?.msg }
             
         }
     }
