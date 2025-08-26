@@ -15,11 +15,8 @@ const sendingEmailLoading = ref(false)
 const checkEmailBlur = async () => {
     const emailAvailible = await authFormApi.checkEmailAvailible(email.value)
 
-    if (emailAvailible) {
-        emailValid.value = false
-    } else {
-        emailValid.value = true
-    }
+    emailValid.value = !emailAvailible
+
 }
 
 const sendPasswordReset = async () => {

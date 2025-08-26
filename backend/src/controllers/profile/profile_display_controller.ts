@@ -21,7 +21,7 @@ const getAccountData = async (req: Request, res: Response) => {
         }
 
         if (accountData.profilePicture) {
-            accountData.profilePicture = `${process.env.APP_URL}/uploads/profile/${accountData.profilePicture}`
+            accountData.profilePicture = `${process.env.BACKEND_URL}/uploads/profile/${accountData.profilePicture}`
         }
         
         res.status(200).json({

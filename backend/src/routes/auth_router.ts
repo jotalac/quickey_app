@@ -28,7 +28,7 @@ router.use("/sso", ssoRouter)
 
 router.post("/refresh-token", refreshToken)
 
-router.post("/forgot-password", forgotPassword)
+router.post("/forgot-password", loginLimiter, forgotPassword)
 // router.get("/validate-token", authenticateToken, verifyToken)
 
 export default router

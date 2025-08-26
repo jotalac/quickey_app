@@ -24,7 +24,7 @@ export function useAuth() {
             }
             logout()
             return false
-        } catch (error) {
+        } catch (error: any) {
             console.log("No active session found");
             logout()
             return false

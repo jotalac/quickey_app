@@ -19,7 +19,7 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-      callbackURL: `${process.env.APP_URL}/api/auth/sso/github/callback`,
+      callbackURL: `${process.env.BACKEND_URL}/api/auth/sso/github/callback`,
       scope: ['user:email'] // ensure email is returned
     },
     async (accessToken: string, refreshToken: string, profile: any, cb: VerifyCallback) => {

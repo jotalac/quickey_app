@@ -169,7 +169,7 @@ const saveNewProfilePicture = async (req: Request, res: Response) => {
 
         await User.updateOne({_id: user._id}, {profilePicture: newName})
 
-        const publicUrl = `${process.env.APP_URL}/uploads/profile/${newName}`
+        const publicUrl = `${process.env.BACKEND_URL}/uploads/profile/${newName}`
 
         res.status(200).json({
             status: "success",

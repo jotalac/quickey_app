@@ -27,8 +27,14 @@ class EmailService {
     }
 
     private generateEmailHtml(templateName: string, data: Record<string, any>): string {
+        //get the template html file
         const templatePath = path.join(process.cwd(), 'public', 'templates', 'emails', `${templateName}.html`);
         let emailTemplate = fs.readFileSync(templatePath, 'utf-8')
+
+        //get the logo in base 64
+        const logoPath = path.join(process.cwd(), 'public', 'images', 'icons', 'main-logo.png')
+        const logoBase64 = fs.readFileSync(logoPath, { encoding: 'base64' })
+        data.logoBase64 = `data:image/png;base64,${logoBase64}`
 
         //replate place holders with actuall data
         Object.keys(data).forEach(key => {
@@ -47,13 +53,6 @@ class EmailService {
                 subject: options.subject,
                 //get html from options or parse it from file 
                 html: options.html || this.generateEmailHtml(options.template!, options.data!),
-                attachments: [
-                     {
-                        filename: 'main-logo.svg',
-                        path: path.join(process.cwd(), 'public', 'images', 'icons', 'main-logo.png'),
-                        cid: 'logoImage'
-                     }
-                ]
             }
 
             await this.transporter.sendMail(mailOptions)

@@ -3,7 +3,7 @@ import { AuthService } from '@/api/auth/auth_service';
 import { userKeybindingApi } from '@/api/keybinding/keybinding_user';
 import { useConstantsStore } from '@/stores/constantsStore';
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 import KeybindingSave from '@/components/profile/KeybindingSave.vue';
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveProfileDialog.vue';
@@ -22,7 +22,7 @@ const currentPage = ref(1)
 const pageSize = ref(15)
 const totalRecords = ref(0)
 
-const {currentUser} = useAuth()
+const {currentUser, isAuthLoading} = useAuth()
 
 const constantsStore = useConstantsStore()
 const {keybindingCategories} = storeToRefs(constantsStore)
@@ -86,6 +86,10 @@ watch([filterLiked, selectedCategories, sortBy, filterPublic], ()=> {
     filterValueChanged()
 })
 
+watch(() => currentUser.value, () => {
+    filterValueChanged()
+})
+
 //debounce for seaching 
 let searchTimeout: ReturnType<typeof setTimeout>
 watch(searchValues, () => {
@@ -95,8 +99,10 @@ watch(searchValues, () => {
     }, 500)  
 })
 
-onBeforeMount(() => {
-    filterValueChanged()
+onMounted(() => {
+    if (currentUser.value) {
+        filterValueChanged()
+    }
 })
 
 
@@ -228,7 +234,9 @@ const handleDialogHide = () => {
         <!-- disaply binding data -->
         <div class="keybinding-display-cont">
             <!-- display the loading cont -->
-            <Skeleton v-for="skeleton in 8" v-if="dataLoading" :key="skeleton" width="350px" height="200px" class="skeleton-loading"/>
+             <div v-if="dataLoading" class="skeleton-div">
+                 <Skeleton v-for="skeleton in 8" :key="skeleton" width="350px" height="200px" class="skeleton-loading"/>
+             </div>
             <p v-else-if="displayData.length === 0" class="no-saves-text">No saves availible</p>
 
             <!-- actual blocks of saves -->
@@ -418,6 +426,13 @@ const handleDialogHide = () => {
 .skeleton-loading{
     margin: 15px;
 }
+
+.skeleton-div{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 
 .no-saves-text{
     position: absolute;

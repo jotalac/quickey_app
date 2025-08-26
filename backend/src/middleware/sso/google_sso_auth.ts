@@ -13,7 +13,7 @@
 //     {
 //       clientID: process.env.GOOGLE_CLIENT_ID as string,
 //       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-//       callbackURL: `${process.env.APP_URL}/api/auth/sso/google/callback`,
+//       callbackURL: `${process.env.BACKEND_URL}/api/auth/sso/google/callback`,
 //     },
 //     async (accessToken: string, refreshToken: string, profile: Profile, cb: VerifyCallback) => {
 //         try {
