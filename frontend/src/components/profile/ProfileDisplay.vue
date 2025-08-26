@@ -134,7 +134,7 @@ const setAccountData = (data: {email: string, createdAt: string, bio: string, so
       handleSocialLink(data.socialLinks)
 }
 
-const setKeybindingStats = (data) => {
+const setKeybindingStats = (data: any) => {
   totalKeybindings.value = data.totalCount
   sharedKeybindings.value = data.sharedCount
   likedKeybindings.value = data.likedCount
