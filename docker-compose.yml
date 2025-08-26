@@ -6,6 +6,8 @@ services:
     image: quickey-backend:latest
     env_file:
       - ./backend/.env
+    volumes:
+      - upload_data:/app/uploads
     expose:
       - "5000"
     networks:
@@ -47,6 +49,7 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
+  upload_data:
 
 
 

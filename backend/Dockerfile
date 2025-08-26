@@ -25,6 +25,7 @@ RUN npm ci --only=production && npm cache clean --force
 COPY --from=builder /app/dist ./dist
 
 COPY public ./public
+COPY uploads ./uploads
 
 #set enviroment
 ENV NODE_ENV=production

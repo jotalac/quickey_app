@@ -12,6 +12,11 @@ quickey.pro {
         reverse_proxy backend:5000
     }
 
+    handle /uploads/* {
+        reverse_proxy backend:5000
+    }
+
+
     #handle all other requests to frontend
     handle {
         #set root directory to where the frontend files are

@@ -247,10 +247,11 @@ function validateSocialMediaLinks(links: socialMediaLink[]): boolean {
 
 const processImage = async (file: Express.Multer.File): Promise<string> => {
     try {
-        //get the loaciton for new edited file
         const originalPath = file.path
-        const ext = path.extname(file.filename).toLocaleLowerCase()
-        const newName = file.filename.replace(ext, '.webp')
+        const baseName = path.basename(file.filename, path.extname(file.filename))
+        
+        // ✅ Always create a unique webp filename
+        const newName = `${baseName}_processed.webp`
         const newPath = path.join(PUBLIC_IMAGE_FOLDER, newName)
 
         //edit the file, size, quailty and format
@@ -260,10 +261,9 @@ const processImage = async (file: Express.Multer.File): Promise<string> => {
         .webp({quality: 85})
         .toFile(newPath)
         
-        //delete the original file (if it wasnt webp)
-        if (originalPath !== newPath) {
-            fs.unlink(originalPath, () => {})
-        }
+        fs.unlink(originalPath, (err) => {
+            if (err) console.log('Error deleting temp file:', err)
+        })
 
         return newName
     } catch (error) {

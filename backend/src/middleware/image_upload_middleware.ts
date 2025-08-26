@@ -3,10 +3,12 @@ import fs from 'fs'
 import multer from "multer";
 import { IUser } from "../@types/user";
 
-const PROFILE_DIR = path.join(__dirname, '..', 'uploads', 'profile')
+const PROFILE_DIR = path.join(__dirname, '..', '..', 'uploads', 'profile')
 
 //ensure directroy exists - create it
-fs.mkdirSync(PROFILE_DIR, {recursive: true})
+if (!fs.existsSync(PROFILE_DIR)) {
+    fs.mkdirSync(PROFILE_DIR, { recursive: true })
+}
 
 const ALLOWED_MIME = new Set([
     'image/jpeg',
