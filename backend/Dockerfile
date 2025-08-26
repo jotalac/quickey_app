@@ -9,7 +9,7 @@ RUN npm ci
 
 # Copy and compile source
 COPY src ./src
-RUN npm run build          
+RUN npm run build         
 
 
 # Stage 2: Production image
@@ -32,6 +32,11 @@ ENV NODE_ENV=production
 # Add a non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
+
+
+# Create uploads directory and set permissions
+RUN mkdir -p uploads/profile uploads/email_images public/images/icons
+RUN chmod -R 755 uploads/ public/
 
 EXPOSE 5000
 CMD ["node", "dist/index.js"]
