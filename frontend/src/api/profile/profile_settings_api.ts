@@ -1,6 +1,6 @@
 import { api } from "../api"
 
-export const passwrodChnageApi = {
+export const profileSettingsApi = {
     async requestPasswordChange() {
         try {
             const response = await api.post('/profile/password-change-request')
@@ -33,4 +33,15 @@ export const passwrodChnageApi = {
             return {status: "error", msg: error.response?.data?.msg}
         }        
     },
+
+    async deleteAccount() {
+        try {
+            const response = await api.delete('/profile/delete')
+            
+            return response.data
+        } catch (error: any) {
+            console.log(error)
+            return {status: "error", msg: error.response?.data?.msg}
+        }    
+    }
 }

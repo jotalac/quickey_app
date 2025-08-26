@@ -4,6 +4,9 @@ import User from "../../models/user_model"
 import path from "path"
 import sharp from "sharp"
 import fs from "fs"
+import KeyBinding from "../../models/keybinding_model"
+import Like from "../../models/like_model"
+import PasswordReset from "../../models/password_change_model"
 
 interface socialMediaLink {
     platform: string,
@@ -161,8 +164,7 @@ const saveNewProfilePicture = async (req: Request, res: Response) => {
 
         //delete the old profile picutre
         if (user.profilePicture) {
-            const oldPath = path.join(PUBLIC_IMAGE_FOLDER, user.profilePicture)
-            fs.unlink(oldPath, (e) => {})
+            deleteOldProfilePicture(user.profilePicture)
         }
 
         await User.updateOne({_id: user._id}, {profilePicture: newName})
@@ -180,6 +182,38 @@ const saveNewProfilePicture = async (req: Request, res: Response) => {
     } catch (error) {
         console.log(error)
         res.status(500).json({status: "error", msg: "Error saving new image"})
+    }
+}
+
+const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const user = req.user as IUser
+
+        if (!user._id) {
+            res.status(401).json({status: "error", msg: "User not authorized"})
+            return
+        }
+        
+        const [deletedUser] = await Promise.all([
+            User.findOneAndDelete({_id: user._id}),
+            KeyBinding.deleteMany({userId: user._id}),
+            Like.deleteMany({userId: user._id}),
+            PasswordReset.deleteMany({userId: user._id})
+        ])
+
+        if (!deletedUser) {
+            res.status(400).json({status: "error", msg: "User not found"})
+            return
+        }
+        
+        //delete profile picture
+        if (deletedUser.profilePicture) {
+            deleteOldProfilePicture(deletedUser.profilePicture)
+        }
+        res.status(200).json({status: "success", msg: "User deleted successfully"})
+        
+    } catch (error) {
+        res.status(500).json({status: "error", msg: "Error deleting user"})
     }
 }
 
@@ -238,5 +272,11 @@ const processImage = async (file: Express.Multer.File): Promise<string> => {
     }
 }
 
+const deleteOldProfilePicture = (imageLink: string) => {
+    const oldPath = path.join(PUBLIC_IMAGE_FOLDER, imageLink)
+    fs.unlink(oldPath, (e) => {})
+}
 
-export {editUsername, editBio, editSocialMediaLinks, saveNewProfilePicture}
+
+
+export {editUsername, editBio, editSocialMediaLinks, saveNewProfilePicture, deleteUser}

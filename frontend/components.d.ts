@@ -38,6 +38,7 @@ declare module 'vue' {
     DefaultAction: typeof import('./src/components/modals/actionNodes/DefaultAction.vue')['default']
     DefaultActionNode: typeof import('./src/components/modals/multiBinding/actionNodes/DefaultActionNode.vue')['default']
     DelayNode: typeof import('./src/components/modals/multiBinding/actionNodes/DelayNode.vue')['default']
+    DeleteProfileDialog: typeof import('./src/components/modals/DeleteProfileDialog.vue')['default']
     DevInfoDialogHome: typeof import('./src/components/modals/devInfoDialogHome.vue')['default']
     Dialog: typeof import('primevue/dialog')['default']
     Divider: typeof import('primevue/divider')['default']

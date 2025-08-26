@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import { passwrodChnageApi } from '@/api/profile/password_change_api';
+import { profileSettingsApi } from '@/api/profile/profile_settings_api';
 import { useToast } from 'primevue';
 
 const route = useRoute()
@@ -17,7 +17,7 @@ const token = route.query.token as string;
 const userEmail = ref()
 
 onBeforeMount(async () => {
-    const response = await passwrodChnageApi.verifyResetToken(token);
+    const response = await profileSettingsApi.verifyResetToken(token);
     if (response.status === "success") {
         console.log(response);
         
@@ -55,10 +55,10 @@ const resolver = zodResolver(
 const onFormSubmit = async ({valid, values, reset}: {valid: boolean, values: any, reset: () => void}) => {
     if (!valid) return
 
-    const response = await passwrodChnageApi.changePassword(token, values.password)
+    const response = await profileSettingsApi.changePassword(token, values.password)
 
     if (response.status === 'success') {
-        router.push("/")
+        router.push("/app")
         toast.add({summary: "Password changed", detail: "Password change successfully", life: 2000, severity: "success"})
     } else {
         toast.add({summary: "Error changing password", detail: response.msg, life: 2000, severity: "error"})

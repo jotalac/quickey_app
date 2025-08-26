@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { passwrodChnageApi } from '@/api/profile/password_change_api';
+import { profileSettingsApi } from '@/api/profile/profile_settings_api';
 import { useAuth } from '@/composables/useAuth';
+import { useProfileDeleteDialog } from '@/composables/useProfileDeleteDialog';
 import { useConfirm, useToast } from 'primevue';
 import { useRouter } from 'vue-router';
+import DeleteProfileDialog from '../modals/DeleteProfileDialog.vue';
 
 const router = useRouter()
 const {logout} = useAuth()
+const {showDialog} = useProfileDeleteDialog()
 
 const confirm = useConfirm()
 const toast = useToast()
@@ -25,7 +28,7 @@ const confirmChangePassword = () => {
             severity: "warn"
         },
         accept: async () => {
-            const response = await passwrodChnageApi.requestPasswordChange()
+            const response = await profileSettingsApi.requestPasswordChange()
 
             if (response.status === "success") {
                 toast.add({summary: "Link send to email", detail: "Password change link is in your email adress", severity: "success", life: 2000})
@@ -39,10 +42,24 @@ const confirmChangePassword = () => {
     })
 }
 
-// const logoutUser = async () => {
-//     await logout()
-//     router.push('/login')
-// }
+const handleDeleteAccount = async () => {
+    const response = await profileSettingsApi.deleteAccount()
+    console.log("calling function");
+    
+
+    if (response.status === "success") {
+
+        logoutUser()
+        toast.add({summary: "Account deleted", detail: "Account deleted successfully, you can register new account", severity: 'info', life: 3000})
+    } else {
+        toast.add({summary: "Error", detail: response.msg, severity: 'error', life: 3000})
+    }
+} 
+
+const logoutUser = async () => {
+    await logout()
+    router.push('/login')
+}
 
 </script>
 
@@ -50,6 +67,7 @@ const confirmChangePassword = () => {
     <div class="profile-settings-cont">
         <h1>Profile settings <i class="pi pi-cog"/></h1>
         <ConfirmDialog :style="{'width': '500px'}"/>
+        <DeleteProfileDialog @delete-account="handleDeleteAccount"/>
 
         <div class="menu-cont">
             <div class="menu-row">
@@ -59,7 +77,7 @@ const confirmChangePassword = () => {
 
             <div class="menu-row">
                 <p>Delete account <i class="pi pi-user-minus"/></p>
-                <Button label="Delete" outlined size="small" severity="warn"/>
+                <Button label="Delete" outlined size="small" severity="warn" @click="showDialog"/>
             </div>
         </div>
     </div>
