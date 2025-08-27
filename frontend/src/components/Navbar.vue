@@ -36,9 +36,10 @@ const otherItems = ref([
         label: 'Other',
         icon: 'pi pi-angle-down',
         items: [
-            {label: 'firmware', route: '/firmware'},
-            {label: 'FAQ', route: '/#faq'},
             {label: 'shop', route: '/shop'},
+            {label: 'FAQ', route: '/#faq'},
+            {label: 'firmware', route: '/firmware'},
+            {label: 'guide', route: '/guide'},
         ]
     },
 ])

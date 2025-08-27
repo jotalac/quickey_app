@@ -12,6 +12,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import { AuthService } from '@/api/auth/auth_service'
 import { useAuth } from '@/composables/useAuth'
 import ChnagePasswordView from '@/views/ChangePasswordView.vue'
+import GuideView from '@/views/GuideView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,6 +81,11 @@ const router = createRouter({
       path: '/register-verify',
       name: 'register-verify',
       component: EmailVerifyView,
+    },
+    {
+      path: '/guide',
+      name: 'Guide',
+      component: GuideView,
     },
     {
       path: '/:pathMatch(.*)*',
