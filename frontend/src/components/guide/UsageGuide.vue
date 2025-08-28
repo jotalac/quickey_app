@@ -4,12 +4,15 @@ import DecryptedText from '../vue_bits/DecryptedText.vue';
 import imagePlaceholder from '@/assets/images/profile/profile_placeholder.png'
 import cableConnectVideo from '@/assets/videos/cable_connect.webm'
 import deviceConnect from '@/assets/videos/device_connect.webm'
+import simpleBinding from '@/assets/videos/simple_binding.webm'
+import multiBinding from '@/assets/videos/multi_binding.webm'
+import saveBinding from '@/assets/videos/save_binding.webm'
 
 const stepsData = [
     {
         number: 1, 
         title: "Connect Your Device",
-        description: "Connect the macropad to your device using a USB-C cable. Ensure you're using a data-capable cable, not just a charging cable.",
+        description: "Connect the macropad to your device using a USB-C cable. Ensure you're using a data-capable cable, not just a charging cable. If connected correctly lights should start flashing",
         imageSrc: cableConnectVideo,
         tips: ["Use a direct connection to avoid power issues", "Try different USB ports if not detected"]
     },
@@ -23,9 +26,23 @@ const stepsData = [
     {
         number: 3, 
         title: "Configure Key Bindings",
-        description: "Set up your custom key bindings, macros, and shortcuts through the intuitive interface. Save your configuration directly to the device memory.",
-        imageSrc: imagePlaceholder,
-        tips: ["Test bindings before saving", "Create multiple profiles for different workflows"]
+        description: "Set up custom shortcuts by left-clicking any button on the macropad interface. Press your desired key combination simultaneously to record it. The assigned keys will appear on the button for easy reference.",
+        imageSrc: simpleBinding,
+        tips: ["Avoid pressing too many keys at once for better reliability", "This method is ideal for common application shortcuts and hotkeys", "For shortcuts that trigger immediate system actions (like Ctrl + Alt + Delete), you'll need to use multi-binding instead (see step 4)"]
+    },
+    {
+        number: 4, 
+        title: "Complex multi-binding",
+        description: "Create more complex multi-bindings with up to 20 actions. Right click the button on the interace and in the context menu select multi-key. Start dragging in actions.",
+        imageSrc: multiBinding,
+        tips: ["When pressing the button while using multi-key the device wont't be responsive until the action ends", "This method is ideal for more complex actions", "You can use this method to create shortcuts that are otherwise not possible with standart keybinding", "Use delay node to way until some actions perform (ex. application open)"]
+    },
+    {
+        number: 5, 
+        title: "Save binding to device",
+        description: "Click 'save to device' button to send the current current binding to device (device must be connected - step 2). If successfull, all LEDs on the device should start flashing",
+        imageSrc: saveBinding,
+        tips: ["Do not disconnect the device while sending the data to it."]
     },
 ]
 </script>
@@ -89,6 +106,8 @@ const stepsData = [
                 <p>Your Quickey macropad is now configured and ready to boost your productivity.</p>
             </div>
         </footer>
+
+        <Button class="button-go-to" size="large"><RouterLink to="/app">Go to app</RouterLink></Button>
     </div>
 </template>
 
@@ -314,6 +333,17 @@ const stepsData = [
     line-height: 1.6;
 }
 
+.button-go-to{
+    background-color: var(--green-bright);
+    border: 1px solid var(--green-dark);
+    box-shadow: 0 0 30px rgba(7, 214, 76, 0.349);
+}
+
+.button-go-to a {
+    text-decoration: none;
+    color: var(--primary-1000);
+}
+
 /* Animations */
 @keyframes slideIn {
     from {
@@ -346,9 +376,9 @@ const stepsData = [
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .step-card {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: 30px;
         padding: 30px 20px;
     }

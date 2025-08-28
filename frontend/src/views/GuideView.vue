@@ -19,6 +19,7 @@ const activeTabIndex = ref(0)
         <TabMenu :model="tabMenuItems" v-model:activeIndex="activeTabIndex" class="menu-choice"/>
         <div class="guide-content">
             <UsageGuide v-if="activeTabIndex === 0"/>
+            <h1 v-else>This guide being prepared</h1>
 
         </div>
 
