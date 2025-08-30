@@ -9,7 +9,7 @@ import { Icon } from '@iconify/vue'
                 <Icon icon="mdi:envelope" class="icon-footer"/>
                 <spn class="icon-text">Contact</spn>
             </a>
-            <a href="suc" target="_blank">
+            <a href="https://ko-fi.com/quickey" target="_blank">
                 <!-- <i class="fa-solid fa-circle-dollar-to-slot"></i> -->
                 <Icon icon="mingcute:pig-money-fill" class="icon-footer"/>
                 <spn class="icon-text">Support</spn>
@@ -22,13 +22,13 @@ import { Icon } from '@iconify/vue'
                 <Icon icon="line-md:github" class="icon-footer"/>
                 <spn class="icon-text">GitHub</spn>
             </a> -->
-            <a href="https://www.linkedin.com/in/josef-talac-827241260/" target="_blank">
+            <a href="https://www.linkedin.com/in/josef-tala%C4%8D-827241260/" target="_blank">
                 <Icon icon="mdi:linkedin" class="icon-footer"/>
                 <spn class="icon-text">LinkedIn</spn>
             </a>
 
             <RouterLink to="/privacy-policy" style="margin: 0;">
-                <a href="https://www.linkedin.com/in/josef-talac-827241260/" target="_blank">
+                <a href="" target="_blank">
                     <Icon icon="basil:document-outline" class="icon-footer"/>
                     <spn class="icon-text">Privacy Policy</spn>
                 </a>
@@ -51,6 +51,7 @@ footer{
     align-items: center;
     background-color: transparent;
     background: linear-gradient(to top, var(--primary-1000), transparent);
+    z-index: 10;
 }
 
 footer a{

@@ -30,7 +30,7 @@ const router = createRouter({
     {
       path: '/discover',
       name: 'discover',
-      component: AvailableSoonView,
+      component: DiscoverView,
     },
     {
       path: '/firmware',

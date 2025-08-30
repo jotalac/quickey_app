@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import {ref} from 'vue'
+import ElectricBorder from '../vue_bits/ElectricBorder.vue';
 
 
 interface Props {
-    keybinding: KeybindingDataSave
+    keybinding: KeybindingDataSave,
+    mode?: 'normal' | 'hot' | 'discover'
 }
 
 const props = defineProps<Props>()
@@ -58,7 +60,7 @@ const getCategoryIcon = (categoryName: string) => {
 
 <template>
     <div class="save-block-link">
-        <div class="save-cont">
+        <div class="save-cont" :class="props.mode === 'hot' ? 'hot' : ''">
             <!-- hovering areas  -->
             <div 
                 v-for="sectionNumber in 3"
@@ -78,6 +80,7 @@ const getCategoryIcon = (categoryName: string) => {
                     :class="{
                         // 'save-key-binded': !button.isEmpty,
                         'save-key-binded': button.value && button.value.length > 0,
+                        'hot': props.mode === 'hot'
                     }"
                 ></div>
             </div>
@@ -153,6 +156,12 @@ const getCategoryIcon = (categoryName: string) => {
     transition: border 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
+.save-cont.hot{
+    background: linear-gradient(-20deg, rgb(160, 9, 9), rgb(219, 147, 14));
+    box-shadow: 0 0 30px rgb(141, 92, 27);
+    border: 1px solid rgb(192, 135, 29);
+}
+
 .save-keys-cont {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -189,6 +198,11 @@ const getCategoryIcon = (categoryName: string) => {
     box-shadow: 0 0 10px rgba(3, 87, 115, 0.37);
     /* background-color: var(--green-bright); */
     /* box-shadow: 0 0 10px rgba(0, 128, 28, 0.37); */
+}
+
+.save-key-binded.hot{
+    background-color: rgb(247, 210, 142);
+    box-shadow: 0 0 10px rgba(168, 146, 20)
 }
 
 .save-key-empty {

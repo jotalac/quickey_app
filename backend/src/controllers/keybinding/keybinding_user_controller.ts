@@ -286,4 +286,4 @@ const getTotalCountResults = async (pipeline: PipelineStage[]) => {
     return countResult[0]?.count || 0
 }
 
-export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription, updateSave, deleteSave}
+export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription, updateSave, deleteSave, getSortOptions, getTotalCountResults}

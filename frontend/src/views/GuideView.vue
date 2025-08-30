@@ -44,7 +44,7 @@ const activeTabIndex = ref(0)
     position: fixed;
     top: 80px;
     border-radius: var(--border-rad-main);
-    z-index: 10;
+    z-index: 2;
 }
 
 .guide-content{

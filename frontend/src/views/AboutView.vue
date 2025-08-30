@@ -296,7 +296,8 @@ onMounted(async () => {
         <BlockInfo v-for="item in featuresBlocks" :key="item.header" :icon="item.icon" :header="item.header" :text="item.text"/>
     </div>
 
-        <!-- self made quote -->
+
+    <!-- self made quote -->
     <div class="quote-cont" v-animateonscroll="{ enterClass: 'animate-fadein', leaveClass: 'animate-fadeout' }">
       <span class="text-bigger">Not corporate. Just crafted.</span>
       <p class="text-quote">
@@ -322,6 +323,14 @@ onMounted(async () => {
         </div>
       </template>
     </Carousel>
+
+    
+    <div class="support-cont">
+      <p>Since I’m building this project by myself in my free time, your support means a lot to me.</p>
+      <a href='https://ko-fi.com/R6R71KF055' target='_blank'>
+        <img height='50' style='border:0px;height:50px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+      </a>
+    </div>
 
 
     <DataTable :value="tableProducts">
@@ -488,6 +497,20 @@ onMounted(async () => {
   border-radius: var(--border-rad-main);
   border: 1px solid var(--gray-main);
   transition: transform 0.3s ease;
+}
+
+.support-cont{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 30px;
+  font-weight: bold;
+  max-width: 1500px;
+  width: 100%;
+  font-size: var(--bigger-text);
+  text-align: center;
+  padding: 10px;
 }
 
 /* :deep(.carousel-image-app img){
