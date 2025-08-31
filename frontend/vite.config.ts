@@ -7,12 +7,47 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 //ui styles
 import Components from 'unplugin-vue-components/vite';
 import {PrimeVueResolver} from '@primevue/auto-import-resolver';
+import {VitePWA} from "vite-plugin-pwa"
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
     vueDevTools(),
+    VitePWA({
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+      registerType: "autoUpdate",
+      scope: "/",
+      manifest: {
+        "name": "Quickey",
+        "short_name": "Quickey",
+        "start_url": "/app",
+        "display": "standalone",
+        "icons": [
+          { "src": "/favicon.ico", "sizes": "32x32", "type": "image/x-icon", "purpose": "any" },
+          { "src": "/icons/logo_big.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+          { "src": "/icons/logo_small.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        ],
+      },
+      workbox: {
+        navigateFallbackDenylist: [/^\/api/],
+        runtimeCaching: [
+          {
+            // urlPattern: ({url}) => {
+            //   return url.pathname.startsWith("/api")
+            // },
+            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "api-cache",
+              cacheableResponse: {
+                statuses: [0, 200] // cache only successfull
+              },
+              expiration: {maxEntries: 100, maxAgeSeconds: 60 * 60 * 3}
+            }
+          }
+        ],
+      }
+    }),
     Components({
       resolvers: [
         PrimeVueResolver()

@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quickey — Offline</title>
+  <meta name="theme-color" content="#293988" />
+  <link rel="icon" href="/favicon.ico" />
+  <style>
+    /* Minimal standalone styles that mirror app look & feel */
+    :root{
+      --bg: #0a093f;            /* from vite config background_color */
+      --panel: rgba(255,255,255,0.04);
+      --accent: #ff5722;
+      --muted: #9aa0b4;
+      --primary: #293988;
+      --glass: rgba(255,255,255,0.03);
+      --radius: 12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+                   Roboto, "Helvetica Neue", Arial;
+    }
+
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050427 100%);color:#e6eef9}
+    .page {
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      box-sizing:border-box;
+    }
+
+    .card {
+      width:100%;
+      max-width:980px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: var(--radius);
+      padding:28px;
+      box-shadow: 0 8px 30px rgba(6,6,30,0.6);
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:20px;
+      align-items:start;
+    }
+
+    .brand {
+      display:flex;
+      gap:14px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .logo {
+      width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--primary), #15137A);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:20px;
+      box-shadow: 0 6px 18px rgba(41,57,136,0.28);
+    }
+    h1{font-size:20px;margin:0;color:#fff}
+    p.lead{margin:10px 0 18px;color:var(--muted);line-height:1.4}
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{
+      background:var(--accent);
+      color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;
+      box-shadow: 0 6px 18px rgba(255,87,34,0.12);
+    }
+    .btn.secondary{
+      background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);
+    }
+
+    .info {
+      background:var(--glass);
+      border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,0.03);
+      color:var(--muted);font-size:13px;
+    }
+
+    .right {
+      display:flex;flex-direction:column;gap:14px;
+      align-items:stretch;
+    }
+
+    .card-list {
+      background:rgba(255,255,255,0.02);border-radius:10px;padding:12px;min-height:120px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .save {
+      display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border:1px solid rgba(255,255,255,0.02);margin-bottom:8px;
+    }
+    .save .meta{font-size:13px;color:#fff}
+    .save .sub{font-size:12px;color:var(--muted)}
+
+    .muted-small { color:var(--muted); font-size:13px; margin-top:8px; }
+
+    /* responsive */
+    @media (max-width:900px){
+      .card{grid-template-columns:1fr;max-width:720px}
+      .right{order:2}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="card" role="main" aria-labelledby="offline-title">
+      <section>
+        <div class="brand">
+          <div class="logo">Q</div>
+          <div>
+            <h1 id="offline-title">Quickey — Offline</h1>
+            <div class="muted-small">You are currently offline. Some features may be unavailable.</div>
+          </div>
+        </div>
+
+        <p class="lead">This is a cached fallback page. If you previously opened Quickey, some data may be available offline below. Try reconnecting or reload to sync new saves.</p>
+
+        <div class="actions">
+          <button class="btn" id="retryBtn">Try reconnect</button>
+          <button class="btn secondary" id="clearCacheBtn">Clear cached data</button>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="info" id="statusInfo">Status: <strong id="netState">offline</strong> — Last sync: <span id="lastSync">never</span></div>
+
+        <div style="height:12px"></div>
+
+        <div class="card-list" aria-live="polite" id="cachedList">
+          <div class="muted-small">Cached Hot Keybindings</div>
+          <div id="itemsContainer">
+            <div style="color:var(--muted);margin-top:8px">No cached items found.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right" aria-label="offline sidebar">
+        <div class="info">
+          <strong>Offline help</strong>
+          <ul style="margin:8px 0 0 18px;padding:0;color:var(--muted)">
+            <li>View previously loaded saves (if any)</li>
+            <li>Create new saves will queue locally (if your app supports it)</li>
+            <li>Reload when online to sync</li>
+          </ul>
+        </div>
+
+        <div class="info">
+          <strong>Tips</strong>
+          <div class="muted-small">Install the app (Add to home screen) for better offline behavior. App must be served over HTTPS or via preview build.</div>
+        </div>
+
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // Simple offline UI logic. The real app service worker should cache data,
+    // these operations only read from localStorage cache keys used by your app.
+    const retryBtn = document.getElementById('retryBtn');
+    const clearCacheBtn = document.getElementById('clearCacheBtn');
+    const netState = document.getElementById('netState');
+    const lastSync = document.getElementById('lastSync');
+    const itemsContainer = document.getElementById('itemsContainer');
+
+    function updateOnlineStatus(){
+      const online = navigator.onLine;
+      netState.textContent = online ? 'online' : 'offline';
+      netState.style.color = online ? '#9fffa3' : '#ffb3a3';
+    }
+
+    // attempt reload to reconnect
+    retryBtn.addEventListener('click', () => {
+      if (navigator.onLine) {
+        location.reload();
+      } else {
+        // try to ping
+        fetch('/api/health').then(()=>location.reload()).catch(()=>alert('Still offline'));
+      }
+    });
+
+    clearCacheBtn.addEventListener('click', () => {
+      localStorage.removeItem('hotKeybindings');
+      renderCached([]);
+      alert('Cleared cached hot keybindings');
+    });
+
+    function renderCached(arr){
+      itemsContainer.innerHTML = '';
+      if (!arr || arr.length === 0){
+        itemsContainer.innerHTML = '<div style="color:var(--muted);margin-top:8px">No cached items found.</div>';
+        return;
+      }
+      arr.forEach(item=>{
+        const el = document.createElement('div');
+        el.className = 'save';
+        el.innerHTML = '<div style="width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,#293988,#15137A)"></div>\
+          <div style="flex:1">\
+            <div class="meta">'+escapeHtml(item.name || 'Unnamed')+'</div>\
+            <div class="sub">'+(item.username ? escapeHtml(item.username) : 'Unknown user')+' · '+(item.likeCount||0)+' likes</div>\
+          </div>';
+        itemsContainer.appendChild(el);
+      });
+    }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+    // load cached hot keybindings (if your frontend writes them to localStorage)
+    try {
+      const raw = localStorage.getItem('hotKeybindings') || localStorage.getItem('discover.hot') || '[]';
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length) {
+        renderCached(parsed);
+        lastSync.textContent = localStorage.getItem('lastHotSync') || 'previous';
+      } else {
+        renderCached([]);
+      }
+    } catch(e){
+      renderCached([]);
+    }
+
+    // initial status
+    updateOnlineStatus();
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+  </script>
+</body>
+</html>
+```// filepath: c:\CODE_projects\quickey\quickey_app\frontend\public\offline.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quickey — Offline</title>
+  <meta name="theme-color" content="#293988" />
+  <link rel="icon" href="/favicon.ico" />
+  <style>
+    /* Minimal standalone styles that mirror app look & feel */
+    :root{
+      --bg: #0a093f;            /* from vite config background_color */
+      --panel: rgba(255,255,255,0.04);
+      --accent: #ff5722;
+      --muted: #9aa0b4;
+      --primary: #293988;
+      --glass: rgba(255,255,255,0.03);
+      --radius: 12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+                   Roboto, "Helvetica Neue", Arial;
+    }
+
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050427 100%);color:#e6eef9}
+    .page {
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      box-sizing:border-box;
+    }
+
+    .card {
+      width:100%;
+      max-width:980px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: var(--radius);
+      padding:28px;
+      box-shadow: 0 8px 30px rgba(6,6,30,0.6);
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:20px;
+      align-items:start;
+    }
+
+    .brand {
+      display:flex;
+      gap:14px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .logo {
+      width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--primary), #15137A);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:20px;
+      box-shadow: 0 6px 18px rgba(41,57,136,0.28);
+    }
+    h1{font-size:20px;margin:0;color:#fff}
+    p.lead{margin:10px 0 18px;color:var(--muted);line-height:1.4}
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{
+      background:var(--accent);
+      color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;
+      box-shadow: 0 6px 18px rgba(255,87,34,0.12);
+    }
+    .btn.secondary{
+      background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);
+    }
+
+    .info {
+      background:var(--glass);
+      border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,0.03);
+      color:var(--muted);font-size:13px;
+    }
+
+    .right {
+      display:flex;flex-direction:column;gap:14px;
+      align-items:stretch;
+    }
+
+    .card-list {
+      background:rgba(255,255,255,0.02);border-radius:10px;padding:12px;min-height:120px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .save {
+      display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border:1px solid rgba(255,255,255,0.02);margin-bottom:8px;
+    }
+    .save .meta{font-size:13px;color:#fff}
+    .save .sub{font-size:12px;color:var(--muted)}
+
+    .muted-small { color:var(--muted); font-size:13px; margin-top:8px; }
+
+    /* responsive */
+    @media (max-width:900px){
+      .card{grid-template-columns:1fr;max-width:720px}
+      .right{order:2}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="card" role="main" aria-labelledby="offline-title">
+      <section>
+        <div class="brand">
+          <div class="logo">Q</div>
+          <div>
+            <h1 id="offline-title">Quickey — Offline</h1>
+            <div class="muted-small">You are currently offline. Some features may be unavailable.</div>
+          </div>
+        </div>
+
+        <p class="lead">This is a cached fallback page. If you previously opened Quickey, some data may be available offline below. Try reconnecting or reload to sync new saves.</p>
+
+        <div class="actions">
+          <button class="btn" id="retryBtn">Try reconnect</button>
+          <button class="btn secondary" id="clearCacheBtn">Clear cached data</button>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="info" id="statusInfo">Status: <strong id="netState">offline</strong> — Last sync: <span id="lastSync">never</span></div>
+
+        <div style="height:12px"></div>
+
+        <div class="card-list" aria-live="polite" id="cachedList">
+          <div class="muted-small">Cached Hot Keybindings</div>
+          <div id="itemsContainer">
+            <div style="color:var(--muted);margin-top:8px">No cached items found.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right" aria-label="offline sidebar">
+        <div class="info">
+          <strong>Offline help</strong>
+          <ul style="margin:8px 0 0 18px;padding:0;color:var(--muted)">
+            <li>View previously loaded saves (if any)</li>
+            <li>Create new saves will queue locally (if your app supports it)</li>
+            <li>Reload when online to sync</li>
+          </ul>
+        </div>
+
+        <div class="info">
+          <strong>Tips</strong>
+          <div class="muted-small">Install the app (Add to home screen) for better offline behavior. App must be served over HTTPS or via preview build.</div>
+        </div>
+
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // Simple offline UI logic. The real app service worker should cache data,
+    // these operations only read from localStorage cache keys used by your app.
+    const retryBtn = document.getElementById('retryBtn');
+    const clearCacheBtn = document.getElementById('clearCacheBtn');
+    const netState = document.getElementById('netState');
+    const lastSync = document.getElementById('lastSync');
+    const itemsContainer = document.getElementById('itemsContainer');
+
+    function updateOnlineStatus(){
+      const online = navigator.onLine;
+      netState.textContent = online ? 'online' : 'offline';
+      netState.style.color = online ? '#9fffa3' : '#ffb3a3';
+    }
+
+    // attempt reload to reconnect
+    retryBtn.addEventListener('click', () => {
+      if (navigator.onLine) {
+        location.reload();
+      } else {
+        // try to ping
+        fetch('/api/health').then(()=>location.reload()).catch(()=>alert('Still offline'));
+      }
+    });
+
+    clearCacheBtn.addEventListener('click', () => {
+      localStorage.removeItem('hotKeybindings');
+      renderCached([]);
+      alert('Cleared cached hot keybindings');
+    });
+
+    function renderCached(arr){
+      itemsContainer.innerHTML = '';
+      if (!arr || arr.length === 0){
+        itemsContainer.innerHTML = '<div style="color:var(--muted);margin-top:8px">No cached items found.</div>';
+        return;
+      }
+      arr.forEach(item=>{
+        const el = document.createElement('div');
+        el.className = 'save';
+        el.innerHTML = '<div style="width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,#293988,#15137A)"></div>\
+          <div style="flex:1">\
+            <div class="meta">'+escapeHtml(item.name || 'Unnamed')+'</div>\
+            <div class="sub">'+(item.username ? escapeHtml(item.username) : 'Unknown user')+' · '+(item.likeCount||0)+' likes</div>\
+          </div>';
+        itemsContainer.appendChild(el);
+      });
+    }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+    // load cached hot keybindings (if your frontend writes them to localStorage)
+    try {
+      const raw = localStorage.getItem('hotKeybindings') || localStorage.getItem('discover.hot') || '[]';
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length) {
+        renderCached(parsed);
+        lastSync.textContent = localStorage.getItem('lastHotSync') || 'previous';
+      } else {
+        renderCached([]);
+      }
+    } catch(e){
+      renderCached([]);
+    }
+
+    // initial status
+    updateOnlineStatus();
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
