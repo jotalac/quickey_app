@@ -36,7 +36,7 @@ export default defineConfig({
             //   return url.pathname.startsWith("/api")
             // },
             urlPattern: ({ url }) => url.pathname.startsWith('/api'),
-            handler: "StaleWhileRevalidate",
+            handler: "StaleWhileRevalidate", //return the old data (cached) and renews the cached data 
             options: {
               cacheName: "api-cache",
               cacheableResponse: {
