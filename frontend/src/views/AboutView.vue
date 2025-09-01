@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref, onMounted, nextTick } from 'vue'
 import {useRouter, useRoute} from 'vue-router'
+import { Icon } from '@iconify/vue'
 
 //images
 import logo from '@/assets/images/icons/main-logo.svg'
@@ -17,6 +18,7 @@ import rotateImage from '@/assets/images/landing_page/rotate.webp'
 //videos
 import knobVideo from '@/assets/videos/knob_about.mp4'
 import buttonVideo from '@/assets/videos/button_horizontal.mp4'
+import aiVideo from '@/assets/videos/ai_binding.webm'
 
 import discordImage from '@/assets/images/landing_page/discord.webp'
 import ideaImage from '@/assets/images/landing_page/idea.webp'
@@ -296,6 +298,19 @@ onMounted(async () => {
         <BlockInfo v-for="item in featuresBlocks" :key="item.header" :icon="item.icon" :header="item.header" :text="item.text"/>
     </div>
 
+    <div class="ai-cont">
+      <p class="ai-header"><Icon icon="mingcute:ai-fill" width="40" height="40"  style="color: var(--blue-vivid)" />AI-powered macro sequences</p>
+      <p class="ai-description">Create sequences of actions by prompting AI, you don’t need to know the steps. Simply tell AI what you’d like to do, and it creates the macro</p>
+       <video
+          autoplay
+          muted
+          loop
+          class="ai-video-display"
+       >
+         <source :src="aiVideo" type="video/mp4">
+       </video>
+    </div>
+
 
     <!-- self made quote -->
     <div class="quote-cont" v-animateonscroll="{ enterClass: 'animate-fadein', leaveClass: 'animate-fadeout' }">
@@ -475,6 +490,7 @@ onMounted(async () => {
 .text-quote{
   /* font-size: var(--bigger-text); */
   width: 70%;
+  color: var(--gray-bright);
 }
 
 /* carousel styles */
@@ -536,6 +552,38 @@ onMounted(async () => {
   padding: 0 40px;
   margin-top: 50px;
 }
+
+.ai-cont{
+  display: flex;
+  flex-direction: column;
+  max-width: 1500px;
+  width: 100%;
+  margin-top: 30px;
+  padding: 0 40px;
+  align-items: center;
+}
+
+.ai-header{
+  font-size: var(--big-title-text);
+  font-weight: bold;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+}
+
+.ai-description{
+  width: 70%;
+  color: var(--gray-bright);
+  margin-right: auto;
+}
+
+.ai-video-display {
+  width: 1000px;
+  border-radius: var(--border-rad-main);
+  border: 1px solid var(--gray-main);
+  margin-top: 30px;
+}
+
 
 .apps-text{
   font-weight: bold;
@@ -668,6 +716,10 @@ onMounted(async () => {
     display: flex;
     align-items: center;
   }
+
+  .ai-video-display{
+    width: 100%;
+  }
 }
 
 
@@ -745,6 +797,14 @@ onMounted(async () => {
 
   .video-display{
     width: 90%;
+  }
+
+  .ai-header{
+    font-size: var(--bigger-text);
+  }
+
+  .ai-description{
+    width: 100%;
   }
 }
 

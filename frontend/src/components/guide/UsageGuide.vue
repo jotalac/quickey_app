@@ -21,7 +21,7 @@ const stepsData = [
         title: "Connect to Web Application", 
         description: "In the Quickey web app click the connect button to establish communication via Web Serial API. Device cannot be connected anywhere else. (for example Thonny for debuging)",
         imageSrc: deviceConnect,
-        tips: ["Only Chromium browsers support Web Serial API (Chrome, Edge, Opera, Brave ...)", "Ensure no other tabs or services are connected to the device"]
+        tips: ["Only Chromium browsers support Web Serial API (Chrome, Edge, Opera, Brave ...)", "You can download the Quickey platform as PWA (progressive web app) and use it offline with limited functionality" ,"Ensure no other tabs or services are connected to the device"]
     },
     {
         number: 3, 
