@@ -15,6 +15,14 @@ import productImage6 from '@/assets/images/landing_page/product_6.webp'
 import productImage7 from '@/assets/images/landing_page/product_7.webp'
 import rotateImage from '@/assets/images/landing_page/rotate.webp'
 
+import image1 from '@/assets/images/landing_page/1.webp'
+import image2 from '@/assets/images/landing_page/2.webp'
+import image3 from '@/assets/images/landing_page/3.webp'
+import image4 from '@/assets/images/landing_page/4.webp'
+import image5 from '@/assets/images/landing_page/5.webp'
+import image6 from '@/assets/images/landing_page/6.webp'
+import image7 from '@/assets/images/landing_page/7.webp'
+
 //videos
 import knobVideo from '@/assets/videos/knob_about.mp4'
 import buttonVideo from '@/assets/videos/button_horizontal.mp4'
@@ -40,11 +48,11 @@ import ShinyText from '@/components/vue_bits/ShinyText.vue'
 const imagesCarousel = [
   productImage1,
   productImage2,
-  productImage3,
-  productImage4,
+  image3,
+  image4,
   productImage5,
-  productImage6,
-  productImage7,
+  image6,
+  image7,
 ]
 
 const appCarousel = [
