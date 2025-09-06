@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAiKeybindingDialog } from '@/composables/useAiKeybindingDialog';
+import { useAiKeybindingDialog } from '@/composables/dialogVisibility/useAiKeybindingDialog';
 import {  watch, ref } from 'vue';
 import { Icon } from '@iconify/vue';
 import ShinyText from '@/components/vue_bits/ShinyText.vue';

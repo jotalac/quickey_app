@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useProfileDeleteDialog } from '@/composables/useProfileDeleteDialog';
+import { useProfileDeleteDialog } from '@/composables/dialogVisibility/useProfileDeleteDialog';
 import {computed, ref} from 'vue'
 
 const {isDialogVisible, hideDialog} = useProfileDeleteDialog()

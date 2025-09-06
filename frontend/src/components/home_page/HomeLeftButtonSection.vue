@@ -5,7 +5,7 @@ import { storeToRefs } from "pinia";
 import { useDeviceActions } from "@/composables/useButtonActions";
 import { useAuth } from "@/composables/useAuth";
 import SaveBindingDialog from "@/components/modals/SaveBindingDialog.vue";
-import { useSaveDialog } from "@/composables/useSaveDialog";
+import { useSaveDialog } from "@/composables/dialogVisibility/useSaveDialog";
 
 const deviceStore = useDeviceStore()
 const {isConnected} = storeToRefs(deviceStore)

@@ -1,63 +1,47 @@
 <script setup lang="ts">
-import { useEditSaveDialog } from '@/composables/useKeybindingProfileEditDialog';
-import { computed, ref, watch, toRaw } from 'vue';
+import { useEditSaveDialog } from '@/composables/dialogVisibility/useKeybindingProfileEditDialog';
+import { computed, ref, watch } from 'vue';
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import KeybindingPreview from '@/components/KeybindingPreview.vue';
 import { keybindingSaveApi } from '@/api/keybinding/keybinding_save';
-import { zodResolver } from '@primevue/forms/resolvers/zod';
-import { z } from 'zod' 
 import { userKeybindingApi } from '@/api/keybinding/keybinding_user';
 import { useConfirm, useToast } from 'primevue';
 import { storeToRefs } from 'pinia';
 import { useDeviceStore } from '@/stores/deviceStore';
-import { useButtonBindStore } from '@/stores/buttonBindStore';
-import { useButtons } from '@/composables/useButtonsBindingHome';
-import { useRouter } from 'vue-router';
-import type { KnobBindHome } from '@/types/buttonBindHome';
+import { useKeybindingSave } from '@/composables/useKeybindingSave';
+import { useAuth } from '@/composables/useAuth';
 
 interface Props {
     keybidingData: KeybindingDataSave | null
+    editable?: boolean
 }
 
 const toast = useToast()
 const confirm = useConfirm()
-const router = useRouter()
 
+const {currentUser} = useAuth()
 
+const {saveKeybindingToDevice, useCurrentKeybinding, convertDateFormat, likeButtonToggle, validateFormValues} = useKeybindingSave()
 const{isDialogVisible, hideDialog} = useEditSaveDialog()
 const props = defineProps<Props>()
 const emit = defineEmits<{
     dialogHide: [],
     upadeSuccess: [updatedData: any],
-    likeChange: [isLiked: any],
+    likeChange: [isLiked: boolean, saveId: string, likeCount: number],
     saveDeleted: [saveId: string]
 }>()
 
 // name and description edit
-const saveName = ref<string>()
-const saveDescription = ref<string>()
-const isPublic = ref<boolean>()
-const isLiked = ref<boolean>()
-const likeCount = ref<number>()
-
-
+const saveName = ref<string>("")
+const saveDescription = ref<string>("")
+const isPublic = ref<boolean>(false)
+const isLiked = ref<boolean>(false)
+const likeCount = ref<number>(0)
 
 let descriptionOriginal = ""
 
-const validateFormValues = (): boolean => {
-    let valid = true
-    const currentNameLength = saveName.value?.trim().length 
-    const currentDescLength = saveDescription.value?.trim().length 
-    if (currentNameLength!! < 3 || currentNameLength!! > 50) {
-        toast.add({severity: 'warn', summary: "Name length must be 3-50 characters", life: 1000})
-        valid = false
-    } 
-    if (currentDescLength!! > 3000) {
-        toast.add({severity: 'warn', summary: "Description length must be 0-3000 characters", life: 1000})
-        valid = false
-    }
-
-    return valid
+const validateFormValuesLocal = (): boolean => {
+    return validateFormValues(saveName.value, saveDescription.value)
 }
 
 const isFormEdited = computed<boolean>(() => {
@@ -67,18 +51,18 @@ const isFormEdited = computed<boolean>(() => {
 })
 
 const restoreFormValues = () => {
-    saveName.value = props.keybidingData?.name 
+    saveName.value = props.keybidingData?.name || ''
     saveDescription.value = descriptionOriginal
-    isPublic.value = props.keybidingData?.public
+    isPublic.value = props.keybidingData?.public || false
 }
 
 const saveNewInfo = async () => {
     if (!props.keybidingData?._id) return
 
     //validate the values manually :[
-    if (!validateFormValues()) return
+    if (!validateFormValuesLocal()) return
 
-    const saveResult = await userKeybindingApi.editKeybindingSave(saveName.value!!, saveDescription.value!!, isPublic.value!!, props.keybidingData._id)
+    const saveResult = await userKeybindingApi.editKeybindingSave(saveName.value, saveDescription.value, isPublic.value, props.keybidingData._id)
     
     if (saveResult.status === 'success') {
         toast.add({severity: 'success', summary: "Save updated", life: 1000})
@@ -92,32 +76,12 @@ const saveNewInfo = async () => {
 }
 
 // === likes ===
-const likeButtonToggle = async () => {
+const likeButtonToggleLocal = async () => {
     if (!props.keybidingData?._id) return
 
-    const originalLikedState = isLiked.value
-    const originalLikeCount = likeCount.value
+    await likeButtonToggle(props.keybidingData._id, likeCount, isLiked)    
 
-    // Optimistically update UI
-    isLiked.value = !isLiked.value
-    
-    if (isLiked.value) {
-        likeCount.value = (likeCount.value ?? 0) + 1
-    } else {
-        likeCount.value = Math.max(0, (likeCount.value ?? 1) - 1) // Prevent negative counts
-    }
-
-    try {
-        const response = await keybindingSaveApi.toggleLike(isLiked.value, props.keybidingData._id)
-        
-        emit('likeChange', {isLiked: isLiked.value, saveId: props.keybidingData._id, likeCount: likeCount.value})
-    } catch (error) {
-        console.log(error)
-        // Revert on error
-        isLiked.value = originalLikedState
-        likeCount.value = originalLikeCount
-        console.error('Error toggling like:', error)
-    }
+    emit('likeChange', isLiked.value, props.keybidingData._id, likeCount.value)
 }
 
 // ===== delete save ======
@@ -168,22 +132,18 @@ const deleteSave = async (): Promise<boolean> => {
 //items in the menu
 const deviceStore = useDeviceStore()
 const {isConnected} = storeToRefs(deviceStore)
-const {sendToDevice} = deviceStore
-
-const buttonBindStore = useButtonBindStore()
-const {initButtons, resetButton} = useButtons()
 
 const leftMenuItems = computed(() => [
     {
         label: 'Use keybinding',
         icon: 'pi pi-arrow-circle-left',
-        tooltip: 'Device not connected',
+        disabled: !currentUser.value,
         command: useKeybinding
     },
     {
         label: 'Send to device',
         icon: 'pi pi-upload',
-        disabled: !isConnected.value,
+        disabled: !isConnected.value || !currentUser.value,
         command: saveToDevice
 
     }
@@ -192,45 +152,13 @@ const leftMenuItems = computed(() => [
 
 // ==== keybinding actions ====
 const saveToDevice = async () => {
-    if (!isConnected.value || !props.keybidingData) return
-
-    // convert data for export
-    const dataToSend: Record<string, string[]> = {}
-
-    const originalData = JSON.parse(JSON.stringify(props.keybidingData.keyBinding));
-    
-    originalData.forEach((btn: any) => {
-        dataToSend[String(btn.id)] = toRaw(btn.value)
-    })
-
-    console.log(dataToSend)
-
-    await sendToDevice(dataToSend)
+    await saveKeybindingToDevice(props.keybidingData?.keyBinding)
 }
 
 const useKeybinding = () => {
     if (!props.keybidingData) return
-
-    const originalData = JSON.parse(JSON.stringify(props.keybidingData.keyBinding))
-
-    //init the buttons if there are not
-    if (buttonBindStore.allButtons.length === 0) {initButtons()}
-    buttonBindStore.resetAllButtons() //reset current binding
-
-
-    originalData.forEach((btn: any) => {
-        if (btn.id === 'knob') {
-            const state = btn.value.every((value: string) => value === '') ? 'notBinded' : 'binded'
-            const knobElement: KnobBindHome = {state: state, values: {left: btn.value[0], right: btn.value[1], button: btn.value[2]}}
-            buttonBindStore.setKnob(knobElement)
-        }
-
-        const state = buttonBindStore.getStateFromValue(btn.value)
-        buttonBindStore.updateButton(Number(btn.id), {state: state, value: btn.value})
-    })
-
-    dialogHide()
-    router.push("/app")
+    useCurrentKeybinding(props.keybidingData.keyBinding)
+    hideDialog()
 }
 
 
@@ -272,7 +200,7 @@ const dialogHide = () => {
         <div class="dialog-content">
             <div class="left-edit-section">
                 <div class="edit-form-cont">
-                    <Form :key="props.keybidingData?._id" v-slot="$form" class="form-element" @submit="saveNewInfo" validate-on-value-update>
+                    <Form :key="props.keybidingData?._id" class="form-element" @submit="saveNewInfo" validate-on-value-update>
 
                         <label for="save-name" class="input-label">Name</label>
                         <InputText
@@ -282,6 +210,7 @@ const dialogHide = () => {
                         placeholder="Save name"
                         class="form-input"
                         maxlength="50"
+                        :disabled="!editable"
                         />
 
                         <label for="save-description" class="input-label">Description</label>
@@ -292,9 +221,10 @@ const dialogHide = () => {
                             placeholder="Save description (optional)"
                             class="form-input"
                             maxlength="3000"
+                            :disabled="!editable"
                         />
                         
-                        <div class="form-bottom">
+                        <div v-if="editable" class="form-bottom">
                             <SelectButton 
                                 v-model="isPublic"
                                 :options="selectOptions"
@@ -336,19 +266,20 @@ const dialogHide = () => {
 
                     <div class="like-delete-cont">
                         <ConfirmDialog/>
-                        <div class="like-cont">
+                        <div v-if="currentUser" class="like-cont">
                             <Button 
                                 :label="isLiked ? 'Liked' : 'Like'"
                                 :icon="isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
                                 :class="['button-like', { active: isLiked }]"
                                 rounded
                                 outlined
-                                @click="likeButtonToggle"
+                                @click="likeButtonToggleLocal"
                             />
                             <p class="like-count-text"><i class="pi pi-heart-fill like-count-icon"/>{{ likeCount }}</p>
                         </div>
                         
                         <Button
+                            v-if="editable"
                             label="Delete"
                             icon="pi pi-trash"
                             rounded
@@ -358,6 +289,11 @@ const dialogHide = () => {
                             @click="deleteSaveConfirm"     
                         />
 
+                    </div>
+
+                    <div class="user-date-cont">
+                        <p>{{ convertDateFormat(props.keybidingData?.createdAt || '') }}</p>
+                        <p><i class="pi pi-user"/>{{ props.keybidingData?.username }}</p>
                     </div>
                 </div>
 
@@ -494,6 +430,18 @@ const dialogHide = () => {
 
 .button-like.active{
     color: var(--red-vivid);
+}
+
+.user-date-cont{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 35px;
+    color: var(--p-togglebutton-color);
+}
+
+.user-date-cont i{
+    margin-right: 10px;
 }
 
 

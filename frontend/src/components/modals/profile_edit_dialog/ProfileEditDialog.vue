@@ -4,7 +4,7 @@ import type { AuthUser } from '@/api/auth/auth_service';
 import { profileEditApi } from '@/api/profile/profile_edit_api';
 import type { SocialLinks } from '@/components/profile/ProfileDisplay.vue';
 import { useAuth } from '@/composables/useAuth';
-import { useProfileEditDialog } from '@/composables/useProfileEditDialog';
+import { useProfileEditDialog } from '@/composables/dialogVisibility/useProfileEditDialog';
 import { useToast } from 'primevue';
 import {ref, computed, watch} from 'vue'
 import EditSocialMediaLinks from '@/components/modals/profile_edit_dialog/EditSocialMediaLinks.vue';

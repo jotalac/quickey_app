@@ -4,22 +4,6 @@ import { useKnobActionCategories } from '@/composables/useKnobActionCategories';
 export const useKeybindingSaveEdit = () => {
     const {findActionDefinition} = useMulitBindingImport()
 
-
-    // const getCurrentPageButtons = (currentPage: number, totalPages: number, current) => {
-    //     //handle knob
-    //     if (currentPage.value === (totalPages + 1)) {
-    //         currentPageButtons.value = props.keybidingData?.keyBinding[27].value
-    //         console.log(currentPageButtons.value)
-    //     } else {
-    //         const firstIndex = ((currentPage.value - 1) * 9) + 1
-    //         const lastIndex = ((currentPage.value) * 9)
-    //         const pageButtons = props.keybidingData?.keyBinding.filter(button => {
-    //             return Number(button.id) >= firstIndex && Number(button.id) <= lastIndex;
-    //         })
-    //         currentPageButtons.value = pageButtons
-    //     }
-    // }
-
     const convertValueForTooltip = (values: string[]): string => {
         if (!values || values.length <= 1) return ''
     

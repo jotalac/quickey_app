@@ -15,7 +15,7 @@ import { useMultiBindingDialogStore } from "@/stores/multiBindingDialogStore"
 import KnobBindingDialog from "@/components/modals/knobBinding/KnobBindingDialog.vue"
 import { useKnobDialogStore } from "@/stores/knobDialogStore"
 import { useDeviceActions } from "@/composables/useButtonActions"
-import { useAiKeybindingDialog } from "@/composables/useAiKeybindingDialog"
+import { useAiKeybindingDialog } from "@/composables/dialogVisibility/useAiKeybindingDialog"
 import { useAuth } from "@/composables/useAuth"
 
 const {importData} = useDeviceActions()

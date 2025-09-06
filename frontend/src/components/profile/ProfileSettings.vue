@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { profileSettingsApi } from '@/api/profile/profile_settings_api';
 import { useAuth } from '@/composables/useAuth';
-import { useProfileDeleteDialog } from '@/composables/useProfileDeleteDialog';
+import { useProfileDeleteDialog } from '@/composables/dialogVisibility/useProfileDeleteDialog';
 import { useConfirm, useToast } from 'primevue';
 import { useRouter } from 'vue-router';
 import DeleteProfileDialog from '../modals/DeleteProfileDialog.vue';

@@ -1,13 +1,18 @@
 import { Request, Response } from "express"
 import { IUser } from "../../@types/user"
-import mongoose, { FilterQuery, PipelineStage } from "mongoose"
+import mongoose, { FilterQuery, mongo, PipelineStage } from "mongoose"
 import { IKeyBinding } from "../../@types/keybinding"
 import { getSortOptions, getTotalCountResults } from "./keybinding_user_controller"
 import KeyBinding from "../../models/keybinding_model"
 
 const getBindingDiscover = async (req: Request, res: Response) => {
     try {
-        const {userId} = req.query 
+        //get valid user id
+        const {userId} = req.query
+        const userObjectId = typeof userId === 'string' && mongoose.isValidObjectId(userId)
+          ? new mongoose.Types.ObjectId(userId)
+          : null
+        
         //get the filter values
         const {searchText, filterCategories, sortBy = "date_desc", page = "1", limit = "15"} = req.query
         // const query: any = {userId: user._id, }
@@ -50,7 +55,7 @@ const getBindingDiscover = async (req: Request, res: Response) => {
         pipeline.push({
             $addFields: {
                 likeCount: { $size: '$likesData'},
-                isLiked: {$in: [userId, '$likesData.userId']},
+                isLiked: {$in: [userObjectId, '$likesData.userId']},
                 username: {$arrayElemAt: ['$userInfo.username', 0]}
             }
         })
@@ -99,6 +104,10 @@ const getBindingDiscover = async (req: Request, res: Response) => {
 
 const getHotKeybindings = async (req: Request, res: Response) => {
   try {
+    const {userId} = req.query
+    const userObjectId = typeof userId === 'string' && mongoose.isValidObjectId(userId)
+      ? new mongoose.Types.ObjectId(userId)
+      : null
     const limit = parseInt(req.query.limit as string) || 3;
     const timeWindow = parseInt(req.query.days as string) || 7; // Last 7 days
     
@@ -120,7 +129,10 @@ const getHotKeybindings = async (req: Request, res: Response) => {
       // Add total like count
       {
         $addFields: {
-          likeCount: { $size: '$likesData' }
+          likeCount: { $size: '$likesData' },
+          isLiked: userObjectId
+              ? { $in: [ userObjectId, '$likesData.userId' ] }
+              : false,
         }
       },
       
@@ -205,6 +217,7 @@ const getHotKeybindings = async (req: Request, res: Response) => {
           keyBinding: 1,
           public: 1,
           likeCount: 1,
+          isLiked: 1,
           createdAt: 1,
           hotScore: 1,
           recentLikeCount: 1,

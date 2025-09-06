@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { discoverKeybindingApi } from '@/api/keybinding/keybinding_discover';
+import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveProfileDialog.vue';
+import { useEditSaveDialog } from '@/composables/dialogVisibility/useKeybindingProfileEditDialog';
 import { useAuth } from '@/composables/useAuth';
 import { useConstantsStore } from '@/stores/constantsStore';
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import { Icon } from '@iconify/vue';
 import { storeToRefs } from 'pinia';
-import {onMounted, ref, TransitionGroup, watch} from 'vue'
+import { useToast } from 'primevue';
+import {onMounted, ref, watch} from 'vue'
 
 const {currentUser} = useAuth()
+const toast = useToast()
 
 //variables
 const searchValues = ref('')
@@ -76,7 +80,7 @@ const updateDisplayData = async () => {
 const getHotKeybindings = async () =>{
   hotDisplayData.value = []
 
-  const response = await discoverKeybindingApi.getHotKeybindings(3)
+  const response = await discoverKeybindingApi.getHotKeybindings(3, currentUser.value?.id)
   console.log(response)
   hotDisplayData.value = response.data
 }
@@ -98,6 +102,37 @@ watch(searchValues, () => {
         filterValueChanged()
     }, 500)  
 })
+
+//dialog showing 
+// const {showDialog} = useKeybindingDiscoverDialog()
+const {showDialog} = useEditSaveDialog()
+const currentDataDialog = ref<KeybindingDataSave | null>(null)
+
+const showSaveDialog = (currentData: KeybindingDataSave) => {
+  if (!currentUser.value) { //only logged users can view the content
+    toast.add({severity: "info", summary: "Please log-in", detail: "Only logged-in in users can view the shared saves", life: 3000})
+    return
+  }
+  currentDataDialog.value = currentData
+  showDialog()
+}
+
+const handleItemLiked = (isLiked: boolean, saveId: string, likeCount: number) => {
+  //update in the display area
+  const index = displayData.value.findIndex(item => item._id === saveId)
+  if (index !== -1) {
+    displayData.value[index].isLiked = isLiked
+    displayData.value[index].likeCount = likeCount
+  }
+  
+  //update in the hot binding area
+  const index_hot = hotDisplayData.value.findIndex(item => item._id === saveId)
+  if (index_hot !== -1) {
+    hotDisplayData.value[index].isLiked = isLiked
+    hotDisplayData.value[index].likeCount = likeCount
+  }
+  
+}
 
 </script>
 
@@ -128,6 +163,7 @@ watch(searchValues, () => {
             :style="{animationDelay: `${index * 100}ms`}"
             mode="hot"
             class="hot-save-item"
+            @click="showSaveDialog(bindingSave)"
           />
       </div>
     </div>
@@ -195,12 +231,22 @@ watch(searchValues, () => {
           class="saves-container"
           appear
       >  
+        <!-- <KeybindingSaveDiscover
+          :keybiding-data="currentDataDialog"
+          @like-change="handleItemLiked"
+        /> -->
+        <KeybindingSaveProfileDialog
+          :keybiding-data="currentDataDialog"
+          :editable="false"
+          @like-change="handleItemLiked"
+        />
         <KeybindingSave
           v-for="(bindingSave, index) in displayData" 
           :key="bindingSave._id"
           :keybinding="bindingSave"
           :style="{animationDelay: `${index * 20}ms`}"
           class="save-item"
+          @click="showSaveDialog(bindingSave)"
         />
       </TransitionGroup>
 
@@ -231,6 +277,7 @@ watch(searchValues, () => {
 
 .discover-wrapper{
   max-width: 2000px;
+  width: 100%;
   overflow-y: auto;
   display: flex;
   padding: 80px 10px;
@@ -320,8 +367,6 @@ watch(searchValues, () => {
   width: 100%;
 }
 
-.hot-save-item {
-}
 
 
 .search-filters-cont{

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import {ref} from 'vue'
-import ElectricBorder from '../vue_bits/ElectricBorder.vue';
 
 
 interface Props {
@@ -12,7 +11,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const currentPage = ref(1)
-const totalPages = 3
+// const totalPages = 3
 const isPageChanging = ref(false)
 
 
@@ -40,7 +39,7 @@ const handlePageChange = (pageNumber: number) => {
 }
 
 const convertDataFormat = (dateUnformated: string) => {
-    return new Date(props.keybinding.createdAt).toLocaleDateString()
+    return new Date(dateUnformated).toLocaleDateString()
 } 
 
 const getCategoryIcon = (categoryName: string) => {

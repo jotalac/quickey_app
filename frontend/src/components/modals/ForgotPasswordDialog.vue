@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { authFormApi } from '@/api/auth/auth_form_api';
-import { useForgotPasswordDialog } from '@/composables/useForgotPasswordDialog';
+import { useForgotPasswordDialog } from '@/composables/dialogVisibility/useForgotPasswordDialog';
 import { useToast } from 'primevue';
 import {ref} from 'vue'
 

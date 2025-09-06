@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onBeforeMount, ref, watch} from 'vue'
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
-import { useKeybindingSaveEdit } from '@/composables/useKeybindingSaveDialog';
+import { useKeybindingSaveEdit } from '@/composables/useKeybindingSavePreview';
 import ButtonBox from '@/components/home_page/ButtonBox.vue';
 import HomeKnob from '@/components/home_page/HomeKnob.vue'; 
 import RoundPageButton from '@/components/home_page/RoundPageButton.vue'; 

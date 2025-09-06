@@ -58,6 +58,7 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext')['default']
     KeybindingPreview: typeof import('./src/components/KeybindingPreview.vue')['default']
     KeybindingSave: typeof import('./src/components/profile/KeybindingSave.vue')['default']
+    KeybindingSaveDiscover: typeof import('./src/components/modals/KeybindingSaveDiscover.vue')['default']
     KeybindingSaveProfileDialog: typeof import('./src/components/modals/keybindingSaveProfile/KeybindingSaveProfileDialog.vue')['default']
     KeyPressNode: typeof import('./src/components/modals/multiBinding/actionNodes/KeyPressNode.vue')['default']
     KnobActionSelect: typeof import('./src/components/modals/knobBinding/KnobActionSelect.vue')['default']

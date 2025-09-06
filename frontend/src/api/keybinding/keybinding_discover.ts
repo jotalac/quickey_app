@@ -21,11 +21,12 @@ export const discoverKeybindingApi = {
         }
     },
 
-    async getHotKeybindings(limit: number) {
+    async getHotKeybindings(limit: number, userId?: string) {
         try {
             const response = await api.get('/keybinding/get-hot-binding', {
                 params: {
-                    limit
+                    limit,
+                    userId
                 }
             })
             

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSaveDialog } from '@/composables/useSaveDialog';
+import { useSaveDialog } from '@/composables/dialogVisibility/useSaveDialog';
 import {onBeforeMount, onMounted, ref, toRaw} from 'vue'
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod'

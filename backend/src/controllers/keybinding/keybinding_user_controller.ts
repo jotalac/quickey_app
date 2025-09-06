@@ -144,6 +144,33 @@ const getDescription = async (req: Request, res: Response) => {
     }
 }
 
+const getDescriptionDiscover = async (req: Request, res: Response) => {
+    try {
+        const {saveId} = req.params
+
+        const savedData = await KeyBinding.findById(saveId)
+
+        
+        if (!savedData) {
+            res.status(400).json({
+                status: "error",
+                msg: "Invalid save ID"
+            })
+            return
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: savedData.description
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            msg: "Error getting description"
+        })
+    }
+}
+
 const updateSave = async (req: Request, res: Response) => {
     const {saveId} = req.params
     const user = req.user as IUser
@@ -286,4 +313,4 @@ const getTotalCountResults = async (pipeline: PipelineStage[]) => {
     return countResult[0]?.count || 0
 }
 
-export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription, updateSave, deleteSave, getSortOptions, getTotalCountResults}
+export {verfiyBindingName, bindingNameValid, getBindingUser, getDescription, getDescriptionDiscover, updateSave, deleteSave, getSortOptions, getTotalCountResults}

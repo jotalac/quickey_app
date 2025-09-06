@@ -11,7 +11,7 @@ import { z } from 'zod'
 import { authFormApi } from '@/api/auth/auth_form_api'; 
 import { useGoogleLogin } from '@/composables/useGoogleLogin';
 import ForgotPasswordDialog from '@/components/modals/ForgotPasswordDialog.vue';
-import { useForgotPasswordDialog } from '@/composables/useForgotPasswordDialog';
+import { useForgotPasswordDialog } from '@/composables/dialogVisibility/useForgotPasswordDialog';
 
 const router = useRouter()
 const toast = useToast()

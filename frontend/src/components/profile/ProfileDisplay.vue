@@ -8,7 +8,7 @@ import CountUp from '../vue_bits/CountUp.vue';
 import { aiGenKeybindingApi } from '@/api/ai_generation/ai_gen_keybinding_api';
 import { useButtons } from '@/composables/useButtonsBindingHome';
 import { useRouter } from 'vue-router';
-import { useProfileEditDialog } from '@/composables/useProfileEditDialog';
+import { useProfileEditDialog } from '@/composables/dialogVisibility/useProfileEditDialog';
 import ProfileEditDialog from '../modals/profile_edit_dialog/ProfileEditDialog.vue';
 import { useAuth } from '@/composables/useAuth';
 

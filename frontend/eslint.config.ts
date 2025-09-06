@@ -19,4 +19,10 @@ export default defineConfigWithVueTs(
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
   skipFormatting,
+  {
+    name: 'overrride/no-explicit-any',
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off'
+    }
+  }
 )

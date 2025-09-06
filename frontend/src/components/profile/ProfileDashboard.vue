@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { AuthService } from '@/api/auth/auth_service';
 import { userKeybindingApi } from '@/api/keybinding/keybinding_user';
 import { useConstantsStore } from '@/stores/constantsStore';
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import KeybindingSave from '@/components/profile/KeybindingSave.vue';
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveProfileDialog.vue';
-import { useEditSaveDialog } from '@/composables/useKeybindingProfileEditDialog';
+import { useEditSaveDialog } from '@/composables/dialogVisibility/useKeybindingProfileEditDialog';
 import { useAuth } from '@/composables/useAuth';
 
 //search and filter values
@@ -22,7 +21,7 @@ const currentPage = ref(1)
 const pageSize = ref(15)
 const totalRecords = ref(0)
 
-const {currentUser, isAuthLoading} = useAuth()
+const {currentUser} = useAuth()
 
 const constantsStore = useConstantsStore()
 const {keybindingCategories} = storeToRefs(constantsStore)
@@ -135,12 +134,11 @@ const handleItemUpdate = (newData: any) => {
     }
 }
 
-const handleItemLiked = (likeData: any) => {
-    const index = displayData.value.findIndex(item => item._id === likeData.saveId)
-
+const handleItemLiked = (isLiked: boolean, saveId: string, likeCount: number) => {
+    const index = displayData.value.findIndex(item => item._id === saveId)
     if (index !== -1) {
-        displayData.value[index].isLiked = likeData.isLiked
-        displayData.value[index].likeCount = likeData.likeCount
+        displayData.value[index].isLiked = isLiked
+        displayData.value[index].likeCount = likeCount
     }
 }
 
@@ -249,6 +247,7 @@ const handleDialogHide = () => {
             >
                 <KeybindingSaveProfileDialog 
                     :keybiding-data="currentDialogData"
+                    :editable="true"
                     @upade-success="handleItemUpdate"
                     @like-change="handleItemLiked"
                     @save-deleted="handleItemDeleted"

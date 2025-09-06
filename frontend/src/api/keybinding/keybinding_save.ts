@@ -43,7 +43,19 @@ const getDescription =  async (saveId: string) => {
     }
 }
 
+const getDescriptionDiscover =  async (saveId: string) => {
+    try {
+        const response = await api.get(`/keybinding/${saveId}/get-description-discover`)
+        return response.data.data
+    } catch (error) {
+        console.log(error);
+        return ''
+    }
+}
+
+
 export const keybindingSaveApi = {
     getDescription,
+    getDescriptionDiscover,
     toggleLike: debounce(toggleLike, 500),
 }

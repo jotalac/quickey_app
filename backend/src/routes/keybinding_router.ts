@@ -1,7 +1,7 @@
 import express from "express"
 import { getCategories, saveKeyBinding } from "../controllers/keybinding/save_keybinding_controller"
 import { authenticateToken } from "../middleware/auth_middleware"
-import {deleteSave, getBindingUser, getDescription, updateSave, verfiyBindingName} from "../controllers/keybinding/keybinding_user_controller"
+import {deleteSave, getBindingUser, getDescription, getDescriptionDiscover, updateSave, verfiyBindingName} from "../controllers/keybinding/keybinding_user_controller"
 import { keyBindingSaveLimiter, keyBindingUpdateLimiter } from "../middleware/rate_limiter"
 import { likeSave, unlikeSave } from "../controllers/keybinding/like_keybinding_controller"
 import { getBindingDiscover, getHotKeybindings } from "../controllers/keybinding/keybinding_discover_controller"
@@ -17,6 +17,7 @@ router.get("/get-categories", getCategories)
 router.get("/get-user-binding", authenticateToken, getBindingUser)
 
 router.get("/:saveId/get-description", authenticateToken, getDescription)
+router.get("/:saveId/get-description-discover", getDescriptionDiscover)
 
 router.patch("/:saveId/update", authenticateToken, keyBindingUpdateLimiter, updateSave)
 
