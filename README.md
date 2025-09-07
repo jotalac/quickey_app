@@ -16,6 +16,9 @@ Configure key bindings, create macros, and manage your device settings directly 
 - **Interactive Tutorial** - Guided tour for new users
 - **Cross-Platform** - Works on Windows, macOS, Linux, and Android
 
+## Hardware
+- checkout [this repository](https://github.com/JouSee11/quickey_macropad/tree/main) for hardware part of the project
+
 ## 🛠️ Tech Stack
 
 **Frontend:** Vue 3, TypeScript, Vite, PrimeVue,  
