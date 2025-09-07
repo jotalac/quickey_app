@@ -3,7 +3,6 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { Icon } from '@iconify/vue';
 import { onBeforeMount, ref } from 'vue';
 import { useAuth } from '@/composables/useAuth';
-import { authApi } from '@/api/auth/auth_token';
 import { AuthService } from '@/api/auth/auth_service';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue';
@@ -238,6 +237,79 @@ onBeforeMount(() => {
 
 .sso-icon:hover{
     color: var(--primary-0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 650px) {
+  .form-cont {
+    width: 92%;
+    max-width: 440px;
+    border-radius: var(--border-rad-main);
+  }
+  .form-element {
+    padding: 28px 32px;
+  }
+  .icon-header {
+    width: 56px;
+    height: 56px;
+  }
+  .header-text {
+    font-size: 2.2em;
+  }
+  .form-inputs {
+    height: auto;
+    gap: 26px;
+    margin-top: 30px;
+  }
+  .login-register-cont {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .log-in-button {
+    width: 100%;
+    justify-content: center;
+  }
+  .forgotten-password-link {
+    margin-top: 4px;
+  }
+  .sso-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-cont {
+    width: 100%;
+    max-width: 100%;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+  .form-element {
+    padding: 24px 18px 40px;
+    background: var(--blue-dark);
+    border-radius: var(--border-rad-main);
+  }
+  .icon-header {
+    width: 50px;
+    height: 50px;
+  }
+  .header-text {
+    font-size: 1.9em;
+  }
+  .form-inputs {
+    margin-top: 28px;
+    gap: 22px;
+  }
+  .forgotten-password-link {
+    font-size: 0.9rem;
+  }
+  .sso-buttons {
+    width: 100%;
+  }
 }
 
 

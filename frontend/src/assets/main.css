@@ -147,7 +147,8 @@ div.p-dialog-content{
     width: 300px;
 }
 
-/* .error-tooltip-body{
-    width: 500px;
-    max-width: 1500px;
-} */
+@media (max-width: 500px) {
+    #app{
+        background-size: 60px 60px;
+    }
+}

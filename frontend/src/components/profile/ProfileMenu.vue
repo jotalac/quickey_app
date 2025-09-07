@@ -33,7 +33,7 @@ const onTabChange = () => {
 
 <template>
     <div class="menu-section">
-        <TabMenu :model="items" v-model:activeIndex="activeIndex" @tab-change="onTabChange"></TabMenu>
+        <TabMenu :model="items" v-model:activeIndex="activeIndex" @tab-change="onTabChange" class="profile-menu"></TabMenu>
 
         <Button
             text
@@ -80,6 +80,23 @@ const onTabChange = () => {
     margin-left: auto;
     margin-right: 20px;    
     color: var(--red-vivid);
+}
+
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .menu-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 12px 12px;
+  }
+  .profile-menu {
+    width: 100%;
+  }
+  .logout-button {
+    margin: 0 0 0 auto;
+  }
 }
 
 </style>

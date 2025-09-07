@@ -401,4 +401,75 @@ onBeforeMount(() => {
     background-color: transparent;
     border: none;
 }
+
+@media (max-width: 650px) {
+  .form-cont {
+    width: 92%;
+    max-width: 460px;
+    height: auto;
+    padding: 0;
+    border-radius: var(--border-rad-main);
+  }
+  .form-element {
+    padding: 28px 32px 40px;
+  }
+  .icon-header {
+    width: 56px;
+    height: 56px;
+  }
+  .header-text {
+    font-size: 2.2em;
+  }
+  .form-inputs {
+    height: auto;
+    gap: 26px;
+    margin-top: 32px;
+  }
+  .register-login-cont {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-top: 34px;
+  }
+  .log-in-button {
+    width: 100%;
+    justify-content: center;
+  }
+  .sso-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-cont {
+    width: 100%;
+    background: transparent;
+    box-shadow: none;
+  }
+  .form-element {
+    padding: 24px 18px 38px;
+    background: var(--blue-dark);
+    border-radius: var(--border-rad-main);
+  }
+  .icon-header {
+    width: 50px;
+    height: 50px;
+  }
+  .header-text {
+    font-size: 1.9em;
+  }
+  .form-inputs {
+    gap: 22px;
+    margin-top: 28px;
+  }
+  .register-login-cont span {
+    font-size: 0.95rem;
+  }
+  .sso-buttons {
+    width: 100%;
+  }
+}
+
 </style>

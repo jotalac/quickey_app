@@ -189,40 +189,42 @@ const handleDialogHide = () => {
             </template>
 
             <template #start>
-                <MultiSelect
-                    v-model="selectedCategories"
-                    :options="keybindingCategories"
-                    :max-selected-labels="2"
-                    size="small"
-                    placeholder="Filter categories"
-                    class="category-select"
-                />
-
-                <Select
-                    v-model="sortBy"
-                    :options="sortOptions"
-                    option-label="label"
-                    option-value="value"
-                    size="small"
-                    placeholder="Sort by"
-                    class="sort-select"
-                />
-
-                <SelectButton 
-                    v-model="filterPublic"
-                    :options="publicOptions"
-                    size="small"
-                    class="public-select"
-                />
-
-                <Button
-                    :label="filterLiked ? 'Liked' : 'All'"
-                    @click="filterLiked = !filterLiked" 
-                    :class="['filter-liked-button', { 'active-button': filterLiked }]"
-                    size="small"
-                    :icon="filterLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                    variant="text"
-                />
+                <div class="filter-values-cont">
+                    <MultiSelect
+                        v-model="selectedCategories"
+                        :options="keybindingCategories"
+                        :max-selected-labels="2"
+                        size="small"
+                        placeholder="Filter categories"
+                        class="category-select"
+                    />
+    
+                    <Select
+                        v-model="sortBy"
+                        :options="sortOptions"
+                        option-label="label"
+                        option-value="value"
+                        size="small"
+                        placeholder="Sort by"
+                        class="sort-select"
+                    />
+    
+                    <SelectButton 
+                        v-model="filterPublic"
+                        :options="publicOptions"
+                        size="small"
+                        class="public-select"
+                    />
+    
+                    <Button
+                        :label="filterLiked ? 'Liked' : 'All'"
+                        @click="filterLiked = !filterLiked" 
+                        :class="['filter-liked-button', { 'active-button': filterLiked }]"
+                        size="small"
+                        :icon="filterLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                        variant="text"
+                    />
+                </div>
 
             </template>
 
@@ -356,6 +358,11 @@ const handleDialogHide = () => {
 /* .filter-liked-button.active-button{
     color: var(--red-dark);
 } */
+ .filter-values-cont{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+ }
 
 .category-select{
     width: 200px;
@@ -446,6 +453,9 @@ const handleDialogHide = () => {
 .paginator{
     margin-top: 40px;
 }
+
+
+
 
 
 </style>
