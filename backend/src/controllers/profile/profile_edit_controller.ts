@@ -3,6 +3,7 @@ import { IUser } from "../../@types/user"
 import User from "../../models/user_model"
 import path from "path"
 import sharp from "sharp"
+import crypto from "crypto"
 import fs from "fs"
 import KeyBinding from "../../models/keybinding_model"
 import Like from "../../models/like_model"
@@ -245,31 +246,47 @@ function validateSocialMediaLinks(links: socialMediaLink[]): boolean {
     return true
 }
 
-const processImage = async (file: Express.Multer.File): Promise<string> => {
-    try {
-        const originalPath = file.path
-        const baseName = path.basename(file.filename, path.extname(file.filename))
+// const processImage = async (file: Express.Multer.File): Promise<string> => {
+//     try {
+//         const originalPath = file.path
+//         const baseName = path.basename(file.filename, path.extname(file.filename))
         
-        // ✅ Always create a unique webp filename
-        const newName = `${baseName}_processed.webp`
-        const newPath = path.join(PUBLIC_IMAGE_FOLDER, newName)
+//         // ✅ Always create a unique webp filename
+//         const newName = `${baseName}_processed.webp`
+//         const newPath = path.join(PUBLIC_IMAGE_FOLDER, newName)
 
-        //edit the file, size, quailty and format
-        await sharp(originalPath)
+//         //edit the file, size, quailty and format
+//         await sharp(originalPath)
+//         .rotate() // auto orient 
+//         .resize(256, 256, {fit: 'cover'})
+//         .webp({quality: 85})
+//         .toFile(newPath)
+        
+//         fs.unlink(originalPath, (err) => {
+//             if (err) console.log('Error deleting temp file:', err)
+//         })
+
+//         return newName
+//     } catch (error) {
+//         console.log(error)
+//         return ""
+//     }
+// }
+const processImage = async (file: Express.Multer.File): Promise<string> => {
+    if (!file || !file.buffer) return ''
+
+    const id = crypto.randomBytes(10).toString('hex')
+    const name = `${Date.now()}_${id}.webp`
+    const outPath = path.join(PUBLIC_IMAGE_FOLDER, name)
+
+    //edit the file, size, quailty and format
+    await sharp(file.buffer)
         .rotate() // auto orient 
         .resize(256, 256, {fit: 'cover'})
         .webp({quality: 85})
-        .toFile(newPath)
-        
-        fs.unlink(originalPath, (err) => {
-            if (err) console.log('Error deleting temp file:', err)
-        })
+        .toFile(outPath)
 
-        return newName
-    } catch (error) {
-        console.log(error)
-        return ""
-    }
+    return name
 }
 
 const deleteOldProfilePicture = (imageLink: string) => {

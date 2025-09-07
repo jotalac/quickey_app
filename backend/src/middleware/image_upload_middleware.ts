@@ -1,6 +1,6 @@
 import path from "path";
 import fs from 'fs'
-import multer from "multer";
+import multer, { memoryStorage } from "multer";
 import { IUser } from "../@types/user";
 
 const PROFILE_DIR = path.join(__dirname, '..', '..', 'uploads', 'profile')
@@ -20,16 +20,7 @@ const ALLOWED_MIME = new Set([
 ])
 
 export const profilePicUploadMiddleware = multer({
-    storage: multer.diskStorage({
-        destination: (_req, _file, cb) => cb(null, PROFILE_DIR),
-        filename: (req, file, cb) => {
-            //image name = id + timestamp + ext
-            const userId = (req.user as IUser)._id
-            const unique = Date.now().toString(8)
-            const ext = path.extname(file.originalname).toLocaleLowerCase()
-            cb(null, `${userId}-${unique}${ext}`)
-        }
-    }),
+    storage: multer.memoryStorage(), //store it in memory until it is explicitly saved
     limits: {
         fileSize: 4_000_000, // 1.5 MB
         files: 1
