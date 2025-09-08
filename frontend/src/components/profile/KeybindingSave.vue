@@ -375,4 +375,34 @@ const getCategoryIcon = (categoryName: string) => {
     color: var(--gray-main);
 }
 
+
+
+
+/* Base: allow flexible shrinking instead of fixed card width */
+/* .save-block-link { width: 100%; }
+.save-cont {
+  width: 100%;
+  max-width: 350px;
+  box-sizing: border-box;
+} */
+
+/* Single breakpoint */
+@media (max-width: 800px) {
+    .save-block-link{
+        width: 100%;
+        padding: 0px 15px;
+    }
+
+    .save-cont {
+        width: 100%;
+        /* height: 150px; */
+        padding: 14px 16px;
+        margin: 10px 5px;
+        border-radius: 12px;
+    }
+
+  /* Smaller key grid + tighter gaps */
+
+}
+
 </style>

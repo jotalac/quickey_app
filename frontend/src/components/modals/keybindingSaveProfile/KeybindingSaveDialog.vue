@@ -457,4 +457,73 @@ const dialogHide = () => {
     }
 }
 
+
+
+
+
+
+
+
+
+.dialog-content {
+  gap: 16px;
+}
+
+.keybindig-section,
+.keybinding-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Two-column -> stacked on narrower screens */
+@media (max-width: 1100px) {
+  .dialog-content {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .left-edit-section {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    margin-bottom: 8px;
+  }
+
+  .keybindig-section,
+  .keybinding-section {
+    width: 100%;
+  }
+
+  .actions-cont {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .like-delete-cont {
+    flex-direction: column;
+    /* align-items: stretch; */
+    gap: 12px;
+  }
+
+
+  .user-date-cont {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+/* Phone tweaks */
+@media (max-width: 640px) {
+  .form-element { margin-bottom: 24px; }
+  #save-description { height: 120px; }
+  .actions-cont { flex-direction: column; gap: 10px; }
+  .form-bottom { flex-direction: column; gap: 12px; }
+  .form-button-cont { display: flex; justify-content: flex-end; gap: 10px; }
+}
+
 </style>

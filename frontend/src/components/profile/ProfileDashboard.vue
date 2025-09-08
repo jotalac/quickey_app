@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 import KeybindingSave from '@/components/profile/KeybindingSave.vue';
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
-import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveProfileDialog.vue';
+import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveDialog.vue';
 import { useEditSaveDialog } from '@/composables/dialogVisibility/useKeybindingProfileEditDialog';
 import { useAuth } from '@/composables/useAuth';
 
@@ -386,7 +386,8 @@ const handleDialogHide = () => {
     justify-content: center;
     margin-top: 30px;
     width: 100%;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Saves container */
@@ -455,7 +456,12 @@ const handleDialogHide = () => {
 }
 
 
+@media (max-width: 500px) {
 
+    .keybinding-display-cont{
+        margin-top: 10px;
+    }
+}
 
 
 </style>

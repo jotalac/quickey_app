@@ -76,7 +76,11 @@ onBeforeMount(()=> {
 }
 
 
-
+@media (max-width: 500px) {
+    .profile-layout{
+        width: 100%;
+    }
+}
 
 
 

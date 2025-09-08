@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { discoverKeybindingApi } from '@/api/keybinding/keybinding_discover';
-import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveProfileDialog.vue';
+import KeybindingSaveProfileDialog from '@/components/modals/keybindingSaveProfile/KeybindingSaveDialog.vue';
 import { useEditSaveDialog } from '@/composables/dialogVisibility/useKeybindingProfileEditDialog';
 import { useAuth } from '@/composables/useAuth';
 import { useConstantsStore } from '@/stores/constantsStore';

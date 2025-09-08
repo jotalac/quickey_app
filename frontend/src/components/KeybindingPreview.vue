@@ -174,4 +174,25 @@ onBeforeMount(() => {
     transform: scale(1.0);
 }
 
+
+
+
+
+
+
+
+@media (max-width: 620px){
+  .buttons-container{
+    transform: scale(.6);
+  }
+}
+
+/* Keep knob centered */
+.knob-display { grid-column: 2; grid-row: 2; }
+
+/* Page buttons wrap when tight */
+.page-buttons{
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px;
+}
+
 </style>

@@ -130,4 +130,59 @@ h1 i{
 }
 
 
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .profile-settings-cont {
+    padding: 16px;
+  }
+  .menu-cont {
+    width: 100%;
+    max-width: 560px;
+    padding: 16px 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-settings-cont {
+    padding: 12px;
+    gap: 16px;
+  }
+  .menu-cont {
+    width: 100%;
+    max-width: none;
+    border-radius: var(--border-rad-main);
+    padding: 14px 12px;
+    gap: 14px;
+  }
+  .menu-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .menu-row p {
+    margin: 0;
+  }
+  .menu-row :deep(.p-button),
+  .menu-row button {
+    width: 100%;
+    justify-content: center;
+  }
+  :deep(.p-confirmdialog) {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  h1 {
+    font-size: 1.25rem;
+  }
+  h1 i {
+    font-size: 0.9em;
+  }
+  .menu-cont {
+    padding: 12px 10px;
+  }
+}
 </style>

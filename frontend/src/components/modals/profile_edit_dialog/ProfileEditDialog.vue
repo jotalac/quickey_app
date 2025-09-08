@@ -279,4 +279,85 @@ const uploadNewImage = async (event: any) => {
 }
 
 
+
+
+
+
+/* Let dialog body shrink and avoid horizontal scroll */
+:deep(.p-dialog) { max-width: 100vw; }
+:deep(.p-dialog-content) { max-width: 100%; overflow-x: hidden; }
+
+/* Critical: allow flex items to shrink below content size */
+.dialog-content,
+.edit-cont,
+.edit-section { min-width: 0; }
+
+/* Panels fill dialog width but cap at a reasonable max */
+.edit-cont {
+  width: 100%;
+  max-width: 700px;           /* cap on large screens */
+  box-sizing: border-box;
+}
+
+/* Inputs and upload must not force width */
+.edit-input,
+.bio-textarea,
+:deep(.p-fileupload) { width: 100%; min-width: 0; }
+
+/* FileUpload buttons wrap instead of overflowing */
+:deep(.p-fileupload .p-fileupload-buttonbar) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+:deep(.p-fileupload .p-button) { flex: 1 1 auto; }
+
+/* Tighter layout on phones */
+@media (max-width: 640px){
+  .dialog-content { padding: 6px 4px; gap: 14px; }
+  .edit-cont { padding: 12px; }
+  .edit-section { flex-wrap: wrap; gap: 10px; }
+  .button-area { width: 100%; justify-content: stretch; gap: 8px; flex-wrap: wrap; }
+  .button-area :deep(.p-button) { flex: 1 1 100%; }
+}
+
+
+/* Let dialog body shrink and avoid horizontal scroll */
+:deep(.p-dialog) { max-width: 100vw; }
+:deep(.p-dialog-content) { max-width: 100%; overflow-x: hidden; }
+
+/* Critical: allow flex items to shrink below content size */
+.dialog-content,
+.edit-cont,
+.edit-section { min-width: 0; }
+
+/* Panels fill dialog width but cap at a reasonable max */
+.edit-cont {
+  width: 100%;
+  max-width: 700px;           /* cap on large screens */
+  box-sizing: border-box;
+}
+
+/* Inputs and upload must not force width */
+.edit-input,
+.bio-textarea,
+:deep(.p-fileupload) { width: 100%; min-width: 0; }
+
+/* FileUpload buttons wrap instead of overflowing */
+:deep(.p-fileupload .p-fileupload-buttonbar) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+:deep(.p-fileupload .p-button) { flex: 1 1 auto; }
+
+/* Tighter layout on phones */
+@media (max-width: 640px){
+  .dialog-content { padding: 6px 4px; gap: 14px; }
+  .edit-cont { padding: 12px; }
+  .edit-section { flex-wrap: wrap; gap: 10px; }
+  .button-area { width: 100%; justify-content: stretch; gap: 8px; flex-wrap: wrap; }
+  .button-area :deep(.p-button) { flex: 1 1 100%; }
+}
+
 </style>
