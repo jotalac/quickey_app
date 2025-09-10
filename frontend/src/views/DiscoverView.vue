@@ -363,6 +363,7 @@ const handleItemLiked = (isLiked: boolean, saveId: string, likeCount: number) =>
 
 .hot-saves-cont {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
   width: 100%;
 }

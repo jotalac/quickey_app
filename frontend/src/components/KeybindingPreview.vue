@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onBeforeMount, ref, watch} from 'vue'
+import {onBeforeMount, ref} from 'vue'
 import type { KeybindingDataSave } from '@/types/keybindingSaveTypes';
 import { useKeybindingSaveEdit } from '@/composables/useKeybindingSavePreview';
 import ButtonBox from '@/components/home_page/ButtonBox.vue';
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const {getKnobTooltip, convertValueForTooltip, getActionLabel, getTextFromValue, getButtonState, getKnobState} = useKeybindingSaveEdit()
+const {getKnobTooltip, convertValueForTooltip, getTextFromValue, getButtonState, getKnobState} = useKeybindingSaveEdit()
 
 const totalPages = 3
 const currentPage = ref(1)

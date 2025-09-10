@@ -216,7 +216,7 @@ const otherItems = ref([
 
     #login-button-nav{
         right: 20px;
-        width: 100px;
+        /* width: 100px; */
         height: 35px;
     }
 }

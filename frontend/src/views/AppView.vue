@@ -68,6 +68,7 @@ watch(devWarningShow, (isDialogVisible) => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 10px;
 
 }
 #center-section{

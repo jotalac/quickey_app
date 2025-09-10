@@ -71,8 +71,8 @@ const closeDialog = () => {
         v-model:visible="isVisible"
         modal
         header="Knob binding"
-        :style="{width: '70%', height: '300px'}"
-        :breakpoints="{'1200px': 'height: 700px'}"
+        :style="{width: '70vw', height: '300px'}"
+        :breakpoints="{ '1200px':'80vw',  '1000px': '95vw'}"
         @hide="dialogStore.closeDialog"
         
     >
@@ -121,12 +121,13 @@ const closeDialog = () => {
     width: 100%;
     justify-content: space-evenly;
     padding: 10px 30px;
+    padding-bottom: 50px;
 }
 
 .dialog-content-section{
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: center;
     width: 25%;
 }
 
@@ -161,7 +162,7 @@ const closeDialog = () => {
     color: var(--green-dark);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 900px) {
     .knob-dialog-content{
         flex-direction: column;
         align-items: center;

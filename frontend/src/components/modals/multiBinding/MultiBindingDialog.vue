@@ -64,7 +64,8 @@ const handleSave = () => {
         modal
         class="multi-binding-dialog"
         @hide="closeDialog"
-        :style="{ width: '70%', height: '80%' }"
+        :style="{ width: '70vw', height: '80vh' }"
+        :breakpoints="{ '1300px':'80vw',  '1000px': '95vw'}"
         :header="dialogTitle"
     >
         <!-- Main content container -->

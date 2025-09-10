@@ -17,6 +17,7 @@ import { useKnobDialogStore } from "@/stores/knobDialogStore"
 import { useDeviceActions } from "@/composables/useButtonActions"
 import { useAiKeybindingDialog } from "@/composables/dialogVisibility/useAiKeybindingDialog"
 import { useAuth } from "@/composables/useAuth"
+import { useKeybindingSaveEdit } from "@/composables/useKeybindingSavePreview"
 
 const {importData} = useDeviceActions()
 //use the composable functoins
@@ -54,6 +55,8 @@ const multiBindingDialogStore = useMultiBindingDialogStore()
 
 const {showDialog} = useAiKeybindingDialog()
 const {isLoggedIn} = useAuth()
+
+const {convertValueForTooltip, getButtonState} = useKeybindingSaveEdit()
 
 // init buttons when componets are visible
 onMounted(() => {
@@ -225,6 +228,18 @@ const knobDialogStore = useKnobDialogStore()
                     :active-context-menu="activeButtonContext"
                     @bind-button="handleBindButton"
                     @context-menu="handleContextMenu"
+                    v-tooltip.top="{
+                        value: convertValueForTooltip(button.value),
+                        disabled: getButtonState(button.value) !== 'multiBinding',
+                        pt: {
+                            text: {
+                                class: 'multi-binding-tooltip',
+                                // style: 'width: 300px'
+                                style: 'width: 300px; background: var(--primary-50); color: var(--primary-1000)'
+                                // style: 'width: 300px; background: var(--green-dark);'
+                            }
+                        }
+                    }"
                 />
 
                 <HomeKnob 
