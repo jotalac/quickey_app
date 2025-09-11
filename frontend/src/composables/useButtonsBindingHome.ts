@@ -117,6 +117,10 @@ export const useButtons = () => {
             get: () => store.copiedValues,
             set: (val) => store.copiedValues = val
         }),
+        currentBindingName: computed({
+            get: () => store.currentBindingName,
+            set: (val) => store.currentBindingName = val
+        }),
 
         
         initButtons,

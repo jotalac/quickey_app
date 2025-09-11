@@ -152,12 +152,12 @@ const leftMenuItems = computed(() => [
 
 // ==== keybinding actions ====
 const saveToDevice = async () => {
-    await saveKeybindingToDevice(props.keybidingData?.keyBinding)
+    await saveKeybindingToDevice(props.keybidingData?.keyBinding, saveName.value)
 }
 
 const useKeybinding = () => {
     if (!props.keybidingData) return
-    useCurrentKeybinding(props.keybidingData.keyBinding)
+    useCurrentKeybinding(props.keybidingData.keyBinding, saveName.value)
     hideDialog()
 }
 

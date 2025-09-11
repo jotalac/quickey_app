@@ -2,11 +2,13 @@ import { useButtonBindStore } from '@/stores/buttonBindStore'
 import { useDeviceStore } from '@/stores/deviceStore'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from "primevue/usetoast";
+import { useButtons } from './useButtonsBindingHome';
 
 
 export function useDeviceActions () {
     const deviceStore = useDeviceStore()
     const buttonStore = useButtonBindStore()
+    const {currentBindingName} = useButtons()
 
     // const {isConnected} = storeToRefs(deviceStore)
     const {importFromDevice} = deviceStore
@@ -30,6 +32,7 @@ export function useDeviceActions () {
                 },
                 accept: () => {
                     buttonStore.resetAllButtons()
+                    currentBindingName.value = 'custom'
                     toast.add({ severity: 'info', summary: 'Reseted', detail: 'All binding reseted', life: 2000 });
                 },
                 reject: () => {

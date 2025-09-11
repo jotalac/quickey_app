@@ -10,6 +10,8 @@ export const useButtonBindStore = defineStore("buttonBind", () => {
     const buttonsPerPage = ref<number>(9)
     const copiedBtnNumber = ref<number | null>(null)
     const copiedValues = ref<string[] | null>(null)
+    const currentBindingName = ref<string | 'custom'>('custom')
+
     
     const showKnob = ref<number>(1)
     const knobElement = ref<KnobBindHome>({state: 'notBinded', values: {left: '', right: '', button: ''}})
@@ -106,6 +108,7 @@ export const useButtonBindStore = defineStore("buttonBind", () => {
         knobElement,
         copiedBtnNumber,
         copiedValues,
+        currentBindingName,
 
         resetAllButtons,
         setCurrentPage,

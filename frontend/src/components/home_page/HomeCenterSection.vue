@@ -34,7 +34,8 @@ const {
     knobElement,
     resetButton,
     pasteCopied,
-    getButtonValue
+    getButtonValue,
+    currentBindingName
     
 } = useButtons()
 
@@ -98,6 +99,7 @@ const saveDataToDevice = async () => {
 
     //convert data form the buttons to specified structure
     const dataToSend: Record<string, string[]> = {}
+    dataToSend["bindingName"] = [currentBindingName.value]
 
     //add buttons
     allButtons.value.forEach((btn: ButtonBindHome) => {

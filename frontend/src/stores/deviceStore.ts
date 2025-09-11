@@ -148,6 +148,10 @@ export const useDeviceStore = defineStore('device', () => {
             //get button store and handle the incomming data
             const buttonStore = useButtonBindStore()
             Object.entries(jsonData as Record<string, string[]>).forEach(([buttonId, keyCodes]: [string, string[]]) => {
+                if (buttonId === 'bindingName') { //handle importing the save name
+                    buttonStore.currentBindingName = keyCodes[0]
+                    return
+                }
                 const buttonIndex = buttonStore.allButtons.findIndex(btn => btn.id === parseInt(buttonId))
             
                 if (buttonIndex !== -1) {

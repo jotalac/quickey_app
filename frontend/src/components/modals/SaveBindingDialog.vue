@@ -13,7 +13,7 @@ import { storeToRefs } from 'pinia';
 
 const {isDialogVisible, hideDialog} = useSaveDialog()
 const nameServerError = ref('')
-const {allButtons, knobElement} = useButtons()
+const {allButtons, knobElement, currentBindingName} = useButtons()
 const toast = useToast()
 
 //get the categories
@@ -62,6 +62,7 @@ const onSubmit = async ({valid, values, reset}: {valid: boolean, values: any, re
     
     if (saveResult.status === 'success') {
         toast.add({severity: 'success', summary: "Keybinding saved successfully", life: 1000})
+        currentBindingName.value = values.saveName
         hideDialog()
     } else {
         toast.add({severity: 'error', summary: "Error", detail: saveResult.msg, life: 2000})

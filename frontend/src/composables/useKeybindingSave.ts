@@ -15,17 +15,18 @@ export const useKeybindingSave = () => {
     const {isConnected} = storeToRefs(deviceStore)
     const {sendToDevice} = deviceStore
     const buttonBindStore = useButtonBindStore()
-    const {initButtons} = useButtons()
+    const {initButtons, currentBindingName} = useButtons()
     const router = useRouter()
     const toast = useToast()
 
     
     // ==== keybinding actions ====
-    const saveKeybindingToDevice = async (keybinding: KeybindingDataSave["keyBinding"] | undefined) => {    
+    const saveKeybindingToDevice = async (keybinding: KeybindingDataSave["keyBinding"] | undefined, saveName: string) => {    
         if (!isConnected.value || !keybinding) return
         
         // convert data for export
         const dataToSend: Record<string, string[]> = {}
+        dataToSend["bindingName"] = [saveName]
     
         const originalData = JSON.parse(JSON.stringify(keybinding));
         
@@ -36,13 +37,15 @@ export const useKeybindingSave = () => {
         await sendToDevice(dataToSend)
     }
     
-    const useCurrentKeybinding = (keybinding: KeybindingDataSave["keyBinding"]) => {
+    const useCurrentKeybinding = (keybinding: KeybindingDataSave["keyBinding"], saveName: string) => {
     
         const originalData = JSON.parse(JSON.stringify(keybinding))
     
         //init the buttons if there are not
         if (buttonBindStore.allButtons.length === 0) {initButtons()}
         buttonBindStore.resetAllButtons() //reset current binding
+
+        currentBindingName.value = saveName
     
     
         originalData.forEach((btn: any) => {
