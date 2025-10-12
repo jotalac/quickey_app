@@ -20,8 +20,7 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          su jotalac
-          cd ~/quickey_app
+          cd /home/jotalac/quickey_app
           git pull
           docker-compose down
           docker-compose up -d --build
