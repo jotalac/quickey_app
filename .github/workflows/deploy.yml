@@ -20,7 +20,8 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd ${{ secrets.DEPLOY_PATH }}
+          su jotalac
+          cd ~/${{ secrets.DEPLOY_PATH }}
           git pull
           docker-compose down
           docker-compose up -d --build
