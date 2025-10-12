@@ -21,7 +21,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           su jotalac
-          cd ~/${{ secrets.DEPLOY_PATH }}
+          cd ~/quickey_app
           git pull
           docker-compose down
           docker-compose up -d --build
