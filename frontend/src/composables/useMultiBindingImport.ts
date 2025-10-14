@@ -50,7 +50,7 @@ export const useMulitBindingImport = () => {
             if (parts.length >= 2) {
                 const index = parseInt(parts[0])
                 const actionCode = parts[1]
-                const actionValue = parts.length > 2 ? parts[2] : "";
+                const actionValue = parts.length > 2 ? parts.slice(2).join("_") : "";
                 const actionDef = findActionDefinition(actionCode)
 
                 if (actionDef) importNewAction(index, actionDef, actionValue, actionCode)
