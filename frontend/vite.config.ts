@@ -28,25 +28,25 @@ export default defineConfig({
           { "src": "/icons/logo_small.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
         ],
       },
-      workbox: {
-        navigateFallbackDenylist: [/^\/api/],
-        runtimeCaching: [
-          {
-            // urlPattern: ({url}) => {
-            //   return url.pathname.startsWith("/api")
-            // },
-            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
-            handler: "StaleWhileRevalidate", //return the old data (cached) and renews the cached data 
-            options: {
-              cacheName: "api-cache",
-              cacheableResponse: {
-                statuses: [0, 200] // cache only successfull
-              },
-              expiration: {maxEntries: 100, maxAgeSeconds: 60 * 60 * 3}
-            }
-          }
-        ],
-      }
+      // workbox: {
+      //   navigateFallbackDenylist: [/^\/api/],
+      //   runtimeCaching: [
+      //     {
+      //       // urlPattern: ({url}) => {
+      //       //   return url.pathname.startsWith("/api")
+      //       // },
+      //       urlPattern: ({ url }) => url.pathname.startsWith('/api'),
+      //       handler: "StaleWhileRevalidate", //return the old data (cached) and renews the cached data 
+      //       options: {
+      //         cacheName: "api-cache",
+      //         cacheableResponse: {
+      //           statuses: [0, 200] // cache only successfull
+      //         },
+      //         expiration: {maxEntries: 100, maxAgeSeconds: 60 * 60 * 3}
+      //       }
+      //     }
+      //   ],
+      // }
     }),
     Components({
       resolvers: [
