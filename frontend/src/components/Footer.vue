@@ -14,7 +14,7 @@ import { Icon } from '@iconify/vue'
                 <Icon icon="mingcute:pig-money-fill" class="icon-footer"/>
                 <spn class="icon-text">Support</spn>
             </a>
-            <a href="https://instagram.com/quickey.pro/" target="_blank">
+            <a href="https://instagram.com/quickey_dev/" target="_blank">
                 <Icon icon="mdi:instagram" class="icon-footer"/>
                 <spn class="icon-text">Instagram</spn>
             </a>
