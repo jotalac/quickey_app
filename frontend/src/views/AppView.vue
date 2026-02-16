@@ -31,7 +31,7 @@ watch(devWarningShow, (isDialogVisible) => {
 
 <template>
   <!-- optimize for browser to tell it that the about page is the main one -->
-  <link rel="canonical" href="https://quickey.pro/about" />
+  <link rel="canonical" href="https://quickey.jotalac.pro/about" />
 
   <UnsupportedScreen v-if="os === 'ios' || os === 'android' || !isSupported" />
   <main v-else>

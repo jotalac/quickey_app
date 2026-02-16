@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://quickey.pro/sitemap.xml
+Sitemap: https://quickey.jotalac.dev/sitemap.xml

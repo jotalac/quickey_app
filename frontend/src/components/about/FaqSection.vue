@@ -9,7 +9,7 @@
         <AccordionHeader>How can i set the keys function?</AccordionHeader>
         <AccordionContent>
             <p>
-            On the website quickey.pro you can set the binding for all your 27 keys and knob
+            On the website quickey.jotalac.pro you can set the binding for all your 27 keys and knob
             </p>
         </AccordionContent>
     </AccordionPanel>
@@ -85,7 +85,7 @@
         <AccordionHeader>Can I share my keybindings with others?</AccordionHeader>
         <AccordionContent>
             <p>
-            Yes, the feature of sharing your keybindings with others will be availibe in the quickey.pro app.
+            Yes, the feature of sharing your keybindings with others will be availibe in the quickey.jotalac.pro app.
             </p>
         </AccordionContent>
     </AccordionPanel>

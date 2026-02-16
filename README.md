@@ -34,5 +34,5 @@ Configure key bindings, create macros, and manage your device settings directly 
 
 ## 🆘 Support
 - Check FAQ section in about page
-- Visit quickey.pro
+- Visit quickey.jotalac.pro
 - Open GitHub issue
