@@ -1,4 +1,4 @@
-# version: "3.8"
+# version: "3.8"      
 services: 
   backend:
     build:
@@ -19,25 +19,14 @@ services:
     init: true  # This helps with signal handling
     # user: "node:node" # run it as a non root user
     # command: node dist/index.js
- 
-  caddy:
-    container_name: quickey_internal_router
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: quickey-caddy-proxy:latest
-    depends_on:
-      - backend
+   
+    # This service runs the build and then exits    
+  frontend-builder:
+    image: node:20-alpine
+    working_dir: /app
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - global-web
-    restart: unless-stopped
-    # Add proper signal handling for Caddy too
-    stop_signal: SIGTERM
-    stop_grace_period: 30s
+      - /home/jotalac/quickey_app/frontend:/app
+    command: sh -c "npm install && npm run build"
 
 networks:
   global-web:
