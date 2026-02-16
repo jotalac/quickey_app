@@ -11,7 +11,7 @@ services:
     expose:
       - "5000"
     networks:
-      - web
+      - global-web
     restart: unless-stopped
     # Add proper signal handling  
     stop_signal: SIGINT
@@ -21,42 +21,30 @@ services:
     # command: node dist/index.js
  
   caddy:
+    container_name: quickey_internal_router
     build:
       context: .
       dockerfile: Dockerfile
     image: quickey-caddy-proxy:latest
     depends_on:
       - backend
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp" #for http/3
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:
-      - web
+      - global-web
     restart: unless-stopped
     # Add proper signal handling for Caddy too
     stop_signal: SIGTERM
     stop_grace_period: 30s
 
 networks:
-  web:
-    driver: bridge
+  global-web:
+    external: true
+    
 
 volumes:
   caddy_data:
   caddy_config:
   upload_data:
-
-
-
-    #  frontend:
-    # build:
-    #   context: ./frontend
-    #   target: builder
-    # image: quickey-frontend:latest
-    # networks:
-    #   - web

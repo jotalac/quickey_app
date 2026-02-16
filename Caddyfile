@@ -4,7 +4,7 @@
 }
 # Server frontend and backend API under quickey.pro
 
-quickey.pro {
+:80 {
     encode gzip
 
     #proxy /api to backend service
