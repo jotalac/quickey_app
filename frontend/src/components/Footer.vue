@@ -5,7 +5,7 @@ import { Icon } from '@iconify/vue'
 <template>
     <footer>
         <div id="icons-links">
-            <a href="mailto:jtalac@quickey.pro?subject=[Quick key - question]">
+            <a href="mailto:jotalac@jotalac.dev?subject=[Quick key - question]">
                 <Icon icon="mdi:envelope" class="icon-footer"/>
                 <spn class="icon-text">Contact</spn>
             </a>

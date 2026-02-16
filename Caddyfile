@@ -1,8 +1,8 @@
 {
     #contact email for Let's encrypt
-    email jtalac@quickey.pro
+    email quickey@jotalac.dev
 }
-# Server frontend and backend API under quickey.pro
+# Server frontend and backend API under quickey.jotalac.dev
 
 :80 {
     encode gzip
